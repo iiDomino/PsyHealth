@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导航页 - 根目录文件列表</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            display: block;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: 18px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            background-color: #f0f8f0;
+        }
+        .note {
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>📄 根目录下的 HTML 文件</h1>
+    <ul>
+        <!-- 在这里添加你的文件链接，修改 href 和文本即可 -->
+        <li><a href="page1.html">页面 1 (page1.html)</a></li>
+        <li><a href="page2.html">页面 2 (page2.html)</a></li>
+        <li><a href="about.html">关于我们 (about.html)</a></li>
+        <li><a href="contact.html">联系方式 (contact.html)</a></li>
+        <!-- 你可以根据需要继续添加更多链接 -->
+    </ul>
+    <div class="note">
+        ⚡ 点击上方链接即可跳转到对应的 HTML 文件。<br>
+        提示：如果文件不在根目录，请调整路径，例如 <code>folder/page.html</code>。
+    </div>
+</body>
+</html>
