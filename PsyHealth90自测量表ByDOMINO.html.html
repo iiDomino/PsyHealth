@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>PsyHealth自测量表</title>
+    <!-- 引入 html2canvas 用于截图 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        /* 基础重置，确保全屏高度 */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #dbeaf3;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px;
+            box-sizing: border-box;
+        }
+        .phone {
+            max-width: 420px;
+            width: 100%;
+            height: calc(100vh - 4px);
+            background: #ffffff;
+            border-radius: 36px 36px 30px 30px;
+            box-shadow: 0 20px 40px rgba(0, 45, 70, 0.25);
+            overflow: hidden;
+            padding: 0 8px 0 8px;
+            border: 1px solid rgba(130, 185, 225, 0.35);
+            display: flex;
+            flex-direction: column;
+        }
+        .view {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .view.active {
+            display: flex;
+        }
+
+        /* 垂直居中容器（用于每个视图） */
+        .centered-wrapper {
+            margin: auto 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .header {
+            text-align: center;
+        }
+        .title-main {
+            font-size: 1.5rem;
+            font-weight: 550;
+            letter-spacing: -0.5px;
+            color: #0b3b54;
+            line-height: 1.2;
+            word-break: break-word;
+        }
+
+        /* 答题视图 */
+        .progress-section {
+            margin: 0;
+        }
+        .progress-track {
+            background: #d0e4f2;
+            height: 6px;
+            border-radius: 20px;
+            width: 100%;
+        }
+        .progress-fill {
+            background: #21729c;
+            height: 6px;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+        .card {
+            background: #f6fbfe;
+            border: 1px solid #c2ddec;
+            border-radius: 24px;
+            padding: 10px 10px 12px 10px;
+            box-shadow: 0 8px 18px -8px #9ebed1;
+        }
+        .question-num {
+            background: #1c6c96;
+            color: white;
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 470;
+            line-height: 1.4;
+            color: #01273a;
+            margin-bottom: 12px;
+            word-break: break-word;
+            min-height: 3rem;
+        }
+        .option-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #bad2e9;
+            border-radius: 100px;
+            padding: 7px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.08s;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.03);
+        }
+        .option-btn:active { background: #ecf6ff; transform: scale(0.99); }
+        .option-btn.selected { background: #166b99; border-color: #166b99; }
+        .option-marker {
+            width: 32px; height: 32px; border-radius: 32px; background: #deeefa;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 1rem; color: #135e86; flex-shrink: 0;
+            text-transform: uppercase;
+        }
+        .option-btn.selected .option-marker { background: white; color: #166b99; }
+        .option-text { font-size: 0.95rem; font-weight: 500; color: #0a3b54; word-break: break-word; }
+        .option-btn.selected .option-text { color: white; }
+
+        /* 导航按钮 */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .nav-btn {
+            flex: 1;
+            background: white;
+            border: 2px solid #30769c;
+            border-radius: 60px;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f618b;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: 0.1s;
+            text-align: center;
+            min-width: 70px;
+        }
+        .nav-btn:active { background: #e2f0fa; }
+        .nav-btn.disabled {
+            opacity: 0.3;
+            pointer-events: none;
+            border-color: #a1b9cc;
+        }
+
+        /* 口令视图 - 输入框改高改窄 */
+        .password-card {
+            background: #f6fbfe;
+            border: 1px solid #c2ddec;
+            border-radius: 24px;
+            padding: 14px 10px;
+            box-shadow: 0 8px 18px -8px #9ebed1;
+            text-align: center;
+            width: 100%;
+        }
+        .password-title {
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: #0b3b54;
+            margin-bottom: 8px;
+        }
+        .password-input {
+            width: 80%;                /* 改窄，占父容器80% */
+            max-width: 260px;           /* 最大宽度限制，防止过宽 */
+            margin: 0 auto 8px auto;    /* 水平居中，底部间距 */
+            padding: 10px 12px;         /* 增加上下内边距，改高 */
+            font-size: 0.9rem;          /* 稍大一点 */
+            border: 2px solid #bad2e9;
+            border-radius: 60px;
+            text-align: center;
+            letter-spacing: 4px;
+            background: white;
+            outline: none;
+            box-sizing: border-box;
+            display: block;              /* 配合margin:auto居中 */
+        }
+        .password-input:focus {
+            border-color: #1c6c96;
+        }
+        .password-btn {
+            background: #1c6c96;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            margin-bottom: 4px;
+        }
+        .password-btn:active { background: #0f4a70; }
+        .password-error {
+            color: #c03c2b;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            min-height: 1.5em;
+        }
+        .back-link {
+            color: #30769c;
+            font-size: 0.8rem;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+            margin-top: 6px;
+        }
+
+        /* 结果视图 */
+        .result-header {
+            display: flex; align-items: center; justify-content: center;
+        }
+        .result-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px;
+        }
+        .factor-card {
+            background: white; border-radius: 18px; padding: 6px 4px;
+            border-left: 5px solid #4894c0; box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+            cursor: pointer; transition: 0.1s;
+        }
+        .factor-card:active { background: #ecf5fc; }
+        .factor-header { display: flex; justify-content: space-between; font-weight: 700; font-size: 0.75rem; color: #14445f; }
+        .factor-bar { background: #d2e5f5; height: 4px; border-radius: 20px; margin: 4px 0 4px; }
+        .factor-fill { height: 4px; border-radius: 20px; background: #256f94; width: 0%; }
+        .factor-score { font-size: 0.55rem; color: #1f6588; word-break: break-word; }
+        .global-row {
+            background: white; border-radius: 22px; padding: 8px; margin-top: 4px;
+            display: flex; flex-wrap: wrap; gap: 6px 8px; font-weight: 500; color: #0a3850;
+            font-size: 0.7rem;
+        }
+        .capture-btn {
+            background: #1c6c96;
+            color: white;
+            border: none;
+            border-radius: 60px;
+            padding: 7px 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 4px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            transition: 0.1s;
+            width: 100%;
+            text-align: center;
+        }
+        .capture-btn:active { background: #0f4a70; }
+
+        /* 详情视图 */
+        .detail-card {
+            background: #f0f8ff;
+            border-radius: 24px;
+            padding: 10px 10px;
+            border: 1px solid #b5d6ed;
+            max-height: 50vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .detail-title { font-size: 1.4rem; font-weight: 500; color: #003153; margin-bottom: 4px; word-break: break-word; }
+        .detail-sub { font-size: 0.9rem; color: #1f618d; margin-bottom: 4px; font-weight: 400; word-break: break-word; }
+        .detail-content { 
+            font-size: 0.75rem; 
+            line-height: 1.4; 
+            color: #123e59; 
+            margin-bottom: 8px; 
+            background: #e6f2fa; 
+            padding: 8px; 
+            border-radius: 18px;
+            white-space: pre-line;
+            word-break: break-word;
+        }
+        .detail-score { 
+            background: #d8e9f5; 
+            border-radius: 22px; 
+            padding: 8px; 
+            margin: 6px 0; 
+            font-size: 0.75rem;
+        }
+        .level-desc {
+            background: #cde4f2;
+            border-radius: 20px;
+            padding: 8px;
+            margin: 6px 0;
+            font-size: 0.7rem;
+            color: #013a55;
+        }
+        .level-item {
+            margin-bottom: 4px;
+            padding-left: 6px;
+            border-left: 4px solid #1c6c96;
+            word-break: break-word;
+        }
+        .back-from-detail {
+            background: #1c6c96; color: white; border: none; border-radius: 60px; padding: 8px;
+            font-size: 0.9rem; font-weight: 600; width: 100%; cursor: pointer; margin-top: 4px;
+        }
+
+        .developer {
+            font-size: 0.5rem;
+            color: #5f8baa;
+            text-align: center;
+            padding-top: 2px;
+            border-top: 1px dashed #b8d2e8;
+        }
+        .footnote {
+            font-size: 0.55rem;
+            color: #437a9b;
+            text-align: center;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+<div class="phone">
+    <!-- 答题视图 -->
+    <div id="quizView" class="view active">
+        <div class="centered-wrapper">
+            <div class="header">
+                <div class="title-main">PsyHealth自测量表</div>
+            </div>
+            <div class="progress-section">
+                <div class="progress-track">
+                    <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+                </div>
+            </div>
+            <div class="card" id="questionCard">
+                <div class="question-num" id="qNum">第 1 / 90 题</div>
+                <div class="question-text" id="qText">头痛</div>
+                <div class="option-grid" id="optionGrid"></div>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn" id="prevBtn" disabled>◀ 上一题</button>
+                <button class="nav-btn" id="nextBtn" disabled>下一题 ▶</button>
+            </div>
+            <div class="developer">开发者：DOMINO · 版本 1.01</div>
+        </div>
+    </div>
+
+    <!-- 口令验证视图 (输入框已改高改窄) -->
+    <div id="passwordView" class="view">
+        <div class="centered-wrapper">
+            <div class="header">
+                <div class="title-main">验证口令</div>
+            </div>
+            <div class="password-card">
+                <div class="password-title">🔐</div>
+                <input type="password" id="passwordInput" class="password-input" placeholder="口令" maxlength="10" inputmode="numeric">
+                <button class="password-btn" id="submitPasswordBtn">确认查看</button>
+                <div id="passwordError" class="password-error"></div>
+                <a class="back-link" id="backToQuizFromPasswordBtn">← 返回答题页</a>
+            </div>
+            <div class="developer">开发者：DOMINO · 版本 1.01</div>
+        </div>
+    </div>
+
+    <!-- 结果总览视图 -->
+    <div id="resultView" class="view">
+        <div class="centered-wrapper">
+            <div class="result-header">
+                <div class="title-main">测评结果</div>
+            </div>
+            <div id="resultCapture">
+                <div class="result-grid" id="resultGrid"></div>
+                <div class="global-row" id="globalStatsResult"></div>
+                <div class="developer">开发者：DOMINO · 版本 1.01</div>
+            </div>
+            <button class="capture-btn" id="captureResultBtn">📸 保存结果为图片</button>
+            <div class="footnote">点击任一因子查看详细解释</div>
+        </div>
+    </div>
+
+    <!-- 因子详情视图 -->
+    <div id="detailView" class="view">
+        <div class="centered-wrapper">
+            <div class="result-header">
+                <button class="back-btn" id="backToResultBtn">←</button>
+                <div class="title-main" id="detailFactorName">因子名称</div>
+                <div style="width:32px;"></div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-sub" id="detailSub">得分与临界</div>
+                <div class="detail-content" id="detailDescription">详细解释载入中...</div>
+                <div class="detail-score" id="detailScoreBox"></div>
+                <div class="level-desc" id="levelDescription"></div>
+            </div>
+            <button class="back-from-detail" id="backToResultFromDetailBtn">返回结果总览</button>
+            <div class="developer">开发者：DOMINO · 版本 1.01</div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const VALID_PASSWORD = "1234";
+
+    const items = [
+        { num: 1, text: "头痛", factor: "som" },
+        { num: 2, text: "神经过敏，心中不踏实", factor: "anx" },
+        { num: 3, text: "头脑中有不必要的想法或字句盘旋", factor: "obs" },
+        { num: 4, text: "头晕或晕倒", factor: "som" },
+        { num: 5, text: "对异性的兴趣减退", factor: "dep" },
+        { num: 6, text: "对旁人责备求全", factor: "int" },
+        { num: 7, text: "感到别人能控制您的思想", factor: "psy" },
+        { num: 8, text: "责怪别人制造麻烦", factor: "par" },
+        { num: 9, text: "忘性大", factor: "obs" },
+        { num: 10, text: "担心自己的衣饰整齐及仪态的端正", factor: "obs" },
+        { num: 11, text: "容易烦恼和激动", factor: "hos" },
+        { num: 12, text: "胸痛", factor: "som" },
+        { num: 13, text: "害怕空旷的场所或街道", factor: "pho" },
+        { num: 14, text: "感到自己的精力下降，活动减慢", factor: "dep" },
+        { num: 15, text: "想结束自己的生命", factor: "dep" },
+        { num: 16, text: "听到旁人听不到的声音", factor: "psy" },
+        { num: 17, text: "发抖", factor: "anx" },
+        { num: 18, text: "感到大多数人都不可信任", factor: "par" },
+        { num: 19, text: "胃口不好", factor: "oth" },
+        { num: 20, text: "容易哭泣", factor: "dep" },
+        { num: 21, text: "同异性相处时感到害羞不自在", factor: "int" },
+        { num: 22, text: "感到受骗，中了圈套或有人想抓住您", factor: "par" },
+        { num: 23, text: "无缘无故地突然感到害怕", factor: "anx" },
+        { num: 24, text: "自己不能控制地大发脾气", factor: "hos" },
+        { num: 25, text: "怕单独出门", factor: "pho" },
+        { num: 26, text: "经常责怪自己", factor: "dep" },
+        { num: 27, text: "腰痛", factor: "som" },
+        { num: 28, text: "感到难以完成任务", factor: "obs" },
+        { num: 29, text: "感到孤独", factor: "dep" },
+        { num: 30, text: "感到苦闷", factor: "dep" },
+        { num: 31, text: "过分担忧", factor: "dep" },
+        { num: 32, text: "对事物不感兴趣", factor: "dep" },
+        { num: 33, text: "感到害怕", factor: "anx" },
+        { num: 34, text: "您的感情容易受到伤害", factor: "int" },
+        { num: 35, text: "旁人能知道您的私下想法", factor: "psy" },
+        { num: 36, text: "感到别人不理解您、不同情您", factor: "int" },
+        { num: 37, text: "感到人们对您不友好，不喜欢您", factor: "int" },
+        { num: 38, text: "做事必须做得很慢以保证做得正确", factor: "obs" },
+        { num: 39, text: "心跳得很厉害", factor: "anx" },
+        { num: 40, text: "恶心或胃部不舒服", factor: "som" },
+        { num: 41, text: "感到比不上他人", factor: "int" },
+        { num: 42, text: "肌肉酸痛", factor: "som" },
+        { num: 43, text: "感到有人在监视您、谈论您", factor: "par" },
+        { num: 44, text: "难以入睡", factor: "oth" },
+        { num: 45, text: "做事必须反复检查", factor: "obs" },
+        { num: 46, text: "难以做出决定", factor: "obs" },
+        { num: 47, text: "怕乘电车、公共汽车、地铁或火车", factor: "pho" },
+        { num: 48, text: "呼吸有困难", factor: "som" },
+        { num: 49, text: "一阵阵发冷或发热", factor: "som" },
+        { num: 50, text: "因为感到害怕而避开某些东西、场合或活动", factor: "pho" },
+        { num: 51, text: "脑子变空了", factor: "obs" },
+        { num: 52, text: "身体发麻或刺痛", factor: "som" },
+        { num: 53, text: "喉咙有梗塞感", factor: "som" },
+        { num: 54, text: "感到前途没有希望", factor: "dep" },
+        { num: 55, text: "不能集中注意力", factor: "obs" },
+        { num: 56, text: "感到身体的某一部分软弱无力", factor: "som" },
+        { num: 57, text: "感到紧张或容易紧张", factor: "anx" },
+        { num: 58, text: "感到手或脚发重", factor: "som" },
+        { num: 59, text: "想到死亡的事", factor: "oth" },
+        { num: 60, text: "吃得太多", factor: "oth" },
+        { num: 61, text: "当别人看着您或谈论您时感到不自在", factor: "int" },
+        { num: 62, text: "有一些不属于您自己的想法", factor: "psy" },
+        { num: 63, text: "有想打人或伤害他人的冲动", factor: "hos" },
+        { num: 64, text: "醒得太早", factor: "oth" },
+        { num: 65, text: "必须反复洗手、点数", factor: "obs" },
+        { num: 66, text: "睡得不稳不深", factor: "oth" },
+        { num: 67, text: "有想摔坏或破坏东西的想法", factor: "hos" },
+        { num: 68, text: "有一些别人没有的想法", factor: "par" },
+        { num: 69, text: "感到对别人神经过敏", factor: "int" },
+        { num: 70, text: "在商店或电影院等人多的地方感到不自在", factor: "pho" },
+        { num: 71, text: "感到任何事情都很困难", factor: "dep" },
+        { num: 72, text: "一阵阵恐惧或惊恐", factor: "anx" },
+        { num: 73, text: "感到公共场合吃东西很不舒服", factor: "int" },
+        { num: 74, text: "经常与人争论", factor: "hos" },
+        { num: 75, text: "单独一人时神经很紧张", factor: "pho" },
+        { num: 76, text: "别人对您的成绩没有做出恰当的评价", factor: "par" },
+        { num: 77, text: "即使和别人在一起也感到孤单", factor: "psy" },
+        { num: 78, text: "感到坐立不安心神不定", factor: "anx" },
+        { num: 79, text: "感到自己没有什么价值", factor: "dep" },
+        { num: 80, text: "感到熟悉的东西变成陌生或不像是真的", factor: "psy" },
+        { num: 81, text: "大叫或摔东西", factor: "hos" },
+        { num: 82, text: "害怕会在公共场合晕倒", factor: "pho" },
+        { num: 83, text: "感到别人想占您的便宜", factor: "par" },
+        { num: 84, text: "为一些有关性的想法而很苦恼", factor: "psy" },
+        { num: 85, text: "您认为应该因为自己的过错而受到惩罚", factor: "psy" },
+        { num: 86, text: "感到要很快把事情做完", factor: "anx" },
+        { num: 87, text: "感到自己的身体有严重问题", factor: "psy" },
+        { num: 88, text: "从未感到和其他人很亲近", factor: "psy" },
+        { num: 89, text: "感到自己有罪", factor: "oth" },
+        { num: 90, text: "感到自己的脑子有毛病", factor: "psy" }
+    ];
+
+    const factorMeta = {
+        som: { name: "躯体化", count: 12, max: 48, crit: 24, fullDesc: "该分量表主要反映主观的身体不适感，包括心血管、胃肠道、呼吸系统不适，以及头痛、背痛、肌肉酸痛和焦虑的躯体表现。\n得分范围0-48分。得分在24分以上，表明个体在身体上有较明显的不适感，并常伴有头痛、肌肉酸痛等症状。得分在12分以下，躯体症状表现不明显。总的说来，得分越高，躯体的不适感越强；得分越低，症状体验越不明显。" },
+        obs: { name: "强迫症状", count: 10, max: 40, crit: 20, fullDesc: "主要指那些明知没有必要，但又无法摆脱的无意义思想、冲动、行为，以及一些认知障碍的行为征象。\n得分范围0-40分。得分在20分以上，强迫症状较明显。得分在10分以下，强迫症状不明显。总的说来，得分越高，表明个体越无法摆脱一些无意义的行为、思想和冲动，并可能表现出一些认知障碍的行为征兆。得分越低，表明个体在此种症状上表现越不明显，没有出现强迫行为。" },
+        int: { name: "人际关系敏感", count: 9, max: 36, crit: 18, fullDesc: "主要指个人不自在感和自卑感，尤其是在与他人比较时更突出。表现为人际交往中的自卑、心神不安、消极期待等。\n得分范围0-36分。得分在18分以上，表明个体人际关系较为敏感，人际交往中自卑感较强，并伴有行为症状（如坐立不安，退缩等）。得分在9分以下，表明个体在人际关系上较为正常。总的说来，得分越高，个体在人际交往中表现的问题就越多，自卑，自我中心越突出，并已表现出消极的期待。得分越低，个体在人际关系上越能应付自如，人际交流自信、胸有成竹，并抱有积极的期待。" },
+        dep: { name: "抑郁", count: 13, max: 52, crit: 26, fullDesc: "以苦闷的心境为代表性症状，还表现为生活兴趣减退、动力缺乏、活力丧失、失望、悲观，以及有关死亡的思想。\n得分范围0-52分。得分在26分以上，表明个体的抑郁程度较强，生活缺乏足够的兴趣，缺乏运动活力，极端情况下，可能会有想死亡的思想和自杀的观念。得分在13分以下，表明个体抑郁程度较弱，生活态度乐观积极，充满活力，心境愉快。总的说来，得分越高，抑郁程度越明显，得分越低，抑郁程度越不明显。" },
+        anx: { name: "焦虑", count: 10, max: 40, crit: 20, fullDesc: "一般指烦躁、坐立不安、神经过敏、紧张以及由此产生的躯体征象（如震颤）。\n得分范围0-40分。得分在20分以上，表明个体较易焦虑，易表现出烦躁、不安静和神经过敏，极端时可能导致惊恐发作。得分在10分以下，表明个体不易焦虑，易表现出安定的状态。总的说来，得分越高，焦虑表现越明显。得分越低，越不会导致焦虑。" },
+        hos: { name: "敌对", count: 6, max: 24, crit: 12, fullDesc: "从思想、感情及行为三方面反映敌对表现，包括厌烦、摔物、争论直至不可控制的脾气爆发。\n得分范围0-24分。得分在12分以上，表明个体易表现出敌对的思想、情感和行为。得分在6分以下表明个体容易表现出友好的思想、情感和行为。总的说来，得分越高，个体越容易敌对，好争论，脾气难以控制。得分越低，个体的脾气越温和，待人友好，不喜欢争论、无破坏行为。" },
+        pho: { name: "恐怖", count: 7, max: 28, crit: 14, fullDesc: "恐惧对象包括出门旅行、空旷场地、人群、公共场所以及社交恐怖。\n得分范围0-28分。得分在14分以上，表明个体恐怖症状较为明显，常表现出社交、广场和人群恐惧，得分在7分以下，表明个体的恐怖症状不明显。总的说来，得分越高，个体越容易对一些场所和物体发生恐惧，并伴有明显的躯体症状。得分越低，个体越不易产生恐怖心理，越能正常的交往和活动。" },
+        par: { name: "偏执", count: 6, max: 24, crit: 12, fullDesc: "主要指猜疑、关系妄想、投射性思维、敌对、被动体验和夸大等。\n得分范围0-24分。得分在12分以上，表明个体的偏执症状明显，较易猜疑和敌对，得分在6分以下，表明个体的偏执症状不明显。总的说来，得分越高，个体越易偏执，表现出投射性的思维和妄想，得分越低，个体思维越不易走极端。" },
+        psy: { name: "精神病性", count: 10, max: 40, crit: 20, fullDesc: "反映各式各样的急性症状和行为，包括幻听、思维播散、被洞悉感等精神分裂样症状。\n得分范围0-40分。得分在20分以上，表明个体的精神病性症状较为明显，得分在10分以下，表明个体的精神病性症状不明显。总的说来，得分越高，越多的表现出精神病性症状和行为。得分越低，就越少表现出这些症状和行为。" },
+        oth: { name: "其他 (睡眠/饮食)", count: 7, max: 28, crit: 14, fullDesc: "主要反映睡眠及饮食情况。得分范围0-28分。得分在14分以上，表明个体睡眠饮食问题较明显，得分在7分以下，表明个体睡眠饮食问题不明显。得分越高，睡眠饮食问题越突出。" }
+    };
+
+    let scores = new Array(90).fill(null);
+    let currentIndex = 0;
+
+    const quizView = document.getElementById('quizView');
+    const passwordView = document.getElementById('passwordView');
+    const resultView = document.getElementById('resultView');
+    const detailView = document.getElementById('detailView');
+    const qNumDiv = document.getElementById('qNum');
+    const qTextDiv = document.getElementById('qText');
+    const optionGrid = document.getElementById('optionGrid');
+    const progressFill = document.getElementById('progressFill');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const backToResultBtn = document.getElementById('backToResultBtn');
+    const backToResultFromDetailBtn = document.getElementById('backToResultFromDetailBtn');
+    const resultGrid = document.getElementById('resultGrid');
+    const globalStatsResult = document.getElementById('globalStatsResult');
+    const detailFactorName = document.getElementById('detailFactorName');
+    const detailSub = document.getElementById('detailSub');
+    const detailDescription = document.getElementById('detailDescription');
+    const detailScoreBox = document.getElementById('detailScoreBox');
+    const levelDescription = document.getElementById('levelDescription');
+    const captureBtn = document.getElementById('captureResultBtn');
+
+    const passwordInput = document.getElementById('passwordInput');
+    const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+    const passwordError = document.getElementById('passwordError');
+    const backToQuizFromPasswordBtn = document.getElementById('backToQuizFromPasswordBtn');
+
+    function countAnswered() { return scores.filter(v => v !== null).length; }
+    function updateProgress() { progressFill.style.width = (countAnswered() / 90 * 100) + '%'; }
+    function isAllAnswered() { return scores.every(v => v !== null); }
+
+    function updateNavButtons() {
+        prevBtn.disabled = (currentIndex === 0);
+        if (currentIndex === 89) nextBtn.disabled = (scores[currentIndex] === null);
+        else nextBtn.disabled = (scores[currentIndex] === null);
+    }
+
+    function renderCurrent() {
+        if (currentIndex >= 90) return;
+        const item = items[currentIndex];
+        qNumDiv.innerText = `第 ${item.num} / 90 题`;
+        qTextDiv.innerText = item.text;
+        const labels = ['没有', '很轻', '中等', '偏重', '严重'];
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        let html = '';
+        for (let val = 0; val <= 4; val++) {
+            const selectedClass = (scores[currentIndex] === val) ? 'selected' : '';
+            html += `<div class="option-btn ${selectedClass}" data-value="${val}"><span class="option-marker">${letters[val]}</span><span class="option-text">${labels[val]}</span></div>`;
+        }
+        optionGrid.innerHTML = html;
+        document.querySelectorAll('.option-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const value = parseInt(this.dataset.value, 10);
+                scores[currentIndex] = value;
+                document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                updateProgress();
+                if (!isAllAnswered() && currentIndex < 89) { currentIndex++; renderCurrent(); }
+                else if (isAllAnswered()) showPasswordView();
+                updateNavButtons();
+            });
+        });
+        updateNavButtons();
+    }
+
+    function goPrev() { if (currentIndex > 0) { currentIndex--; renderCurrent(); } }
+    function goNext() {
+        if (scores[currentIndex] === null) return;
+        if (currentIndex < 89) { currentIndex++; renderCurrent(); }
+        else if (currentIndex === 89) showPasswordView();
+    }
+
+    function computeResults() {
+        const sums = { som:0, obs:0, int:0, dep:0, anx:0, hos:0, pho:0, par:0, psy:0, oth:0 };
+        items.forEach((item, idx) => sums[item.factor] += scores[idx]);
+        const totalScore = scores.reduce((a,b) => a + b, 0);
+        const positiveItems = scores.filter(s => s >= 1).length;
+        const negativeItems = 90 - positiveItems;
+        const positiveAvg = positiveItems ? (scores.filter(s => s >= 1).reduce((a,b)=>a+b,0) / positiveItems).toFixed(2) : 0;
+        return { sums, totalScore, positiveItems, negativeItems, positiveAvg };
+    }
+
+    function showResultView() {
+        const { sums, totalScore, positiveItems, negativeItems, positiveAvg } = computeResults();
+        let gridHtml = '';
+        for (let [key, meta] of Object.entries(factorMeta)) {
+            const raw = sums[key];
+            const mean = (raw / meta.count).toFixed(2);
+            const percent = (raw / meta.max) * 100;
+            gridHtml += `<div class="factor-card" data-factor="${key}"><div class="factor-header"><span>${meta.name}</span> <span>${raw}</span></div><div class="factor-bar"><div class="factor-fill" style="width:${percent}%;"></div></div><div class="factor-score">均分${mean} / 临界≥${meta.crit}</div></div>`;
+        }
+        resultGrid.innerHTML = gridHtml;
+        globalStatsResult.innerHTML = `<div>📊 总分: ${totalScore}</div><div>📌 总指数: ${(totalScore/90).toFixed(2)}</div><div>🔹 阳性项目: ${positiveItems}</div><div>🔸 阴性项目: ${negativeItems}</div><div>📈 阳性均分: ${positiveAvg}</div>`;
+        document.querySelectorAll('.factor-card').forEach(card => {
+            card.addEventListener('click', (e) => showDetailView(card.dataset.factor, sums));
+        });
+        passwordView.classList.remove('active');
+        resultView.classList.add('active');
+    }
+
+    function showPasswordView() {
+        passwordInput.value = ''; passwordError.innerText = '';
+        quizView.classList.remove('active');
+        passwordView.classList.add('active');
+        setTimeout(() => passwordInput.focus(), 100);
+    }
+
+    function showDetailView(factorKey, sums) {
+        const meta = factorMeta[factorKey];
+        const raw = sums[factorKey];
+        const mean = (raw / meta.count).toFixed(2);
+        const percent = (raw / meta.max) * 100;
+        const lowBound = Math.floor(meta.crit / 2);
+        detailFactorName.innerText = meta.name;
+        detailSub.innerText = `得分 ${raw}  ·  临界值 ≥ ${meta.crit}`;
+        detailDescription.innerText = meta.fullDesc;
+        detailScoreBox.innerHTML = `<div style="font-weight:600; margin-bottom:8px;">您的得分详情</div><div>因子总分: ${raw} (满分 ${meta.max})</div><div>条目均分: ${mean}</div><div>超过临界: ${raw >= meta.crit ? '是 ⚠️' : '否'}</div><div class="factor-bar" style="margin-top:12px;"><div class="factor-fill" style="width:${percent}%;"></div></div>`;
+        let levelHtml = '<div style="font-weight:600; margin-bottom:10px;">📊 得分区间解读</div>';
+        levelHtml += `<div class="level-item">🔹 得分 ≤ ${lowBound-1} ：${meta.name}症状不明显，表现良好。</div>`;
+        levelHtml += `<div class="level-item">🔸 得分 ${lowBound}–${meta.crit-1} ：存在轻度到中度症状，可关注。</div>`;
+        levelHtml += `<div class="level-item">🔺 得分 ≥ ${meta.crit} ：症状明显，建议进一步关注或咨询。</div>`;
+        if (raw < lowBound) levelHtml = levelHtml.replace('🔹', '▶ 您的得分处于该区间');
+        else if (raw < meta.crit) levelHtml = levelHtml.replace('🔸', '▶ 您的得分处于该区间');
+        else levelHtml = levelHtml.replace('🔺', '▶ 您的得分处于该区间');
+        levelDescription.innerHTML = levelHtml;
+        resultView.classList.remove('active');
+        detailView.classList.add('active');
+    }
+
+    function backToResult() { detailView.classList.remove('active'); resultView.classList.add('active'); showResultView(); }
+    function captureResult() {
+        const element = document.getElementById('resultCapture');
+        if (!element) return;
+        html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'PsyHealth自测量表结果.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(error => alert('截图生成失败，请重试。' + error));
+    }
+
+    prevBtn.addEventListener('click', goPrev);
+    nextBtn.addEventListener('click', goNext);
+    backToResultBtn.addEventListener('click', backToResult);
+    backToResultFromDetailBtn.addEventListener('click', backToResult);
+    captureBtn.addEventListener('click', captureResult);
+    submitPasswordBtn.addEventListener('click', () => {
+        const entered = passwordInput.value.trim();
+        if (entered === VALID_PASSWORD) { passwordError.innerText = ''; showResultView(); }
+        else { passwordError.innerText = '❌ 口令错误，请重新输入'; passwordInput.value = ''; passwordInput.focus(); }
+    });
+    passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); submitPasswordBtn.click(); } });
+    backToQuizFromPasswordBtn.addEventListener('click', () => { passwordView.classList.remove('active'); quizView.classList.add('active'); renderCurrent(); });
+
+    renderCurrent();
+    updateProgress();
+})();
+</script>
+</body>
+</html>
