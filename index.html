@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易变猪倾向测评</title>
+<style>* {
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+}
+body {
+    background: #f0f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 16px;
+}
+.container {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 100%;
+    padding: 30px 25px;
+}
+.view {
+    display: none;
+}
+.view.active {
+    display: block;
+}
+h1, h2 {
+    color: #2c3e50;
+    text-align: center;
+}
+button {
+    background: #3498db;
+    color: white;
+    border: none;
+    border-radius: 40px;
+    padding: 12px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin: 5px;
+}
+button:hover {
+    background: #2980b9;
+}
+button:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+#options {
+    margin: 25px 0;
+}
+.option-item {
+    background: #ecf0f1;
+    border-radius: 40px;
+    padding: 12px 20px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.option-item:hover {
+    background: #d5dbdb;
+}
+.option-item.selected {
+    background: #3498db;
+    color: white;
+}
+.progress {
+    text-align: right;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+#question {
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+.nav-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+#score {
+    font-size: 48px;
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: center;
+    margin: 20px 0;
+}
+#interpretation {
+    background: #ecf0f1;
+    border-radius: 16px;
+    padding: 20px;
+    line-height: 1.5;
+    margin: 20px 0;
+}
+</style>
+</head>
+<body>
+    <div class="container">
+        <!-- 欢迎页 -->
+        <div id="welcome" class="view active">
+            <h1>简易变猪倾向测评</h1>
+            <p>本测试共7题，每题从“非常不同意”到“非常同意”五个选项中选择，结果仅供参考。</p>
+            <button id="startBtn">开始测试</button>
+        </div>
+
+        <!-- 答题页 -->
+        <div id="quiz" class="view">
+            <div class="progress">
+                <span id="currentQ">1</span>/<span id="totalQ">5</span>
+            </div>
+            <div id="question"></div>
+            <div id="options"></div>
+            <div class="nav-buttons">
+                <button id="prevBtn" disabled>上一题</button>
+                <button id="nextBtn">下一题</button>
+            </div>
+        </div>
+
+        <!-- 结果页 -->
+        <div id="result" class="view">
+            <h2>你的测评结果</h2>
+            <div id="score"></div>
+            <div id="interpretation"></div>
+            <button id="restartBtn" style="display: none;">重新测试</button>
+        </div>
+     <!-- 开发者签名（显示在所有页面底部） -->
+        <div style="text-align: center; margin-top: 30px; color: #95a5a6; font-size: 12px; border-top: 1px solid #ecf0f1; padding-top: 15px;">
+            开发者：DOMINO
+        </div>
+    </div>
+
+ <script>
+// 题目数据
+const RESULT_PASSWORD = "1225"; // 可修改为任意密码
+const questions = [
+    { text: "我经常无缘无故感到肚子饿。", score: null },
+    { text: "我对未来的食物容易担忧。", score: null },
+    { text: "我觉得很难吃饱。", score: null },
+    { text: "一些小饿就能让我心烦意乱。", score: null },
+    { text: "我总觉得有什么断粮的事情要发生。", score: null },
+{ text: "我总觉得有人要抢我的食物。", score: null },
+    { text: "即使我吃饱了也总觉得要再吃点什么。", score: null }
+];
+
+const totalQuestions = questions.length;
+let currentIndex = 0;          // 当前题目索引（0开始）
+
+// DOM 元素
+const welcomeDiv = document.getElementById('welcome');
+const quizDiv = document.getElementById('quiz');
+const resultDiv = document.getElementById('result');
+const startBtn = document.getElementById('startBtn');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const restartBtn = document.getElementById('restartBtn');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const currentQSpan = document.getElementById('currentQ');
+const totalQSpan = document.getElementById('totalQ');
+const scoreEl = document.getElementById('score');
+const interpretationEl = document.getElementById('interpretation');
+
+// 初始化总题数显示
+totalQSpan.textContent = totalQuestions;
+
+// 开始测试：隐藏欢迎页，显示答题页，渲染第一题
+startBtn.addEventListener('click', () => {
+    setActiveView('quiz');
+    renderQuestion(0);
+});
+
+// 上一题
+prevBtn.addEventListener('click', () => {
+    if (currentIndex > 0) {
+        renderQuestion(currentIndex - 1);
+    }
+});
+
+// 下一题 / 提交
+nextBtn.addEventListener('click', () => {
+    // 如果当前题未选答案，提醒但不跳转
+    if (questions[currentIndex].score === null) {
+        alert('请先选择一项再继续');
+        return;
+    }
+
+    if (currentIndex < totalQuestions - 1) {
+        // 还有下一题
+        renderQuestion(currentIndex + 1);
+    } else {
+        // 已经是最后一题，计算并显示结果
+        calculateResult();
+    }
+});
+
+// 重新测试
+restartBtn.addEventListener('click', () => {
+    // 重置所有题目的答案
+    questions.forEach(q => q.score = null);
+    currentIndex = 0;
+    setActiveView('welcome');
+});
+
+// 根据索引渲染题目
+function renderQuestion(index) {
+    currentIndex = index;
+    currentQSpan.textContent = index + 1;
+
+    const q = questions[index];
+    questionEl.textContent = q.text;
+
+// 根据题号决定分值数组：前三题 A=2,B=3,C=4,D=5,E=6；后四题 A=1,B=2,C=3,D=4,E=5
+let scoreValues;
+if (index < 3) {  // 前三题
+    scoreValues = [2, 3, 4, 5, 6];
+} else {
+    scoreValues = [1, 2, 3, 4, 5];
+}
+
+ // 生成选项
+let optionsHtml = '';
+const optionLabels = ['非常不同意', '不同意', '一般', '同意', '非常同意'];
+const letters = ['A', 'B', 'C', 'D', 'E'];
+for (let i = 0; i < 5; i++) {  // i从0开始，便于索引
+    const value = scoreValues[i];
+    const selectedClass = (q.score === value) ? 'selected' : '';
+    optionsHtml += `<div class="option-item ${selectedClass}" data-value="${value}">${letters[i]} - ${optionLabels[i]}</div>`;
+}
+    optionsEl.innerHTML = optionsHtml;
+
+    // 为选项添加点击事件
+    document.querySelectorAll('.option-item').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+            // 移除其他选项的选中样式
+            document.querySelectorAll('.option-item').forEach(o => o.classList.remove('selected'));
+            e.target.classList.add('selected');
+            // 记录得分
+            const value = parseInt(e.target.dataset.value, 10);
+            questions[currentIndex].score = value;
+ // 自动进入下一题或显示结果
+    if (currentIndex < totalQuestions - 1) {
+        renderQuestion(currentIndex + 1);
+    } else {
+        calculateResult();
+    }
+        });
+    });
+
+    // 更新按钮状态
+    prevBtn.disabled = (currentIndex === 0);
+    // 如果是最后一题，改变按钮文字为“查看结果”
+    nextBtn.textContent = (currentIndex === totalQuestions - 1) ? '查看结果' : '下一题';
+}
+
+// 计算总分并显示结果页
+function calculateResult() {
+    // 检查是否有未答题目（理论上前面已限制，但再检查一次）
+    const unanswered = questions.some(q => q.score === null);
+    if (unanswered) {
+        alert('所有题目都必须回答！');
+        // 跳转到第一个未答题目（简化处理，可完善）
+        const firstNull = questions.findIndex(q => q.score === null);
+        renderQuestion(firstNull);
+        return;
+    }
+    // 密码验证：弹出输入框，只有输入正确密码才能继续
+    const password = prompt("请输入密码以查看测评结果：");
+    if (!password || password !== RESULT_PASSWORD) {
+        alert("密码错误，无法查看结果！");
+        return; // 密码错误，停留在当前页
+    }
+
+
+    // 计算总分
+    const total = questions.reduce((sum, q) => sum + q.score, 0);
+    
+    // 根据总分解释
+    let interpretation = '';
+    if (total <= 10) {
+        interpretation = '你的变猪倾向较低，情绪状态较为平稳。但也要注意适时放松。';
+    } else if (total <= 15) {
+        interpretation = '你有中等程度的变猪倾向，偶尔的紧张是正常的。建议学习一些放松技巧，如深呼吸、冥想。';
+    } else {
+        interpretation = '确定无疑，你就是猪。建议寻求专业心理咨询，同时多关注自我照顾。';
+    }
+
+    // 显示结果
+    scoreEl.textContent = `${total} 分`;
+    interpretationEl.textContent = interpretation;
+
+    setActiveView('result');
+}
+
+// 切换活动视图
+function setActiveView(viewId) {
+    welcomeDiv.classList.remove('active');
+    quizDiv.classList.remove('active');
+    resultDiv.classList.remove('active');
+    if (viewId === 'welcome') {
+        welcomeDiv.classList.add('active');
+    } else if (viewId === 'quiz') {
+        quizDiv.classList.add('active');
+    } else if (viewId === 'result') {
+        resultDiv.classList.add('active');
+    }
+}
+</script>
+</body>
+</html>
