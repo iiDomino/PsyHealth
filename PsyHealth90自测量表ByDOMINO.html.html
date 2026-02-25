@@ -110,6 +110,14 @@
             word-break: break-word;
             min-height: 3rem;
         }
+        /* 新增提示语样式 */
+        .question-hint {
+            font-size: 0.8rem;
+            color: #5a7a95;
+            margin: -4px 0 12px 2px;
+            letter-spacing: 0.2px;
+            font-style: italic;
+        }
         .option-grid {
             display: flex;
             flex-direction: column;
@@ -350,6 +358,8 @@
             <div class="card" id="questionCard">
                 <div class="question-num" id="qNum">第 1 / 90 题</div>
                 <div class="question-text" id="qText">头痛</div>
+                <!-- 新增提示语 -->
+                <div class="question-hint">请根据您一周内状况选择</div>
                 <div class="option-grid" id="optionGrid"></div>
             </div>
             <div class="nav-buttons">
