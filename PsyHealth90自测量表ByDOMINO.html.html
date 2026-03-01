@@ -261,6 +261,17 @@
             display: flex; flex-wrap: wrap; gap: 6px 8px; font-weight: 500; color: #0a3850;
             font-size: 0.7rem;
         }
+        /* 评测日期时间样式 */
+        .result-datetime {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #2f6c8f;
+            background: #e2f0f8;
+            padding: 6px 10px;
+            border-radius: 40px;
+            margin: 6px 0 2px 0;
+            font-weight: 400;
+        }
         .capture-btn {
             background: #1c6c96;
             color: white;
@@ -395,6 +406,8 @@
             </div>
             <div id="resultCapture">
                 <div class="result-grid" id="resultGrid"></div>
+                <!-- 添加评测日期时间元素 -->
+                <div id="resultDatetime" class="result-datetime"></div>
                 <div class="global-row" id="globalStatsResult"></div>
                 <div class="developer">开发者：DOMINO · 版本 1.01</div>
             </div>
@@ -550,6 +563,7 @@
     const backToResultFromDetailBtn = document.getElementById('backToResultFromDetailBtn');
     const resultGrid = document.getElementById('resultGrid');
     const globalStatsResult = document.getElementById('globalStatsResult');
+    const resultDatetime = document.getElementById('resultDatetime'); // 新增
     const detailFactorName = document.getElementById('detailFactorName');
     const detailSub = document.getElementById('detailSub');
     const detailDescription = document.getElementById('detailDescription');
@@ -628,6 +642,16 @@
         }
         resultGrid.innerHTML = gridHtml;
         globalStatsResult.innerHTML = `<div>📊 总分: ${totalScore}</div><div>📌 总指数: ${(totalScore/90).toFixed(2)}</div><div>🔹 阳性项目: ${positiveItems}</div><div>🔸 阴性项目: ${negativeItems}</div><div>📈 阳性均分: ${positiveAvg}</div>`;
+        
+        // 设置评测日期时间
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        resultDatetime.innerText = `📅 评测时间：${year}-${month}-${day} ${hours}:${minutes}`;
+
         document.querySelectorAll('.factor-card').forEach(card => {
             card.addEventListener('click', (e) => showDetailView(card.dataset.factor, sums));
         });
