@@ -1,66 +1,649 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>导航页 - PsyHealth scales</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>UCLA孤独量表 · 精简版</title>
+    <!-- html2canvas 库用于截图 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #333;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-        }
-        ul {
-            list-style: none;
+        * {
+            box-sizing: border-box;
+            margin: 0;
             padding: 0;
         }
-        li {
-            margin: 10px 0;
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef3f8;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 0;
         }
-        a {
-            display: block;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-decoration: none;
-            color: #4CAF50;
-            font-size: 18px;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .container {
+            max-width: 700px;
+            width: 100%;
+            height: 100vh;
+            background: white;
+            box-shadow: 0 25px 45px -12px rgba(0,30,60,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: 20px 16px;
         }
-        a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            background-color: #f0f8f0;
+        h1 {
+            font-size: 1.9rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+            color: #11324b;
+            border-left: 6px solid #4f7eb3;
+            padding-left: 14px;
+            flex-shrink: 0;
         }
-        .note {
-            margin-top: 30px;
-            color: #666;
-            font-size: 14px;
+        .subhead {
+            color: #244b6b;
+            font-size: 0.92rem;
+            margin: 6px 0 12px 0;
+            background: #e5eff9;
+            padding: 10px 16px;
+            border-radius: 24px;
+            border: 1px solid #bbd2e9;
+            flex-shrink: 0;
+        }
+        /* 指导语已移除 */
+
+        /* 测评区域（滑动容器） */
+        #quizArea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        /* 题目卡片区域（可滑动） */
+        .question-pane {
+            background: #f9fcff;
+            border-radius: 28px;
+            padding: 20px 16px;
+            border: 2px solid #c5d9f0;
+            box-shadow: inset 0 2px 5px #ffffff, 0 4px 8px -4px #7f9fc0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 8px;
+        }
+        .q-header {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            flex-shrink: 0;
+        }
+        .q-num {
+            background: #1f4970;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            box-shadow: 0 4px 0 #0d2940;
+            flex-shrink: 0;
+        }
+        .q-text {
+            font-size: 1.25rem;
+            font-weight: 550;
+            line-height: 1.4;
+            flex: 1;
+            color: #04223b;
+        }
+        /* 选项区域纵向排列 */
+        .option-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 15px 0 10px;
+            flex-shrink: 0;
+        }
+        .option-item {
+            width: 100%;
+            background: #ffffff;
+            border-radius: 50px;
+            border: 2px solid #bacee6;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #9bb3cf;
+        }
+        .option-item.selected {
+            background: #d9e9ff;
+            border-color: #1f4970;
+            box-shadow: 0 4px 0 #1f4970;
+            transform: scale(1.02);
+        }
+        .option-item input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 2px solid #1f4970;
+            border-radius: 50%;
+            margin-right: 8px;
+            position: relative;
+            cursor: pointer;
+            background: white;
+            flex-shrink: 0;
+        }
+        .option-item input[type="radio"]:checked {
+            background: #1f4970;
+            border-color: #1f4970;
+            box-shadow: inset 0 0 0 5px white;
+        }
+        .option-item label {
+            font-size: 1.1rem;
+            font-weight: 550;
+            color: #0a2a44;
+            cursor: pointer;
+            flex: 1;
             text-align: center;
+        }
+
+        /* 进度条 */
+        .progress-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 8px 0 4px;
+            font-weight: 500;
+            color: #1d3f5c;
+            flex-shrink: 0;
+        }
+        .progress-badge {
+            background: #deeaf5;
+            padding: 6px 22px;
+            border-radius: 40px;
+            font-size: 0.95rem;
+        }
+
+        /* 导航按钮组（仅保留上一题/下一题） */
+        .nav-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 8px 0 0;
+            flex-shrink: 0;
+        }
+        .btn {
+            background: white;
+            border: 2px solid #1f4970;
+            color: #1f4970;
+            font-size: 1rem;
+            font-weight: 600;
+            padding: 12px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: 0.12s;
+            box-shadow: 0 4px 0 #b0c7e0;
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+        .btn-primary {
+            background: #1f4970;
+            color: white;
+            border: 2px solid #123456;
+            box-shadow: 0 4px 0 #0b263b;
+        }
+        .btn-primary:hover {
+            background: #123b5b;
+        }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 #9bb3cf;
+        }
+        .btn:disabled {
+            opacity: 0.35;
+            transform: none;
+            box-shadow: 0 4px 0 #b0c7e0;
+            pointer-events: none;
+        }
+
+        /* 结果区域（全屏滑动） */
+        #resultArea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .result-card {
+            background: linear-gradient(145deg, #e8f0fe, #ffffff);
+            border-radius: 32px;
+            padding: 22px 20px;
+            border: 3px solid #bbd2e9;
+            box-shadow: 0 8px 0 #7e9fc7;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+        .result-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #0a2942;
+            margin-bottom: 8px;
+        }
+        .datetime {
+            font-size: 0.85rem;
+            color: #2b4e72;
+            background: #dde9f5;
+            display: inline-block;
+            padding: 5px 16px;
+            border-radius: 40px;
+            margin-bottom: 16px;
+        }
+        .main-score {
+            display: flex;
+            align-items: baseline;
+            gap: 10px 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+        .total-score {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1;
+            color: #1f4970;
+            background: #dbeafe;
+            padding: 0px 16px;
+            border-radius: 70px;
+        }
+        .level-badge {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: #2d5e2c;
+            color: white;
+            padding: 6px 24px;
+            border-radius: 60px;
+            box-shadow: 0 5px 0 #1b3e1a;
+        }
+        .grade-reference {
+            background: #e2ecf9;
+            border-radius: 24px;
+            padding: 16px 16px;
+            margin: 20px 0 15px;
+            font-size: 0.95rem;
+            border: 2px dashed #4f7eb3;
+        }
+        .grade-reference h3 {
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            color: #11324b;
+        }
+        .grade-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px 12px;
+            justify-content: space-between;
+        }
+        .grade-item {
+            background: white;
+            border-radius: 40px;
+            padding: 5px 14px;
+            border: 1px solid #8ba9cc;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .desc-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            background: #ffffffd6;
+            border-radius: 28px;
+            padding: 16px 18px;
+            border: 1px solid #abc0d6;
+        }
+
+        /* 结果页按钮组 */
+        .result-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 0 0 5px;
+            flex-shrink: 0;
+        }
+        .btn-retest {
+            background: #6b4f3c;
+            border: 2px solid #4f3b2c;
+            color: white;
+            box-shadow: 0 4px 0 #3e2e22;
+        }
+        .btn-retest:hover {
+            background: #543f2f;
+        }
+
+        /* 隐藏类 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 页脚 */
+        .footer-note {
+            font-size: 0.7rem;
+            color: #6b7f96;
+            text-align: center;
+            border-top: 1px solid #ccd9e9;
+            padding-top: 8px;
+            margin-top: 5px;
+            flex-shrink: 0;
         }
     </style>
 </head>
 <body>
-    <h1>PsyHealth Scales</h1>
-    <ul>
-        <!-- 在这里添加你的文件链接，修改 href 和文本即可 -->
-        <li><a href="PsyHealth90自测量表ByDOMINO.html.html">PsyHealth90自测量表ByDOMINO </a></li>
-        <li><a href="test.html">test</a></li>
-        <li><a href="人格85自测量表.html">人格85自测量表</a></li>
-        <li><a href="lonely20scale.html">孤独等级自测量表</a></li>
-        <!-- 你可以根据需要继续添加更多链接 -->
-    </ul>
-    <div class="note">
-        ⚡ 点击上方链接开始对应的测评。<br>
-    开发者：Domino's Psy Farm
+<div class="container">
+    <h1>UCLA孤独量表</h1>
+    <div class="subhead">⚙️ 20题目 · 4级评分</div>
+
+    <!-- 测评区域（不含指导语，不含查看结果/重新开始按钮） -->
+    <div id="quizArea">
+        <!-- 逐题卡片（内部滚动） -->
+        <div class="question-pane" id="questionPane">
+            <div class="q-header">
+                <span class="q-num" id="currentQNum">1</span>
+                <span class="q-text" id="currentQText">加载中...</span>
+            </div>
+
+            <div class="option-grid" id="optionGroup"></div>
+
+            <!-- 进度指示：题号 -->
+            <div class="progress-area">
+                <span class="progress-badge" id="progressText">第 1 / 20 题</span>
+            </div>
+        </div>
+
+        <!-- 导航按钮组：仅保留上一题/下一题 -->
+        <div class="nav-buttons">
+            <button class="btn" id="prevBtn" disabled>◀ 上一题</button>
+            <button class="btn" id="nextBtn">下一题 ▶</button>
+        </div>
     </div>
+
+    <!-- 结果区域（初始隐藏） -->
+    <div id="resultArea" class="hidden">
+        <div class="result-card" id="resultCard">
+            <div class="result-title">📊 你的孤独测评结果</div>
+            <div class="datetime">测评时间：<span id="assessmentDatetime"></span></div>
+            <div class="main-score">
+                <span class="total-score" id="finalScore">--</span>
+                <span class="level-badge" id="finalLevel">---</span>
+            </div>
+
+            <!-- 分级信息块 -->
+            <div class="grade-reference">
+                <h3>📌 孤独分级标准</h3>
+                <div class="grade-grid">
+                    <span class="grade-item">≥45 高度</span>
+                    <span class="grade-item">39–44 中等偏高</span>
+                    <span class="grade-item">34–38 中等</span>
+                    <span class="grade-item">28–33 中等偏下</span>
+                    <span class="grade-item">20–27 低度</span>
+                </div>
+            </div>
+
+            <div class="desc-text" id="finalDescription"></div>
+        </div>
+
+        <!-- 结果页专用按钮组：重新测评（左） 点击保存（右、蓝色） -->
+        <div class="result-buttons">
+            <button class="btn btn-retest" id="retestBtn">🔄 重新测评</button>
+            <button class="btn btn-primary" id="screenshotBtn">点击保存</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <div class="footer-note">
+        UCLA孤独量表第三版 · 开发者：DOMINO
+    </div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 题目数据 ----------
+        const questions = [
+            { num: 1,  text: "你常感到与周围人关系和谐吗？" },
+            { num: 2,  text: "你常感到缺少伙伴吗？" },
+            { num: 3,  text: "你常感到没人可以信赖吗？" },
+            { num: 4,  text: "你常感到寂寞吗？" },
+            { num: 5,  text: "你常感到属于朋友中的一员吗？" },
+            { num: 6,  text: "你常感到与周围人有许多共同点吗？" },
+            { num: 7,  text: "你常感到与任何人都不亲密了吗？" },
+            { num: 8,  text: "你常感到你的兴趣与想法与周围的人不一样吗？" },
+            { num: 9,  text: "你常感到想要与人来往、结交朋友吗？" },
+            { num: 10, text: "你常感到与人亲近吗？" },
+            { num: 11, text: "你常感到被人冷落吗？" },
+            { num: 12, text: "你常感到你与别人的来往毫无意义吗？" },
+            { num: 13, text: "你常感到没有人很了解你吗？" },
+            { num: 14, text: "你常感到与别人隔开了吗？" },
+            { num: 15, text: "你常感到当你愿意时就能找到伙伴吗？" },
+            { num: 16, text: "你常感到有人真正的了解你吗？" },
+            { num: 17, text: "你常感到羞怯吗？" },
+            { num: 18, text: "你常感到人们围着你但并不关心你吗？" },
+            { num: 19, text: "你常感到有人愿意与你交谈吗？" },
+            { num: 20, text: "你常感到有人值得你信赖吗？" }
+        ];
+
+        // 反向计分题号 (内部计算用)
+        const reverseItems = [1, 5, 6, 9, 10, 15, 16, 19, 20];
+
+        // 状态
+        let currentIndex = 0;               // 0-based
+        let answers = new Array(20).fill(null);
+
+        // DOM 元素 - 测评区域
+        const quizArea = document.getElementById('quizArea');
+        const resultArea = document.getElementById('resultArea');
+        const qNumSpan = document.getElementById('currentQNum');
+        const qTextSpan = document.getElementById('currentQText');
+        const optionGroup = document.getElementById('optionGroup');
+        const progressText = document.getElementById('progressText');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // DOM 元素 - 结果区域
+        const resultCard = document.getElementById('resultCard');
+        const screenshotBtn = document.getElementById('screenshotBtn');
+        const retestBtn = document.getElementById('retestBtn');
+        const assessmentDatetime = document.getElementById('assessmentDatetime');
+        const finalScore = document.getElementById('finalScore');
+        const finalLevel = document.getElementById('finalLevel');
+        const finalDescription = document.getElementById('finalDescription');
+
+        // ---------- 辅助函数 ----------
+        function getAnsweredCount() {
+            return answers.filter(a => a !== null).length;
+        }
+
+        function updateMeta() {
+            progressText.innerText = `第 ${currentIndex+1} / 20 题`;
+            prevBtn.disabled = (currentIndex === 0);
+            nextBtn.disabled = (currentIndex === 19);
+        }
+
+        // 渲染当前题目
+        function renderCurrentQuestion() {
+            const q = questions[currentIndex];
+            qNumSpan.innerText = q.num;
+            qTextSpan.innerText = q.text;
+
+            const selectedValue = answers[currentIndex];
+            const optionLabels = ['从不', '很少', '有时', '一直'];
+            let htmlStr = '';
+            for (let val = 1; val <= 4; val++) {
+                const checkedAttr = (selectedValue === val) ? 'checked' : '';
+                htmlStr += `
+                    <div class="option-item ${selectedValue === val ? 'selected' : ''}">
+                        <input type="radio" name="currentQ" value="${val}" id="opt_${val}" ${checkedAttr}>
+                        <label for="opt_${val}">${optionLabels[val-1]}</label>
+                    </div>
+                `;
+            }
+            optionGroup.innerHTML = htmlStr;
+
+            // 绑定change事件：保存答案并自动跳转
+            const radios = document.querySelectorAll('input[name="currentQ"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function(e) {
+                    const newVal = parseInt(e.target.value, 10);
+                    answers[currentIndex] = newVal;
+
+                    // 更新选中样式
+                    document.querySelectorAll('.option-item').forEach(item => {
+                        item.classList.remove('selected');
+                    });
+                    e.target.closest('.option-item').classList.add('selected');
+
+                    // 自动跳转逻辑
+                    if (currentIndex < 19) {
+                        currentIndex++;
+                        renderCurrentQuestion();
+                    } else {
+                        // 最后一题自动显示结果
+                        showResult();
+                    }
+                });
+            });
+
+            updateMeta();
+        }
+
+        // 手动上一题
+        function goPrev() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 手动下一题
+        function goNext() {
+            if (currentIndex < 19) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        // 计算总分
+        function computeTotal() {
+            let total = 0;
+            for (let i = 0; i < 20; i++) {
+                const raw = answers[i];
+                if (raw === null) continue;
+                const qNum = i + 1;
+                if (reverseItems.includes(qNum)) {
+                    total += (5 - raw);
+                } else {
+                    total += raw;
+                }
+            }
+            return total;
+        }
+
+        // 获取等级与描述
+        function getLevelInfo(score) {
+            if (score >= 45) return { level: '高度孤独感', desc: '您经常体验到强烈的孤独感，社交联系可能无法满足内心需要。建议寻求支持或与信任的人谈谈。' };
+            if (score >= 39) return { level: '中等偏高孤独感', desc: '孤独感较为明显，很多时候会感到孤立。主动参与社交或倾诉可能会改善。' };
+            if (score >= 34) return { level: '中等孤独', desc: '有时会感到孤独，但并非持续。可以留意哪些情境下孤独感增强。' };
+            if (score >= 28) return { level: '中等偏下孤独感', desc: '总体孤独感不强，大部分时间人际关系良好。' };
+            return { level: '低度孤独感', desc: '孤独感很低，您在生活中常感到与他人相处融洽。' };
+        }
+
+        // 显示结果（隐藏测评区域，显示结果区域）
+        function showResult() {
+            // 检查完整性
+            const missing = answers.findIndex(a => a === null);
+            if (missing !== -1) {
+                alert(`您还有第 ${missing+1} 题未回答。请完成所有题目后查看结果。`);
+                currentIndex = missing;
+                renderCurrentQuestion();
+                return;
+            }
+
+            const total = computeTotal();
+            const levelInfo = getLevelInfo(total);
+
+            finalScore.innerText = total;
+            finalLevel.innerText = levelInfo.level;
+            finalDescription.innerText = levelInfo.desc;
+
+            // 生成当前日期时间
+            const now = new Date();
+            const formatted = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+            assessmentDatetime.innerText = formatted;
+
+            // 隐藏测评区域，显示结果区域
+            quizArea.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+        }
+
+        // 重置所有（返回测评区域）
+        function resetAll() {
+            answers = new Array(20).fill(null);
+            currentIndex = 0;
+            renderCurrentQuestion();
+
+            // 显示测评区域，隐藏结果区域
+            quizArea.classList.remove('hidden');
+            resultArea.classList.add('hidden');
+        }
+
+        // ---------- 截图功能 ----------
+        function downloadCanvas(canvas, filename) {
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        function captureResultCard() {
+            if (resultArea.classList.contains('hidden')) {
+                alert('请先完成测评并显示结果');
+                return;
+            }
+
+            html2canvas(resultCard, {
+                scale: 2,
+                backgroundColor: '#ffffff',
+                allowTaint: false,
+                useCORS: true,
+                logging: false
+            }).then(canvas => {
+                const now = new Date();
+                const timestamp = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
+                downloadCanvas(canvas, `UCLA孤独测评_${timestamp}.png`);
+            }).catch(error => {
+                console.error('截图失败:', error);
+                alert('截图生成失败，可稍后重试。');
+            });
+        }
+
+        // ---------- 事件绑定 ----------
+        prevBtn.addEventListener('click', goPrev);
+        nextBtn.addEventListener('click', goNext);
+        screenshotBtn.addEventListener('click', captureResultCard);
+        retestBtn.addEventListener('click', resetAll);
+
+        // 初始化渲染
+        renderCurrentQuestion();
+    })();
+</script>
 </body>
 </html>
