@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>UCLA孤独量表 · 全屏纵向选项</title>
+    <title>UCLA孤独量表 · 精简版</title>
     <!-- html2canvas 库用于截图 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -52,16 +52,7 @@
             border: 1px solid #bbd2e9;
             flex-shrink: 0;
         }
-        .guide {
-            background: #f1f9fc;
-            border-radius: 24px;
-            padding: 12px 16px;
-            margin: 8px 0 12px 0;
-            border-left: 5px solid #2f6690;
-            font-size: 0.95rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-            flex-shrink: 0;
-        }
+        /* 指导语已移除 */
 
         /* 测评区域（滑动容器） */
         #quizArea {
@@ -116,13 +107,13 @@
         /* 选项区域纵向排列 */
         .option-grid {
             display: flex;
-            flex-direction: column;   /* 纵向排列 */
+            flex-direction: column;
             gap: 12px;
             margin: 15px 0 10px;
             flex-shrink: 0;
         }
         .option-item {
-            width: 100%;              /* 占满整行 */
+            width: 100%;
             background: #ffffff;
             border-radius: 50px;
             border: 2px solid #bacee6;
@@ -184,7 +175,7 @@
             font-size: 0.95rem;
         }
 
-        /* 导航按钮组 */
+        /* 导航按钮组（仅保留上一题/下一题） */
         .nav-buttons {
             display: flex;
             flex-wrap: wrap;
@@ -355,8 +346,6 @@
             margin-top: 5px;
             flex-shrink: 0;
         }
-
-        /* 超小屏优化：无需额外修改，纵向自然适应 */
     </style>
 </head>
 <body>
@@ -364,12 +353,8 @@
     <h1>UCLA孤独量表</h1>
     <div class="subhead">⚙️ 20题目 · 4级评分</div>
 
-    <!-- 测评区域（包含题目和导航按钮） -->
+    <!-- 测评区域（不含指导语，不含查看结果/重新开始按钮） -->
     <div id="quizArea">
-        <div class="guide">
-            📌 指导语：下列是人们有时出现的一些感受。对每项描述，请指出你具有那种感觉的频度。点击选项后自动进入下一题。
-        </div>
-
         <!-- 逐题卡片（内部滚动） -->
         <div class="question-pane" id="questionPane">
             <div class="q-header">
@@ -385,12 +370,10 @@
             </div>
         </div>
 
-        <!-- 导航按钮组 -->
+        <!-- 导航按钮组：仅保留上一题/下一题 -->
         <div class="nav-buttons">
             <button class="btn" id="prevBtn" disabled>◀ 上一题</button>
             <button class="btn" id="nextBtn">下一题 ▶</button>
-            <button class="btn btn-primary" id="resultBtn">📋 查看结果</button>
-            <button class="btn reset-sm" id="resetBtn">⟲ 重新开始</button>
         </div>
     </div>
 
@@ -474,8 +457,6 @@
         const progressText = document.getElementById('progressText');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-        const resultBtn = document.getElementById('resultBtn');
-        const resetBtn = document.getElementById('resetBtn');
 
         // DOM 元素 - 结果区域
         const resultCard = document.getElementById('resultCard');
@@ -657,8 +638,6 @@
         // ---------- 事件绑定 ----------
         prevBtn.addEventListener('click', goPrev);
         nextBtn.addEventListener('click', goNext);
-        resultBtn.addEventListener('click', showResult);
-        resetBtn.addEventListener('click', resetAll);
         screenshotBtn.addEventListener('click', captureResultCard);
         retestBtn.addEventListener('click', resetAll);
 
