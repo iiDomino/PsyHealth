@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>UCLA孤独量表 · 结果页单独显示</title>
+    <title>UCLA孤独量表 · 手机适配版</title>
     <!-- html2canvas 库用于截图 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -311,7 +311,6 @@
         .btn-retest:hover {
             background: #543f2f;
         }
-        /* 蓝色保存按钮直接复用 .btn-primary 样式，无需额外定义 */
 
         /* 隐藏类 */
         .hidden {
@@ -326,6 +325,87 @@
             text-align: center;
             border-top: 1px solid #ccd9e9;
             padding-top: 20px;
+        }
+
+        /* ---------- 手机屏幕优化 ---------- */
+        @media (max-width: 500px) {
+            .container {
+                padding: 20px 16px;
+            }
+            h1 {
+                font-size: 1.8rem;
+                padding-left: 14px;
+            }
+            .q-text {
+                font-size: 1.2rem;
+            }
+            .option-grid {
+                gap: 10px;
+            }
+            .option-item {
+                flex: 1 1 calc(50% - 10px);  /* 每行两个，减去gap */
+                padding: 12px 4px;
+            }
+            .option-item label {
+                font-size: 1rem;
+            }
+            .option-item input[type="radio"] {
+                width: 18px;
+                height: 18px;
+                margin-right: 4px;
+            }
+            .btn {
+                padding: 10px 16px;
+                font-size: 1rem;
+                min-width: 100px;
+            }
+            .total-score {
+                font-size: 3rem;
+                padding: 0px 12px;
+            }
+            .level-badge {
+                font-size: 1.5rem;
+                padding: 6px 20px;
+            }
+            .result-title {
+                font-size: 1.6rem;
+            }
+            .grade-item {
+                font-size: 0.9rem;
+                padding: 4px 12px;
+            }
+            .desc-text {
+                font-size: 1rem;
+                padding: 16px;
+            }
+            .datetime {
+                font-size: 0.85rem;
+                padding: 4px 14px;
+            }
+            .nav-buttons {
+                gap: 10px;
+            }
+            .result-buttons {
+                gap: 10px;
+            }
+            .grade-reference h3 {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* 更小屏 (400px以下) 让选项单列显示，更易点按 */
+        @media (max-width: 400px) {
+            .option-item {
+                flex: 1 1 100%;
+            }
+            .q-num {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            .btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -389,7 +469,7 @@
             <div class="desc-text" id="finalDescription"></div>
         </div>
 
-        <!-- 结果页专用按钮组：左右互换，点击保存改为蓝色（btn-primary） -->
+        <!-- 结果页专用按钮组：左右互换，点击保存为蓝色 -->
         <div class="result-buttons">
             <button class="btn btn-retest" id="retestBtn">🔄 重新测评</button>
             <button class="btn btn-primary" id="screenshotBtn">点击保存</button>
