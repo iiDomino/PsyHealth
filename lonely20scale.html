@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>UCLA孤独量表 · 精简版</title>
+    <title>UCLA孤独量表 · 极简版</title>
     <!-- html2canvas 库用于截图 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -36,23 +36,13 @@
             font-size: 1.9rem;
             font-weight: 600;
             letter-spacing: -0.02em;
-            margin-bottom: 6px;
+            margin-bottom: 12px;
             color: #11324b;
             border-left: 6px solid #4f7eb3;
             padding-left: 14px;
             flex-shrink: 0;
         }
-        .subhead {
-            color: #244b6b;
-            font-size: 0.92rem;
-            margin: 6px 0 12px 0;
-            background: #e5eff9;
-            padding: 10px 16px;
-            border-radius: 24px;
-            border: 1px solid #bbd2e9;
-            flex-shrink: 0;
-        }
-        /* 指导语已移除 */
+        /* 副标题已移除 */
 
         /* 测评区域（滑动容器） */
         #quizArea {
@@ -351,9 +341,8 @@
 <body>
 <div class="container">
     <h1>UCLA孤独量表</h1>
-    <div class="subhead">⚙️ 20题目 · 4级评分</div>
 
-    <!-- 测评区域（不含指导语，不含查看结果/重新开始按钮） -->
+    <!-- 测评区域（无副标题，无指导语，仅题目和导航按钮） -->
     <div id="quizArea">
         <!-- 逐题卡片（内部滚动） -->
         <div class="question-pane" id="questionPane">
