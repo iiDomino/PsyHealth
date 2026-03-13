@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>UCLA孤独量表 · 手机适配版</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>UCLA孤独量表 · 全屏纵向选项</title>
     <!-- html2canvas 库用于截图 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -15,99 +15,116 @@
         body {
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
             background: #eef3f8;
-            padding: 20px 12px;
-            color: #1e2b3c;
-            line-height: 1.5;
             min-height: 100vh;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: center;
+            padding: 0;
         }
         .container {
             max-width: 700px;
             width: 100%;
-            margin: 0 auto;
+            height: 100vh;
             background: white;
-            border-radius: 32px;
             box-shadow: 0 25px 45px -12px rgba(0,30,60,0.3);
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
-            padding: 32px 26px;
+            padding: 20px 16px;
         }
         h1 {
-            font-size: 2.1rem;
+            font-size: 1.9rem;
             font-weight: 600;
             letter-spacing: -0.02em;
             margin-bottom: 6px;
             color: #11324b;
             border-left: 6px solid #4f7eb3;
-            padding-left: 18px;
+            padding-left: 14px;
+            flex-shrink: 0;
         }
         .subhead {
             color: #244b6b;
-            font-size: 0.98rem;
-            margin: 12px 0 24px 0;
+            font-size: 0.92rem;
+            margin: 6px 0 12px 0;
             background: #e5eff9;
-            padding: 14px 20px;
+            padding: 10px 16px;
             border-radius: 24px;
             border: 1px solid #bbd2e9;
+            flex-shrink: 0;
         }
         .guide {
             background: #f1f9fc;
             border-radius: 24px;
-            padding: 16px 22px;
-            margin: 18px 0 28px 0;
+            padding: 12px 16px;
+            margin: 8px 0 12px 0;
             border-left: 5px solid #2f6690;
-            font-size: 1rem;
+            font-size: 0.95rem;
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            flex-shrink: 0;
         }
 
-        /* 逐题卡片 */
+        /* 测评区域（滑动容器） */
+        #quizArea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
+        /* 题目卡片区域（可滑动） */
         .question-pane {
             background: #f9fcff;
-            border-radius: 36px;
-            padding: 28px 24px;
-            margin: 10px 0 25px;
+            border-radius: 28px;
+            padding: 20px 16px;
             border: 2px solid #c5d9f0;
-            box-shadow: inset 0 2px 5px #ffffff, 0 8px 12px -8px #7f9fc0;
+            box-shadow: inset 0 2px 5px #ffffff, 0 4px 8px -4px #7f9fc0;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 8px;
         }
         .q-header {
             display: flex;
             align-items: baseline;
-            gap: 12px;
-            margin-bottom: 28px;
+            gap: 10px;
+            margin-bottom: 16px;
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
         .q-num {
             background: #1f4970;
             color: white;
             font-weight: 700;
-            font-size: 1.3rem;
-            width: 48px;
-            height: 48px;
+            font-size: 1.2rem;
+            width: 44px;
+            height: 44px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 60px;
-            box-shadow: 0 5px 0 #0d2940;
+            box-shadow: 0 4px 0 #0d2940;
+            flex-shrink: 0;
         }
         .q-text {
-            font-size: 1.45rem;
+            font-size: 1.25rem;
             font-weight: 550;
             line-height: 1.4;
             flex: 1;
             color: #04223b;
         }
+        /* 选项区域纵向排列 */
         .option-grid {
             display: flex;
-            flex-wrap: wrap;
-            gap: 14px 20px;
-            justify-content: space-around;
-            margin: 30px 0 15px;
+            flex-direction: column;   /* 纵向排列 */
+            gap: 12px;
+            margin: 15px 0 10px;
+            flex-shrink: 0;
         }
         .option-item {
-            flex: 1 1 120px;
+            width: 100%;              /* 占满整行 */
             background: #ffffff;
-            border-radius: 60px;
+            border-radius: 50px;
             border: 2px solid #bacee6;
             transition: all 0.15s;
             display: flex;
@@ -134,6 +151,7 @@
             position: relative;
             cursor: pointer;
             background: white;
+            flex-shrink: 0;
         }
         .option-item input[type="radio"]:checked {
             background: #1f4970;
@@ -149,43 +167,45 @@
             text-align: center;
         }
 
-        /* 进度条 - 仅剩题号 */
+        /* 进度条 */
         .progress-area {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0 12px;
+            margin: 8px 0 4px;
             font-weight: 500;
             color: #1d3f5c;
+            flex-shrink: 0;
         }
         .progress-badge {
             background: #deeaf5;
             padding: 6px 22px;
             border-radius: 40px;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
-        /* 按钮组 */
+        /* 导航按钮组 */
         .nav-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 14px;
+            gap: 10px;
             justify-content: center;
-            margin: 28px 0 20px;
+            margin: 8px 0 0;
+            flex-shrink: 0;
         }
         .btn {
             background: white;
             border: 2px solid #1f4970;
             color: #1f4970;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
-            padding: 12px 28px;
+            padding: 12px 16px;
             border-radius: 50px;
             cursor: pointer;
             transition: 0.12s;
             box-shadow: 0 4px 0 #b0c7e0;
             flex: 1 1 auto;
-            min-width: 120px;
+            min-width: 100px;
         }
         .btn-primary {
             background: #1f4970;
@@ -207,100 +227,108 @@
             pointer-events: none;
         }
 
-        /* 结果卡片 (含分级 + 日期时间) */
+        /* 结果区域（全屏滑动） */
+        #resultArea {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            min-height: 0;
+        }
         .result-card {
             background: linear-gradient(145deg, #e8f0fe, #ffffff);
-            border-radius: 36px;
-            padding: 30px 28px;
-            margin: 40px 0 20px;
+            border-radius: 32px;
+            padding: 22px 20px;
             border: 3px solid #bbd2e9;
-            box-shadow: 0 10px 0 #7e9fc7;
+            box-shadow: 0 8px 0 #7e9fc7;
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 10px;
         }
         .result-title {
-            font-size: 1.9rem;
+            font-size: 1.7rem;
             font-weight: 700;
             color: #0a2942;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            margin-bottom: 8px;
         }
         .datetime {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             color: #2b4e72;
             background: #dde9f5;
             display: inline-block;
-            padding: 5px 18px;
+            padding: 5px 16px;
             border-radius: 40px;
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
         .main-score {
             display: flex;
             align-items: baseline;
-            gap: 10px 25px;
+            gap: 10px 15px;
             flex-wrap: wrap;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .total-score {
-            font-size: 4.2rem;
+            font-size: 3.2rem;
             font-weight: 800;
             line-height: 1;
             color: #1f4970;
             background: #dbeafe;
-            padding: 0px 20px;
-            border-radius: 80px;
+            padding: 0px 16px;
+            border-radius: 70px;
         }
         .level-badge {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: 600;
             background: #2d5e2c;
             color: white;
-            padding: 8px 32px;
+            padding: 6px 24px;
             border-radius: 60px;
             box-shadow: 0 5px 0 #1b3e1a;
         }
         .grade-reference {
             background: #e2ecf9;
-            border-radius: 28px;
-            padding: 20px 22px;
-            margin: 25px 0 15px;
-            font-size: 1.05rem;
+            border-radius: 24px;
+            padding: 16px 16px;
+            margin: 20px 0 15px;
+            font-size: 0.95rem;
             border: 2px dashed #4f7eb3;
         }
         .grade-reference h3 {
-            font-size: 1.25rem;
-            margin-bottom: 12px;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
             color: #11324b;
         }
         .grade-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px 18px;
+            gap: 6px 12px;
             justify-content: space-between;
         }
         .grade-item {
             background: white;
             border-radius: 40px;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border: 1px solid #8ba9cc;
             font-weight: 500;
+            font-size: 0.85rem;
         }
         .desc-text {
-            font-size: 1.15rem;
+            font-size: 1rem;
             line-height: 1.5;
             background: #ffffffd6;
-            border-radius: 32px;
-            padding: 18px 22px;
+            border-radius: 28px;
+            padding: 16px 18px;
             border: 1px solid #abc0d6;
         }
 
-        /* 结果页专用按钮组 */
+        /* 结果页按钮组 */
         .result-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 14px;
+            gap: 10px;
             justify-content: center;
-            margin-top: 20px;
+            margin: 0 0 5px;
+            flex-shrink: 0;
         }
         .btn-retest {
             background: #6b4f3c;
@@ -319,94 +347,16 @@
 
         /* 页脚 */
         .footer-note {
-            font-size: 0.8rem;
+            font-size: 0.7rem;
             color: #6b7f96;
-            margin-top: 32px;
             text-align: center;
             border-top: 1px solid #ccd9e9;
-            padding-top: 20px;
+            padding-top: 8px;
+            margin-top: 5px;
+            flex-shrink: 0;
         }
 
-        /* ---------- 手机屏幕优化 ---------- */
-        @media (max-width: 500px) {
-            .container {
-                padding: 20px 16px;
-            }
-            h1 {
-                font-size: 1.8rem;
-                padding-left: 14px;
-            }
-            .q-text {
-                font-size: 1.2rem;
-            }
-            .option-grid {
-                gap: 10px;
-            }
-            .option-item {
-                flex: 1 1 calc(50% - 10px);  /* 每行两个，减去gap */
-                padding: 12px 4px;
-            }
-            .option-item label {
-                font-size: 1rem;
-            }
-            .option-item input[type="radio"] {
-                width: 18px;
-                height: 18px;
-                margin-right: 4px;
-            }
-            .btn {
-                padding: 10px 16px;
-                font-size: 1rem;
-                min-width: 100px;
-            }
-            .total-score {
-                font-size: 3rem;
-                padding: 0px 12px;
-            }
-            .level-badge {
-                font-size: 1.5rem;
-                padding: 6px 20px;
-            }
-            .result-title {
-                font-size: 1.6rem;
-            }
-            .grade-item {
-                font-size: 0.9rem;
-                padding: 4px 12px;
-            }
-            .desc-text {
-                font-size: 1rem;
-                padding: 16px;
-            }
-            .datetime {
-                font-size: 0.85rem;
-                padding: 4px 14px;
-            }
-            .nav-buttons {
-                gap: 10px;
-            }
-            .result-buttons {
-                gap: 10px;
-            }
-            .grade-reference h3 {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* 更小屏 (400px以下) 让选项单列显示，更易点按 */
-        @media (max-width: 400px) {
-            .option-item {
-                flex: 1 1 100%;
-            }
-            .q-num {
-                width: 40px;
-                height: 40px;
-                font-size: 1.1rem;
-            }
-            .btn {
-                width: 100%;
-            }
-        }
+        /* 超小屏优化：无需额外修改，纵向自然适应 */
     </style>
 </head>
 <body>
@@ -420,7 +370,7 @@
             📌 指导语：下列是人们有时出现的一些感受。对每项描述，请指出你具有那种感觉的频度。点击选项后自动进入下一题。
         </div>
 
-        <!-- 逐题卡片 -->
+        <!-- 逐题卡片（内部滚动） -->
         <div class="question-pane" id="questionPane">
             <div class="q-header">
                 <span class="q-num" id="currentQNum">1</span>
@@ -469,7 +419,7 @@
             <div class="desc-text" id="finalDescription"></div>
         </div>
 
-        <!-- 结果页专用按钮组：左右互换，点击保存为蓝色 -->
+        <!-- 结果页专用按钮组：重新测评（左） 点击保存（右、蓝色） -->
         <div class="result-buttons">
             <button class="btn btn-retest" id="retestBtn">🔄 重新测评</button>
             <button class="btn btn-primary" id="screenshotBtn">点击保存</button>
