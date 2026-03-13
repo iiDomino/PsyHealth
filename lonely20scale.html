@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>UCLA孤独量表 · 极简版</title>
+    <title>UCLA孤独量表 · 最终版</title>
     <!-- html2canvas 库用于截图 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -42,7 +42,6 @@
             padding-left: 14px;
             flex-shrink: 0;
         }
-        /* 副标题已移除 */
 
         /* 测评区域（滑动容器） */
         #quizArea {
@@ -91,8 +90,13 @@
             font-size: 1.25rem;
             font-weight: 550;
             line-height: 1.4;
-            flex: 1;
             color: #04223b;
+            flex: 1;
+            /* 统一三行高度：三行 = 1.4 * 1.25rem * 3 = 5.25rem */
+            min-height: 5.25rem;
+            display: flex;
+            align-items: flex-start;
+            word-break: break-word;
         }
         /* 选项区域纵向排列 */
         .option-grid {
@@ -370,7 +374,8 @@
     <div id="resultArea" class="hidden">
         <div class="result-card" id="resultCard">
             <div class="result-title">📊 你的孤独测评结果</div>
-            <div class="datetime">测评时间：<span id="assessmentDatetime"></span></div>
+            <!-- 测评时间后加上开发者：DOMINO -->
+            <div class="datetime">测评时间：<span id="assessmentDatetime"></span> · 开发者：DOMINO</div>
             <div class="main-score">
                 <span class="total-score" id="finalScore">--</span>
                 <span class="level-badge" id="finalLevel">---</span>
@@ -594,7 +599,7 @@
             resultArea.classList.add('hidden');
         }
 
-        // ---------- 截图功能 ----------
+        // ---------- 截图功能（确保完整捕获） ----------
         function downloadCanvas(canvas, filename) {
             const link = document.createElement('a');
             link.download = filename;
@@ -608,17 +613,43 @@
                 return;
             }
 
+            // 保存当前样式
+            const originalResultAreaOverflow = resultArea.style.overflow;
+            const originalResultAreaHeight = resultArea.style.height;
+            const originalResultCardOverflow = resultCard.style.overflow;
+            const originalResultCardHeight = resultCard.style.height;
+
+            // 临时展开，使所有内容可见
+            resultArea.style.overflow = 'visible';
+            resultArea.style.height = 'auto';
+            resultCard.style.overflow = 'visible';
+            resultCard.style.height = 'auto';
+
             html2canvas(resultCard, {
                 scale: 2,
                 backgroundColor: '#ffffff',
                 allowTaint: false,
                 useCORS: true,
-                logging: false
+                logging: false,
+                scrollY: 0,
+                windowWidth: document.documentElement.clientWidth
             }).then(canvas => {
+                // 恢复样式
+                resultArea.style.overflow = originalResultAreaOverflow;
+                resultArea.style.height = originalResultAreaHeight;
+                resultCard.style.overflow = originalResultCardOverflow;
+                resultCard.style.height = originalResultCardHeight;
+
                 const now = new Date();
                 const timestamp = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
                 downloadCanvas(canvas, `UCLA孤独测评_${timestamp}.png`);
             }).catch(error => {
+                // 恢复样式
+                resultArea.style.overflow = originalResultAreaOverflow;
+                resultArea.style.height = originalResultAreaHeight;
+                resultCard.style.overflow = originalResultCardOverflow;
+                resultCard.style.height = originalResultCardHeight;
+
                 console.error('截图失败:', error);
                 alert('截图生成失败，可稍后重试。');
             });
