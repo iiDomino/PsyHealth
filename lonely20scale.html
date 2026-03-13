@@ -27,26 +27,26 @@
         .container {
             max-width: 700px;
             width: 100%;
-            height: 100%;               /* 改为100%，不依赖vh */
+            height: 100%;
             background: white;
             box-shadow: 0 25px 45px -12px rgba(0,30,60,0.3);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            padding: 20px 16px;
+            padding: 16px 12px;
         }
         h1 {
-            font-size: 1.9rem;
+            font-size: 1.8rem;
             font-weight: 600;
             letter-spacing: -0.02em;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             color: #11324b;
             border-left: 6px solid #4f7eb3;
-            padding-left: 14px;
+            padding-left: 12px;
             flex-shrink: 0;
         }
 
-        /* 测评区域（滑动容器） */
+        /* 测评区域 */
         #quizArea {
             flex: 1;
             display: flex;
@@ -54,24 +54,23 @@
             overflow: hidden;
             min-height: 0;
         }
-        /* 题目卡片区域（可滑动） */
         .question-pane {
             background: #f9fcff;
-            border-radius: 28px;
-            padding: 20px 16px;
+            border-radius: 24px;
+            padding: 16px 12px;
             border: 2px solid #c5d9f0;
             box-shadow: inset 0 2px 5px #ffffff, 0 4px 8px -4px #7f9fc0;
             display: flex;
             flex-direction: column;
             flex: 1;
-            overflow-y: auto;
-            margin-bottom: 8px;
+            overflow: visible;
+            margin-bottom: 6px;
         }
         .q-header {
             display: flex;
             align-items: baseline;
-            gap: 10px;
-            margin-bottom: 16px;
+            gap: 8px;
+            margin-bottom: 10px;
             flex-wrap: wrap;
             flex-shrink: 0;
         }
@@ -79,9 +78,9 @@
             background: #1f4970;
             color: white;
             font-weight: 700;
-            font-size: 1.2rem;
-            width: 44px;
-            height: 44px;
+            font-size: 1.1rem;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -90,23 +89,21 @@
             flex-shrink: 0;
         }
         .q-text {
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             font-weight: 550;
-            line-height: 1.4;
+            line-height: 1.3;
             color: #04223b;
             flex: 1;
-            /* 统一三行高度：三行 = 1.4 * 1.25rem * 3 = 5.25rem */
-            min-height: 5.25rem;
+            min-height: 4.68rem;
             display: flex;
             align-items: flex-start;
             word-break: break-word;
         }
-        /* 选项区域纵向排列 */
         .option-grid {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            margin: 15px 0 10px;
+            gap: 10px;
+            margin: 10px 0 8px;
             flex-shrink: 0;
         }
         .option-item {
@@ -118,7 +115,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 14px 8px;
+            padding: 12px 8px;
             cursor: pointer;
             box-shadow: 0 4px 0 #9bb3cf;
         }
@@ -147,7 +144,7 @@
             box-shadow: inset 0 0 0 5px white;
         }
         .option-item label {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 550;
             color: #0a2a44;
             cursor: pointer;
@@ -155,30 +152,28 @@
             text-align: center;
         }
 
-        /* 进度条 */
         .progress-area {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 8px 0 4px;
+            margin: 4px 0 2px;
             font-weight: 500;
             color: #1d3f5c;
             flex-shrink: 0;
         }
         .progress-badge {
             background: #deeaf5;
-            padding: 6px 22px;
+            padding: 4px 20px;
             border-radius: 40px;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
         }
 
-        /* 导航按钮组（仅保留上一题/下一题） */
         .nav-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            margin: 8px 0 0;
+            margin: 4px 0 0;
             flex-shrink: 0;
         }
         .btn {
@@ -187,7 +182,7 @@
             color: #1f4970;
             font-size: 1rem;
             font-weight: 600;
-            padding: 12px 16px;
+            padding: 10px 16px;
             border-radius: 50px;
             cursor: pointer;
             transition: 0.12s;
@@ -215,7 +210,7 @@
             pointer-events: none;
         }
 
-        /* 结果区域（全屏滑动） */
+        /* 结果区域 */
         #resultArea {
             flex: 1;
             display: flex;
@@ -231,92 +226,107 @@
             box-shadow: 0 8px 0 #7e9fc7;
             flex: 1;
             overflow-y: auto;
-            margin-bottom: 10px;
+            margin-bottom: 4px;
         }
         .result-title {
             font-size: 1.7rem;
             font-weight: 700;
             color: #0a2942;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .datetime {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #2b4e72;
             background: #dde9f5;
             display: inline-block;
-            padding: 5px 16px;
+            padding: 4px 14px;
             border-radius: 40px;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
         }
         .main-score {
             display: flex;
             align-items: baseline;
-            gap: 10px 15px;
+            gap: 8px 12px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         .total-score {
-            font-size: 3.2rem;
+            font-size: 3rem;
             font-weight: 800;
             line-height: 1;
             color: #1f4970;
             background: #dbeafe;
-            padding: 0px 16px;
+            padding: 0px 14px;
             border-radius: 70px;
         }
         .level-badge {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             background: #2d5e2c;
             color: white;
-            padding: 6px 24px;
+            padding: 5px 20px;
             border-radius: 60px;
             box-shadow: 0 5px 0 #1b3e1a;
         }
         .grade-reference {
             background: #e2ecf9;
             border-radius: 24px;
-            padding: 16px 16px;
-            margin: 20px 0 15px;
-            font-size: 0.95rem;
+            padding: 14px 14px;
+            margin: 15px 0 12px;
+            font-size: 0.9rem;
             border: 2px dashed #4f7eb3;
         }
         .grade-reference h3 {
-            font-size: 1.15rem;
-            margin-bottom: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
             color: #11324b;
         }
         .grade-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px 12px;
+            gap: 5px 10px;
             justify-content: space-between;
         }
         .grade-item {
             background: white;
             border-radius: 40px;
-            padding: 5px 14px;
+            padding: 4px 12px;
             border: 1px solid #8ba9cc;
             font-weight: 500;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
         }
         .desc-text {
-            font-size: 1rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.4;
             background: #ffffffd6;
             border-radius: 28px;
-            padding: 16px 18px;
+            padding: 14px 16px;
             border: 1px solid #abc0d6;
         }
 
-        /* 结果页按钮组 */
+        .scroll-hint {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #6b7f96;
+            margin: 2px 0 4px;
+            opacity: 0.7;
+            flex-shrink: 0;
+            letter-spacing: 0.3px;
+        }
+
+        /* 结果页按钮组：使两个按钮宽度相等、文字不换行 */
         .result-buttons {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
-            margin: 0 0 5px;
+            margin: 0 0 3px;
             flex-shrink: 0;
+        }
+        .result-buttons .btn {
+            flex: 1 1 0;           /* 均分剩余空间，宽度相等 */
+            min-width: 0;           /* 允许缩小 */
+            white-space: nowrap;    /* 强制单行，高度一致 */
         }
         .btn-retest {
             background: #6b4f3c;
@@ -328,19 +338,17 @@
             background: #543f2f;
         }
 
-        /* 隐藏类 */
         .hidden {
             display: none !important;
         }
 
-        /* 页脚 */
         .footer-note {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #6b7f96;
             text-align: center;
             border-top: 1px solid #ccd9e9;
-            padding-top: 8px;
-            margin-top: 5px;
+            padding-top: 6px;
+            margin-top: 3px;
             flex-shrink: 0;
         }
     </style>
@@ -349,42 +357,31 @@
 <div class="container">
     <h1>UCLA孤独量表</h1>
 
-    <!-- 测评区域（无副标题，无指导语，仅题目和导航按钮） -->
     <div id="quizArea">
-        <!-- 逐题卡片（内部滚动） -->
         <div class="question-pane" id="questionPane">
             <div class="q-header">
                 <span class="q-num" id="currentQNum">1</span>
                 <span class="q-text" id="currentQText">加载中...</span>
             </div>
-
             <div class="option-grid" id="optionGroup"></div>
-
-            <!-- 进度指示：题号 -->
             <div class="progress-area">
                 <span class="progress-badge" id="progressText">第 1 / 20 题</span>
             </div>
         </div>
-
-        <!-- 导航按钮组：仅保留上一题/下一题 -->
         <div class="nav-buttons">
             <button class="btn" id="prevBtn" disabled>◀ 上一题</button>
             <button class="btn" id="nextBtn">下一题 ▶</button>
         </div>
     </div>
 
-    <!-- 结果区域（初始隐藏） -->
     <div id="resultArea" class="hidden">
         <div class="result-card" id="resultCard">
             <div class="result-title">📊 你的孤独测评结果</div>
-            <!-- 测评时间后加上开发者：DOMINO -->
             <div class="datetime">测评时间：<span id="assessmentDatetime"></span> · 开发者：DOMINO</div>
             <div class="main-score">
                 <span class="total-score" id="finalScore">--</span>
                 <span class="level-badge" id="finalLevel">---</span>
             </div>
-
-            <!-- 分级信息块 -->
             <div class="grade-reference">
                 <h3>📌 孤独分级标准</h3>
                 <div class="grade-grid">
@@ -395,18 +392,15 @@
                     <span class="grade-item">20–27 低度</span>
                 </div>
             </div>
-
             <div class="desc-text" id="finalDescription"></div>
         </div>
-
-        <!-- 结果页专用按钮组：重新测评（左） 点击保存（右、蓝色） -->
+        <div class="scroll-hint">⬆️ 向上滑动查看更多</div>
         <div class="result-buttons">
             <button class="btn btn-retest" id="retestBtn">🔄 重新测评</button>
             <button class="btn btn-primary" id="screenshotBtn">点击保存</button>
         </div>
     </div>
 
-    <!-- 页脚 -->
     <div class="footer-note">
         UCLA孤独量表第三版 · 开发者：DOMINO
     </div>
@@ -414,7 +408,6 @@
 
 <script>
     (function() {
-        // ---------- 题目数据 ----------
         const questions = [
             { num: 1,  text: "你常感到与周围人关系和谐吗？" },
             { num: 2,  text: "你常感到缺少伙伴吗？" },
@@ -438,14 +431,11 @@
             { num: 20, text: "你常感到有人值得你信赖吗？" }
         ];
 
-        // 反向计分题号 (内部计算用)
         const reverseItems = [1, 5, 6, 9, 10, 15, 16, 19, 20];
 
-        // 状态
-        let currentIndex = 0;               // 0-based
+        let currentIndex = 0;
         let answers = new Array(20).fill(null);
 
-        // DOM 元素 - 测评区域
         const quizArea = document.getElementById('quizArea');
         const resultArea = document.getElementById('resultArea');
         const qNumSpan = document.getElementById('currentQNum');
@@ -454,8 +444,6 @@
         const progressText = document.getElementById('progressText');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-
-        // DOM 元素 - 结果区域
         const resultCard = document.getElementById('resultCard');
         const screenshotBtn = document.getElementById('screenshotBtn');
         const retestBtn = document.getElementById('retestBtn');
@@ -464,18 +452,12 @@
         const finalLevel = document.getElementById('finalLevel');
         const finalDescription = document.getElementById('finalDescription');
 
-        // ---------- 辅助函数 ----------
-        function getAnsweredCount() {
-            return answers.filter(a => a !== null).length;
-        }
-
         function updateMeta() {
             progressText.innerText = `第 ${currentIndex+1} / 20 题`;
             prevBtn.disabled = (currentIndex === 0);
             nextBtn.disabled = (currentIndex === 19);
         }
 
-        // 渲染当前题目
         function renderCurrentQuestion() {
             const q = questions[currentIndex];
             qNumSpan.innerText = q.num;
@@ -495,25 +477,21 @@
             }
             optionGroup.innerHTML = htmlStr;
 
-            // 绑定change事件：保存答案并自动跳转
             const radios = document.querySelectorAll('input[name="currentQ"]');
             radios.forEach(radio => {
                 radio.addEventListener('change', function(e) {
                     const newVal = parseInt(e.target.value, 10);
                     answers[currentIndex] = newVal;
 
-                    // 更新选中样式
                     document.querySelectorAll('.option-item').forEach(item => {
                         item.classList.remove('selected');
                     });
                     e.target.closest('.option-item').classList.add('selected');
 
-                    // 自动跳转逻辑
                     if (currentIndex < 19) {
                         currentIndex++;
                         renderCurrentQuestion();
                     } else {
-                        // 最后一题自动显示结果
                         showResult();
                     }
                 });
@@ -522,7 +500,6 @@
             updateMeta();
         }
 
-        // 手动上一题
         function goPrev() {
             if (currentIndex > 0) {
                 currentIndex--;
@@ -530,7 +507,6 @@
             }
         }
 
-        // 手动下一题
         function goNext() {
             if (currentIndex < 19) {
                 currentIndex++;
@@ -538,7 +514,6 @@
             }
         }
 
-        // 计算总分
         function computeTotal() {
             let total = 0;
             for (let i = 0; i < 20; i++) {
@@ -554,7 +529,6 @@
             return total;
         }
 
-        // 获取等级与描述
         function getLevelInfo(score) {
             if (score >= 45) return { level: '高度孤独感', desc: '您经常体验到强烈的孤独感，社交联系可能无法满足内心需要。建议寻求支持或与信任的人谈谈。' };
             if (score >= 39) return { level: '中等偏高孤独感', desc: '孤独感较为明显，很多时候会感到孤立。主动参与社交或倾诉可能会改善。' };
@@ -563,9 +537,7 @@
             return { level: '低度孤独感', desc: '孤独感很低，您在生活中常感到与他人相处融洽。' };
         }
 
-        // 显示结果（隐藏测评区域，显示结果区域）
         function showResult() {
-            // 检查完整性
             const missing = answers.findIndex(a => a === null);
             if (missing !== -1) {
                 alert(`您还有第 ${missing+1} 题未回答。请完成所有题目后查看结果。`);
@@ -581,28 +553,22 @@
             finalLevel.innerText = levelInfo.level;
             finalDescription.innerText = levelInfo.desc;
 
-            // 生成当前日期时间
             const now = new Date();
             const formatted = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} ${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
             assessmentDatetime.innerText = formatted;
 
-            // 隐藏测评区域，显示结果区域
             quizArea.classList.add('hidden');
             resultArea.classList.remove('hidden');
         }
 
-        // 重置所有（返回测评区域）
         function resetAll() {
             answers = new Array(20).fill(null);
             currentIndex = 0;
             renderCurrentQuestion();
-
-            // 显示测评区域，隐藏结果区域
             quizArea.classList.remove('hidden');
             resultArea.classList.add('hidden');
         }
 
-        // ---------- 截图功能（确保完整捕获） ----------
         function downloadCanvas(canvas, filename) {
             const link = document.createElement('a');
             link.download = filename;
@@ -616,13 +582,11 @@
                 return;
             }
 
-            // 保存当前样式
             const originalResultAreaOverflow = resultArea.style.overflow;
             const originalResultAreaHeight = resultArea.style.height;
             const originalResultCardOverflow = resultCard.style.overflow;
             const originalResultCardHeight = resultCard.style.height;
 
-            // 临时展开，使所有内容可见
             resultArea.style.overflow = 'visible';
             resultArea.style.height = 'auto';
             resultCard.style.overflow = 'visible';
@@ -637,7 +601,6 @@
                 scrollY: 0,
                 windowWidth: document.documentElement.clientWidth
             }).then(canvas => {
-                // 恢复样式
                 resultArea.style.overflow = originalResultAreaOverflow;
                 resultArea.style.height = originalResultAreaHeight;
                 resultCard.style.overflow = originalResultCardOverflow;
@@ -647,24 +610,20 @@
                 const timestamp = `${now.getFullYear()}-${now.getMonth()+1}-${now.getDate()}_${now.getHours()}-${now.getMinutes()}-${now.getSeconds()}`;
                 downloadCanvas(canvas, `UCLA孤独测评_${timestamp}.png`);
             }).catch(error => {
-                // 恢复样式
                 resultArea.style.overflow = originalResultAreaOverflow;
                 resultArea.style.height = originalResultAreaHeight;
                 resultCard.style.overflow = originalResultCardOverflow;
                 resultCard.style.height = originalResultCardHeight;
-
                 console.error('截图失败:', error);
                 alert('截图生成失败，可稍后重试。');
             });
         }
 
-        // ---------- 事件绑定 ----------
         prevBtn.addEventListener('click', goPrev);
         nextBtn.addEventListener('click', goNext);
         screenshotBtn.addEventListener('click', captureResultCard);
         retestBtn.addEventListener('click', resetAll);
 
-        // 初始化渲染
         renderCurrentQuestion();
     })();
 </script>
