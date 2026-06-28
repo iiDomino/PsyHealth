@@ -117,13 +117,11 @@
     const result = scale.score(answers, scale);
     persistResult(result);
     const details = result.details.map(item => `<li>${item}</li>`).join("");
-    const urgentMarkup = result.urgent ? `<div class="urgent-box"><strong>安全优先</strong><p>该提示不能判断风险高低，需要咨询师立即进行人工风险评估。如当前存在明确计划、可用手段、近期行为或无法保证安全，请立即联系当地急救、公安或精神卫生医疗机构，并让可信任的人陪同。</p></div>` : "";
     pageShell(`
       <section class="panel" id="resultCapture" aria-labelledby="resultTitle">
         <p class="eyebrow">测评完成</p>
         <h1 id="resultTitle" class="result-title">${result.title}</h1>
         <div class="score-orb" aria-label="${result.scoreLabel} ${result.score}"><div><strong>${result.score}</strong><span>${result.scoreLabel}</span></div></div>
-        ${urgentMarkup}
         <p class="result-summary">${result.summary}</p>
         <div class="result-detail"><strong>结果说明</strong><ul>${details}</ul></div>
         <p class="notice" style="margin-top:18px">测评结果仅供自我了解，不能替代专业诊断。若困扰持续、加重或明显影响生活，请及时寻求专业帮助。</p>
