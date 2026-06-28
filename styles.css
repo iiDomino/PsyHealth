@@ -13,6 +13,56 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
+/* 个人版主页：全部量表直接展示 */
+.compact-library { max-width: 920px; }
+.direct-scale-section { margin-top: 30px; }
+.direct-scale-list { list-style: none; counter-reset: scale; display: grid; gap: 12px; padding: 0; margin: 0; }
+.direct-scale-list li { counter-increment: scale; }
+.direct-scale-list a { display: flex; align-items: center; gap: 14px; padding: 17px 20px; border-radius: 18px; background: #fff; color: #173f55; text-decoration: none; font-weight: 750; box-shadow: 0 10px 28px rgba(31,101,136,.09); border: 1px solid rgba(31,101,136,.1); }
+.direct-scale-list a::before { content: counter(scale, decimal-leading-zero); display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg,#2a8ab3,#69c3bc); color: white; font-size: .88rem; }
+.direct-scale-list a:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(31,101,136,.14); }
+
+/* 初筛资料 */
+.profile-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 24px 0; }
+.profile-wide { grid-column: 1 / -1; }
+.text-field { display: grid; gap: 8px; color: #244b5d; font-weight: 700; }
+.text-field input,.text-field select { width: 100%; min-height: 48px; border: 1px solid #c7dce3; border-radius: 13px; padding: 10px 13px; background: #fff; color: #173f55; font: inherit; box-sizing: border-box; }
+
+/* 新增量表沿用原始单页测评的全屏卡片语言 */
+.quiz-page { min-height: 100vh; margin: 0; background: linear-gradient(145deg,#d9f4f4 0%,#f7e8ef 48%,#e4effb 100%); }
+.legacy-quiz-shell { width: min(760px,100%); min-height: 100vh; margin: auto; padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; }
+.legacy-quiz-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; color: #255e78; font-weight: 700; }
+.legacy-quiz-head a { color: inherit; text-decoration: none; }
+.legacy-progress { height: 8px; border-radius: 8px; background: rgba(255,255,255,.7); overflow: hidden; margin-bottom: 16px; }
+.legacy-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#2b9eb3,#ef91a9); transition: width .2s ease; }
+.legacy-card { margin: auto 0; padding: clamp(24px,5vw,46px); border-radius: 28px; background: rgba(255,255,255,.95); box-shadow: 0 20px 60px rgba(40,82,104,.16); }
+.legacy-card h1 { margin: 4px 0 10px; color: #174d68; font-size: clamp(1.45rem,4vw,2.2rem); }
+.legacy-kicker { margin: 0; color: #39839a; font-size: .82rem; font-weight: 800; letter-spacing: .03em; }
+.legacy-instruction { color: #607984; }
+.legacy-question { display: grid; gap: 10px; margin: 30px 0 24px; padding: 24px; border-radius: 20px; background: linear-gradient(135deg,#f1fbfc,#fff4f7); color: #163f52; }
+.legacy-question small { color: #4a8ba0; font-weight: 800; }
+.legacy-question strong { font-size: clamp(1.1rem,3vw,1.4rem); line-height: 1.65; }
+.legacy-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 12px; }
+.legacy-options button,.legacy-nav button { min-height: 50px; border: 1px solid #bddde2; border-radius: 15px; background: #fff; color: #24576a; font: inherit; font-weight: 750; cursor: pointer; }
+.legacy-options button:hover,.legacy-options button.selected { border-color: #2b9eb3; background: #e5f8f8; color: #17677c; transform: translateY(-1px); }
+.legacy-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
+.legacy-nav button { padding: 0 22px; }
+.legacy-nav button:disabled { opacity: .4; cursor: default; }
+.legacy-score { display: grid; place-items: center; gap: 8px; margin: 28px auto; width: min(260px,100%); padding: 24px; border-radius: 22px; background: linear-gradient(135deg,#e5f8f8,#fff0f4); color: #174d68; }
+.legacy-score strong { font-size: clamp(2rem,7vw,3.2rem); text-align: center; }
+.legacy-score span { font-weight: 800; }
+.legacy-result-lines { padding: 18px 22px; border-radius: 18px; background: #f5fafb; color: #355b6a; }
+.legacy-result-lines p { margin: 8px 0; }
+.result-time,.report-count { color: #708891; font-size: .9rem; }
+
+@media (max-width: 620px) {
+  .profile-grid { grid-template-columns: 1fr; }
+  .profile-wide { grid-column: auto; }
+  .legacy-quiz-shell { padding: 14px; }
+  .legacy-card { padding: 24px 18px; }
+  .legacy-options { grid-template-columns: 1fr; }
+}
+
 * { box-sizing: border-box; }
 
 body {
