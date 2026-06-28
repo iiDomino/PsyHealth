@@ -1,84 +1,25 @@
 <!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="PsyHealth 初次来访综合筛查">
-  <title>初次来访综合筛查 · PsyHealth</title>
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-  <main class="app-shell">
-    <header class="topbar"><a class="home-link" href="index.html">← 返回首页</a><span class="privacy-pill">🔒 不保存姓名和联系方式</span></header>
-    <section class="panel" id="intakeApp">
-      <p class="eyebrow">咨询前信息整理</p>
-      <h1>初次来访综合筛查</h1>
-      <p class="lead">这不是诊断测验。它帮助你说明主要困扰，并为后续选择测评和咨询访谈提供方向。</p>
-
-      <form id="intakeForm">
-        <fieldset class="form-section">
-          <legend>1. 这次由谁填写？</legend>
-          <label class="choice-row"><input type="radio" name="role" value="本人" required><span>我为自己填写</span></label>
-          <label class="choice-row"><input type="radio" name="role" value="家长或监护人"><span>我是家长或监护人</span></label>
-          <label class="choice-row"><input type="radio" name="role" value="伴侣或家庭成员"><span>我是伴侣或家庭成员</span></label>
-        </fieldset>
-
-        <fieldset class="form-section">
-          <legend>2. 需要帮助的人处于哪个年龄阶段？</legend>
-          <label class="choice-row"><input type="radio" name="age" value="不满14岁" required><span>不满 14 岁</span></label>
-          <label class="choice-row"><input type="radio" name="age" value="14–17岁"><span>14–17 岁</span></label>
-          <label class="choice-row"><input type="radio" name="age" value="18–59岁"><span>18–59 岁</span></label>
-          <label class="choice-row"><input type="radio" name="age" value="60岁及以上"><span>60 岁及以上</span></label>
-        </fieldset>
-
-        <fieldset class="form-section">
-          <legend>3. 目前最想解决哪些问题？</legend>
-          <p class="field-help">可多选。</p>
-          <label class="choice-row"><input type="checkbox" name="topic" value="emotion"><span>情绪低落、焦虑、恐惧或压力</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="relationship"><span>婚恋、亲密关系或失恋</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="family"><span>家庭、亲子或养育</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="interpersonal"><span>人际、社交、孤独或社会适应</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="youth"><span>儿童青少年、学习或校园适应</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="wellbeing"><span>睡眠、疲劳、疼痛或身体不适</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="growth"><span>个性、自我认识或个人成长</span></label>
-          <label class="choice-row"><input type="checkbox" name="topic" value="habits"><span>酒精、吸烟、网络、游戏或其他习惯</span></label>
-        </fieldset>
-
-        <fieldset class="form-section">
-          <legend>4. 困扰持续了多久？</legend>
-          <label class="choice-row"><input type="radio" name="duration" value="不足2周" required><span>不足 2 周</span></label>
-          <label class="choice-row"><input type="radio" name="duration" value="2周至3个月"><span>2 周至 3 个月</span></label>
-          <label class="choice-row"><input type="radio" name="duration" value="3个月至1年"><span>3 个月至 1 年</span></label>
-          <label class="choice-row"><input type="radio" name="duration" value="1年以上"><span>1 年以上</span></label>
-        </fieldset>
-
-        <fieldset class="form-section">
-          <legend>5. 对生活的影响有多大？</legend>
-          <label class="choice-row"><input type="radio" name="impact" value="较小" required><span>较小：基本不影响日常生活</span></label>
-          <label class="choice-row"><input type="radio" name="impact" value="中等"><span>中等：影响部分学习、工作、睡眠或关系</span></label>
-          <label class="choice-row"><input type="radio" name="impact" value="明显"><span>明显：难以正常学习、工作、照顾自己或维持关系</span></label>
-        </fieldset>
-
-        <fieldset class="form-section risk-section">
-          <legend>6. 安全与紧急情况</legend>
-          <p class="field-help">以下问题只用于决定是否需要优先人工帮助，不会自动作出诊断。</p>
-          <label class="choice-row"><input type="checkbox" name="risk" value="存在伤害自己或他人的想法、计划或行为"><span>近期存在伤害自己或他人的想法、计划或行为</span></label>
-          <label class="choice-row"><input type="checkbox" name="risk" value="目前难以保证自己或他人的安全"><span>目前难以保证自己或他人的安全</span></label>
-          <label class="choice-row"><input type="checkbox" name="risk" value="出现明显精神异常或意识混乱"><span>近期出现明显幻觉、妄想、意识混乱，或连续多日几乎不睡且异常兴奋冲动</span></label>
-          <label class="choice-row"><input type="checkbox" name="risk" value="存在虐待、暴力或未成年人现实危险"><span>存在虐待、暴力或未成年人处于现实危险</span></label>
-        </fieldset>
-
-        <label class="consent-row">
-          <input type="checkbox" name="consent" required>
-          <span>我已阅读<a href="privacy.html">隐私与数据说明</a>，理解本工具只用于咨询前筛查和信息整理，不构成诊断；本次摘要与量表结果将保存在当前浏览器会话中。</span>
-        </label>
-
-        <p id="formError" class="error-text" role="alert" aria-live="polite"></p>
-        <button class="primary-btn full-btn" type="submit">生成测评建议</button>
-      </form>
-    </section>
-  </main>
-  <script src="catalog.js"></script>
-  <script src="intake.js"></script>
-</body>
-</html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>初筛信息 · PsyHealth</title><link rel="stylesheet" href="styles.css"></head>
+<body><main class="app-shell"><header class="topbar"><a class="home-link" href="index.html">← 返回首页</a></header>
+  <section class="panel" id="intakeApp"><p class="eyebrow">来访资料</p><h1>初筛信息</h1><p class="lead">填写来访者基本资料和本次求助问题。</p>
+    <form id="intakeForm">
+      <div class="profile-grid">
+        <label class="text-field"><span>来访者姓名</span><input name="name" autocomplete="name" required></label>
+        <label class="text-field"><span>性别</span><select name="gender" required><option value="">请选择</option><option>男</option><option>女</option><option>其他</option><option>不愿说明</option></select></label>
+        <label class="text-field"><span>具体年龄</span><input name="age" type="number" min="1" max="120" inputmode="numeric" required></label>
+        <label class="text-field"><span>最高学历</span><select name="education" required><option value="">请选择</option><option>小学及以下</option><option>初中</option><option>高中／中专</option><option>大专</option><option>本科</option><option>硕士</option><option>博士及以上</option></select></label>
+        <label class="text-field"><span>职业</span><input name="occupation" required></label>
+        <label class="text-field"><span>婚姻状况</span><select name="marital" required><option value="">请选择</option><option>未婚</option><option>已婚</option><option>分居</option><option>离异</option><option>丧偶</option><option>其他</option></select></label>
+        <label class="text-field profile-wide"><span>出生城市</span><input name="birthCity" required></label>
+      </div>
+      <fieldset class="form-section"><legend>求助问题分类</legend><p class="field-help">可多选。</p>
+        <label class="choice-row"><input type="checkbox" name="topic" value="婚恋难题"><span>1、婚恋难题</span></label>
+        <label class="choice-row"><input type="checkbox" name="topic" value="焦虑抑郁"><span>2、焦虑抑郁</span></label>
+        <label class="choice-row"><input type="checkbox" name="topic" value="儿童心理"><span>3、儿童心理</span></label>
+        <label class="choice-row"><input type="checkbox" name="topic" value="社会家庭"><span>4、社会家庭</span></label>
+        <label class="choice-row"><input type="checkbox" name="topic" value="法律相关"><span>5、法律相关</span></label>
+      </fieldset>
+      <p id="formError" class="error-text" role="alert"></p><button class="primary-btn full-btn" type="submit">保存初筛信息</button>
+    </form>
+  </section></main><script src="intake.js"></script></body></html>
