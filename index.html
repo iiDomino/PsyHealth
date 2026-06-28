@@ -1,66 +1,93 @@
-<!DOCTYPE html>
-<html lang="zh">
+<!doctype html>
+<html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>导航页 - PsyHealth scales</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #333;
-            border-bottom: 2px solid #4CAF50;
-            padding-bottom: 10px;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-        }
-        li {
-            margin: 10px 0;
-        }
-        a {
-            display: block;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            text-decoration: none;
-            color: #4CAF50;
-            font-size: 18px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        a:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            background-color: #f0f8f0;
-        }
-        .note {
-            margin-top: 30px;
-            color: #666;
-            font-size: 14px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PsyHealth 心理自助测评工具">
+  <title>PsyHealth 测评量表</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-    <h1>PsyHealth Scales</h1>
-    <ul>
-        <!-- 在这里添加你的文件链接，修改 href 和文本即可 -->
-        <li><a href="PsyHealth90自测量表ByDOMINO.html.html">PsyHealth90自测量表ByDOMINO </a></li>
-        <li><a href="人格85自测量表.html">人格85自测量表</a></li>
-        <li><a href="lonely20scale.html">孤独等级自测20量表</a></li>
-        <li><a href="爱情关系合适度测评.html">爱情关系合适度测评</a></li>
-        <!-- 你可以根据需要继续添加更多链接 -->
-    </ul>
-    <div class="note">
-        ⚡ 点击上方链接开始对应的测评。<br>
-    开发者：Domino's Psy Farm
+<body class="library-page">
+  <main class="library-shell">
+    <header class="library-hero">
+      <div class="hero-tools"><span class="brand-pill">Domino's Psy Farm</span><a class="report-shortcut" href="report.html">查看本次初筛报告 →</a></div>
+      <h1>PsyHealth 咨询辅助工具</h1>
+      <p>根据你现在最想解决的问题选择入口。系统会逐步推荐适合的测评，所有答案默认只在当前浏览器中计算。</p>
+    </header>
+
+    <a class="intake-card" href="intake.html">
+      <span class="intake-icon">🧭</span>
+      <span>
+        <small>不知道从哪里开始？</small>
+        <strong>初次来访综合筛查</strong>
+        <span>用几分钟说明主要困扰、持续时间和生活影响，再获得测评建议。</span>
+      </span>
+      <span class="card-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">按求助主题选择</p>
+        <h2>你更想先了解哪一方面？</h2>
+      </div>
     </div>
+
+    <section class="scale-grid" aria-label="测评量表列表">
+      <a class="scale-card peach" href="category.html?category=emotion">
+        <span class="card-icon">🌤️</span>
+        <span class="card-kicker">情绪 · 焦虑 · 压力</span>
+        <strong>最近总是难受、紧张或提不起劲</strong>
+        <span>抑郁情绪、焦虑、恐惧、压力、强迫与创伤反应。</span>
+      </a>
+      <a class="scale-card rose" href="category.html?category=relationship">
+        <span class="card-icon">💞</span>
+        <span class="card-kicker">婚恋 · 亲密关系</span>
+        <strong>关系中有冲突、犹豫或失落</strong>
+        <span>关系满意度、沟通、信任、依恋与关系决策。</span>
+      </a>
+      <a class="scale-card amber" href="category.html?category=family">
+        <span class="card-icon">🏠</span>
+        <span class="card-kicker">家庭 · 亲子 · 养育</span>
+        <strong>家庭或亲子相处让人疲惫</strong>
+        <span>家庭功能、家庭环境、亲子沟通与养育方式。</span>
+      </a>
+      <a class="scale-card blue" href="category.html?category=interpersonal">
+        <span class="card-icon">🤝</span>
+        <span class="card-kicker">人际 · 社会适应</span>
+        <strong>社交、孤独或人际关系困扰</strong>
+        <span>社交回避、人际信任、沟通、孤独感与社会支持。</span>
+      </a>
+      <a class="scale-card violet" href="category.html?category=youth">
+        <span class="card-icon">🎒</span>
+        <span class="card-kicker">儿童 · 青少年 · 学习</span>
+        <strong>孩子在情绪、行为或学习上遇到困难</strong>
+        <span>学习压力、同伴关系、校园适应及家长/教师观察。</span>
+      </a>
+      <a class="scale-card night" href="category.html?category=wellbeing">
+        <span class="card-icon">🌙</span>
+        <span class="card-kicker">睡眠 · 身心状态</span>
+        <strong>睡不好、疲惫或身体总是不舒服</strong>
+        <span>睡眠、躯体感受、疼痛、疲劳与生活质量。</span>
+      </a>
+      <a class="scale-card mint" href="category.html?category=growth">
+        <span class="card-icon">🌱</span>
+        <span class="card-kicker">个性 · 自我 · 成长</span>
+        <strong>想更系统地了解自己</strong>
+        <span>人格特点、自我效能、自尊、韧性与应对方式。</span>
+      </a>
+      <a class="scale-card teal" href="category.html?category=habits">
+        <span class="card-icon">🧩</span>
+        <span class="card-kicker">成瘾 · 行为习惯</span>
+        <strong>某种习惯已经难以控制</strong>
+        <span>酒精、吸烟、网络、游戏、进食与冲动行为。</span>
+      </a>
+    </section>
+
+    <aside class="safety-note">
+      <strong>使用说明</strong>
+      <p>这些工具用于咨询前筛查和自我了解，不能替代专业诊断。若存在伤害自己或他人的危险、明显精神异常或急性身体不适，请优先联系当地急救、公安或精神卫生医疗机构。</p>
+      <p><a class="text-link" href="privacy.html">查看隐私与数据说明</a></p>
+    </aside>
+  </main>
 </body>
 </html>
