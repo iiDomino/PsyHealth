@@ -110,24 +110,6 @@
             border-color: #b58f74;
             color: #4d3629;
         }
-        /* 底部开发者 */
-        .footer {
-            flex-shrink: 0;
-            text-align: center;
-            padding: 14px 16px 18px;
-            font-size: 17px;
-            color: #9e7b64;
-            background: #fdf3ea;
-            border-top: 1px solid #eedaca;
-            font-weight: 400;
-            letter-spacing: 1.5px;
-            padding-bottom: calc(14px + env(safe-area-inset-bottom, 12px));
-        }
-        .footer span {
-            font-weight: 600;
-            color: #b4623a;
-        }
-
         /* ------------- 结果页样式 (可滚动，但保留全屏结构) ----------- */
         .result-container {
             flex: 1;
@@ -138,11 +120,12 @@
             flex-direction: column;
             -webkit-overflow-scrolling: touch;
         }
-        /* 截图目标区域（包含所有结果卡片，不包含底部开发者） */
+        /* 截图目标区域（包含所有结果卡片） */
         #resultCapture {
             background: #fffbf8;
             border-radius: 32px 32px 16px 16px;
         }
+        .home-floating { position: fixed; top: 12px; left: 14px; z-index: 30; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.94); color: #9b6041; text-decoration: none; font-size: .82rem; font-weight: 700; box-shadow: 0 4px 14px rgba(90,45,25,.14); }
         .result-card {
             background: #fff3ea;
             border-radius: 36px 16px 36px 16px;
@@ -274,6 +257,7 @@
     </style>
 </head>
 <body>
+    <a class="home-floating" href="index.html" data-html2canvas-ignore="true">← 返回主页</a>
     <div id="app"></div>
     <script>
         (function() {
@@ -443,7 +427,6 @@
                             <div class="option-btn" data-opt="否">否</div>
                         </div>
                     </div>
-                    <div class="footer"><span>DOMINO</span> · 用心回答每一题</div>
                 `;
                 app.innerHTML = html;
                 document.querySelectorAll('.option-btn').forEach(btn => {
@@ -464,7 +447,7 @@
                 const dateTime = getNowDateTime();
                 try {
                     let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-                    const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评.html', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:`情感基础 ${g1}；价值观契合 ${g2}；理性承诺 ${g3}`, completedAt:new Date().toISOString() };
+                    const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:`情感基础 ${g1}；价值观契合 ${g2}；理性承诺 ${g3}`, completedAt:new Date().toISOString() };
                     records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
                 } catch (error) {}
 
@@ -496,7 +479,6 @@
                             </div>
                         </div>
                     </div>
-                    <div class="footer"><span>DOMINO</span> · 测评仅供参考</div>
                 `;
                 app.innerHTML = html;
 
