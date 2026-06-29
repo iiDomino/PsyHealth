@@ -7,7 +7,7 @@
       <div class="profile-grid">
         <label class="text-field"><span>来访者姓名</span><input name="name" autocomplete="name" required></label>
         <label class="text-field"><span>性别</span><select name="gender" required><option value="">请选择</option><option>男</option><option>女</option><option>其他</option><option>不愿说明</option></select></label>
-        <label class="text-field"><span>具体年龄</span><input name="age" type="number" min="1" max="120" inputmode="numeric" required></label>
+        <label class="text-field"><span>年龄</span><input name="age" type="number" min="1" max="120" inputmode="numeric" required></label>
         <label class="text-field"><span>最高学历</span><select name="education" required><option value="">请选择</option><option>小学及以下</option><option>初中</option><option>高中／中专</option><option>大专</option><option>本科</option><option>硕士</option><option>博士及以上</option></select></label>
         <label class="text-field"><span>职业</span><input name="occupation" required></label>
         <label class="text-field"><span>婚姻状况</span><select name="marital" required><option value="">请选择</option><option>未婚</option><option>已婚</option><option>分居</option><option>离异</option><option>丧偶</option><option>其他</option></select></label>
@@ -20,6 +20,7 @@
         <label class="choice-row"><input type="checkbox" name="topic" value="社会家庭"><span>4、社会家庭</span></label>
         <label class="choice-row"><input type="checkbox" name="topic" value="法律相关"><span>5、法律相关</span></label>
       </fieldset>
+      <label class="text-field referral-field"><span>四位数推荐码</span><input name="referralCode" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{4}" maxlength="4" placeholder="请输入推荐码" required><small>推荐码用于开放相应的测评项目。</small></label>
       <p id="formError" class="error-text" role="alert"></p><button class="primary-btn full-btn" type="submit">保存初筛信息</button>
     </form>
-  </section></main><script src="intake.js"></script></body></html>
+  </section></main><script src="cloud-config.js"></script><script src="storage.js"></script><script src="intake.js"></script></body></html>

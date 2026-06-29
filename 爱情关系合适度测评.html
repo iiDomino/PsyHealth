@@ -453,7 +453,7 @@
                     let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
                     const details = [`情感基础：${g1}分（${eval1}）`,`价值观契合：${g2}分（${eval2}）`,`理性承诺：${g3}分（${eval3}）`,`总分：${total}分`,`总体评价：${finalMsg}`];
                     const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:details.join('；'), details, completedAt:new Date().toISOString() };
-                    records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
+                    window.PsyHealthStorage.saveResult(record);
                 } catch (error) {}
 
                 const html = `
@@ -511,5 +511,8 @@
 
         })();
     </script>
+    <script src="cloud-config.js"></script>
+    <script src="storage.js"></script>
+    <script src="access-control.js"></script>
 </body>
 </html>

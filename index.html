@@ -11,32 +11,34 @@
     <header class="library-hero">
       <div class="hero-tools"><span class="brand-pill">PsyHealth</span></div>
       <h1>PsyHealth 测评量表</h1>
-      <p>先填写初筛资料，再按需要完成测评。主页直接列出全部 10 项测评。</p>
+      <p>请先填写初筛资料并输入推荐码，再完成已开放的测评。</p>
     </header>
 
     <a class="intake-card" href="intake.html">
       <span class="intake-icon">📝</span><span><small>来访资料</small><strong>填写初筛信息</strong><span>姓名、性别、年龄、学历、职业、婚姻状况、出生城市与求助问题。</span></span><span class="card-arrow">→</span>
     </a>
 
-    <a class="intake-card report-entry-card" href="report.html">
+    <a class="intake-card report-entry-card" href="report.html" id="currentReportCard">
       <span class="intake-icon">📊</span><span><small>本次汇总</small><strong>查看粗筛报告</strong><span>汇总来访资料、已使用量表与相应评测结果，并可截图保存。</span></span><span class="card-arrow">→</span>
     </a>
 
-    <section class="direct-scale-section" aria-labelledby="allScalesTitle">
+    <p class="access-notice" id="accessNotice" hidden>完成初筛信息后，已获开放的测评项目会显示在这里。</p>
+    <section class="direct-scale-section" id="allScalesSection" aria-labelledby="allScalesTitle">
       <div class="section-heading"><div><p class="eyebrow">全部测评</p><h2 id="allScalesTitle">10 项测评量表</h2></div></div>
       <ol class="direct-scale-list">
-        <li><a href="PsyHealth90自测量表ByDOMINO.html.html">PsyHealth90自测量表</a></li>
-        <li><a href="人格85自测量表.html">人格85自测量表</a></li>
-        <li><a href="爱情关系合适度测评.html">爱情关系合适度测评</a></li>
-        <li><a href="common-scale.html?scale=psq">父母问卷（PSQ）</a></li>
-        <li><a href="common-scale.html?scale=interpersonal">人际关系综合诊断量表</a></li>
-        <li><a href="common-scale.html?scale=sds">抑郁自评量表（SDS）</a></li>
-        <li><a href="common-scale.html?scale=enrich">婚姻质量问卷</a></li>
-        <li><a href="common-scale.html?scale=wellbeing">幸福感指数量表</a></li>
-        <li><a href="common-scale.html?scale=sas">焦虑自评量表（SAS）</a></li>
-        <li><a href="common-scale.html?scale=ucla">孤独感自评量表（UCLA）</a></li>
+        <li><a data-scale="1" href="PsyHealth90自测量表ByDOMINO.html.html">PsyHealth90自测量表</a></li>
+        <li><a data-scale="2" href="人格85自测量表.html">人格85自测量表</a></li>
+        <li><a data-scale="3" href="爱情关系合适度测评.html">爱情关系合适度测评</a></li>
+        <li><a data-scale="4" href="common-scale.html?scale=psq">父母问卷（PSQ）</a></li>
+        <li><a data-scale="5" href="common-scale.html?scale=interpersonal">人际关系综合诊断量表</a></li>
+        <li><a data-scale="6" href="common-scale.html?scale=sds">抑郁自评量表（SDS）</a></li>
+        <li><a data-scale="7" href="common-scale.html?scale=enrich">婚姻质量问卷</a></li>
+        <li><a data-scale="8" href="common-scale.html?scale=wellbeing">幸福感指数量表</a></li>
+        <li><a data-scale="9" href="common-scale.html?scale=sas">焦虑自评量表（SAS）</a></li>
+        <li><a data-scale="10" href="common-scale.html?scale=ucla">孤独感自评量表（UCLA）</a></li>
       </ol>
     </section>
   </main>
+  <script src="cloud-config.js"></script><script src="storage.js"></script><script src="access-control.js"></script><script src="index.js"></script>
 </body>
 </html>

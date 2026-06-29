@@ -552,7 +552,7 @@
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
             const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, details:detailLines, completedAt:new Date().toISOString() };
-            records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
+            window.PsyHealthStorage.saveResult(record);
         } catch (error) {}
         let gridHtml = '';
         for (let [key, meta] of Object.entries(factorMeta)) {
@@ -624,5 +624,8 @@
     updateProgress();
 })();
 </script>
+<script src="cloud-config.js"></script>
+<script src="storage.js"></script>
+<script src="access-control.js"></script>
 </body>
 </html>
