@@ -1,10 +1,5 @@
 (function () {
   "use strict";
-  const allowed = {
-    "0912": [1,2,3,4,5,6,7,8,9,10],
-    "2408": [2,3,4,5,7,8],
-    "2403": [1,2,6,9,10]
-  };
   function currentScale() {
     const file = decodeURIComponent(location.pathname.split("/").pop() || "");
     if (file === "PsyHealth90自测量表ByDOMINO.html.html") return 1;
@@ -14,8 +9,8 @@
     return null;
   }
   const intake = window.PsyHealthStorage?.readSessionIntake();
-  const code = sessionStorage.getItem("psyhealth-access-code") || intake?.accessCode;
   const scale = currentScale();
-  if (scale && (!intake || !allowed[code]?.includes(scale))) location.replace("intake.html?required=1");
-  window.PsyHealthAccess = {allowed, code, intake, canAccess:number => Boolean(intake && allowed[code]?.includes(number))};
+  const allowedScales = Array.isArray(intake?.allowedScales) ? intake.allowedScales.map(Number) : [];
+  if (scale && (!intake || !allowedScales.includes(scale))) location.replace("intake.html?required=1");
+  window.PsyHealthAccess = {intake,allowedScales,canAccess:number => Boolean(intake && allowedScales.includes(number))};
 })();

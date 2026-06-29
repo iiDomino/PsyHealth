@@ -1,11 +1,10 @@
 (async function () {
   "use strict";
-  const code=sessionStorage.getItem("psyhealth-history-access");
-  if (!code) { location.replace("intake.html"); return; }
+  if (!await window.PsyHealthStorage.adminSession()) { location.replace("admin-login.html"); return; }
   const app=document.getElementById("historyDetailApp"), id=new URLSearchParams(location.search).get("id");
   const esc=value=>String(value??"").replace(/[&<>"']/gu,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   app.innerHTML='<section class="panel"><p class="loading-state">正在读取云端详细结果…</p></section>';
-  let record; try { record=await window.PsyHealthStorage.getRecord(code,id); } catch(error) { app.innerHTML=`<section class="panel"><p class="error-text">${esc(error.message)}</p></section>`; return; }
+  let record; try { record=await window.PsyHealthStorage.getRecord(id); } catch(error) { app.innerHTML=`<section class="panel"><p class="error-text">${esc(error.message)}</p></section>`; return; }
   const names={"legacy-psy90":"PsyHealth90自测量表","legacy-personality85":"人格85自测量表","legacy-love40":"爱情关系合适度测评","common-psq":"父母问卷（PSQ）","common-interpersonal":"人际关系综合诊断量表","common-sds":"抑郁自评量表（SDS）","common-enrich":"婚姻质量问卷","common-wellbeing":"幸福感指数量表","common-sas":"焦虑自评量表（SAS）","common-ucla":"孤独感自评量表（UCLA）"};
   if(!record){app.innerHTML='<section class="panel"><h1>记录不存在</h1><a href="history.html">返回历史列表</a></section>';return;}
   const i=record.intake||{}, results=record.results||[];
