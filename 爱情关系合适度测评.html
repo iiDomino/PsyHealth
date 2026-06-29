@@ -33,7 +33,11 @@
         /* 顶部题号/状态栏 */
         .top-bar {
             flex-shrink: 0;
-            padding: 18px 20px 8px;
+            min-height: calc(54px + env(safe-area-inset-top, 0px));
+            padding: max(10px, env(safe-area-inset-top)) 112px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 16px;
             font-weight: 600;
             color: #b27a5a;
@@ -125,7 +129,7 @@
             background: #fffbf8;
             border-radius: 32px 32px 16px 16px;
         }
-        .home-floating { position: fixed; top: 12px; left: 14px; z-index: 30; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.94); color: #9b6041; text-decoration: none; font-size: .82rem; font-weight: 700; box-shadow: 0 4px 14px rgba(90,45,25,.14); }
+        .home-floating { position: fixed; top: max(10px,env(safe-area-inset-top)); left: 14px; z-index: 30; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.94); color: #9b6041; text-decoration: none; font-size: .82rem; font-weight: 700; box-shadow: 0 4px 14px rgba(90,45,25,.14); }
         .result-card {
             background: #fff3ea;
             border-radius: 36px 16px 36px 16px;
@@ -447,7 +451,8 @@
                 const dateTime = getNowDateTime();
                 try {
                     let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-                    const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:`情感基础 ${g1}；价值观契合 ${g2}；理性承诺 ${g3}`, completedAt:new Date().toISOString() };
+                    const details = [`情感基础：${g1}分（${eval1}）`,`价值观契合：${g2}分（${eval2}）`,`理性承诺：${g3}分（${eval3}）`,`总分：${total}分`,`总体评价：${finalMsg}`];
+                    const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:details.join('；'), details, completedAt:new Date().toISOString() };
                     records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
                 } catch (error) {}
 

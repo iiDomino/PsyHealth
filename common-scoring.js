@@ -46,7 +46,7 @@
     ];
     const details = factors.map(([name,items,meaning]) => `${name}：${sum(items.map(number => scored[number - 1]))}/${items.length * 5}分。${meaning}。`);
     details.unshift("总分越高，表示整体婚姻质量越好；各因子应结合双方结果分别查看。");
-    return {score:sum(scored), scoreLabel:"婚姻质量总分", details};
+    return {score:`${sum(scored)} / 620`, scoreLabel:"婚姻质量总分", details};
   }
 
   function wellbeing(values) {
@@ -54,7 +54,12 @@
     const affect = sum(reversed.slice(0,8)) / 8;
     const satisfaction = reversed[8] * 1.1;
     const total = affect + satisfaction;
-    return {score:total.toFixed(2), scoreLabel:"幸福感指数", details:[`总体情感平均分：${affect.toFixed(2)}`,`生活满意度加权分：${satisfaction.toFixed(2)}`,"评分指引：题目原始选项1更接近左侧积极描述，7更接近右侧消极描述；计分时反向换算，因此最终指数越高表示当前幸福感越高。","理论范围为2.10—14.70分；原文件样本平均分为11.8分。"]};
+    const evaluation = total >= 13
+      ? "较高幸福感水平（原文件样本中31%的受试者得分达到13分或以上）"
+      : total >= 9.6
+        ? "处于原文件样本平均值上下1个标准差的范围内"
+        : "低于原文件样本平均值1个标准差以上";
+    return {score:total.toFixed(2), scoreLabel:"幸福感指数", details:[`评价：${evaluation}`,`理论范围：2.10（最低）—14.70（最高）`,`原文件样本：平均分11.8，标准差2.2。`]};
   }
 
   function ucla(values) {

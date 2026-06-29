@@ -19,13 +19,14 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2px;
+            padding: 46px 2px max(2px, env(safe-area-inset-bottom));
             box-sizing: border-box;
         }
         .phone {
             max-width: 420px;
             width: 100%;
-            height: calc(100vh - 4px);
+            height: calc(100vh - 50px);
+            height: calc(100dvh - 50px);
             background: #ffffff;
             border-radius: 36px 36px 30px 30px;
             box-shadow: 0 20px 40px rgba(0, 45, 70, 0.25);
@@ -108,7 +109,10 @@
             color: #01273a;
             margin-bottom: 12px;
             word-break: break-word;
-            min-height: 3rem;
+            height: 4.2rem;
+            min-height: 4.2rem;
+            max-height: 4.2rem;
+            overflow-y: auto;
         }
         /* 新增提示语样式 */
         .question-hint {
@@ -538,9 +542,16 @@
 
     function showResultView() {
         const { sums, totalScore, positiveItems, negativeItems, positiveAvg } = computeResults();
+        const detailLines = Object.entries(factorMeta).map(([key, meta]) => {
+            const raw = sums[key];
+            const mean = (raw / meta.count).toFixed(2);
+            const level = raw >= meta.crit ? '达到临界值' : raw >= meta.crit / 2 ? '中间区间' : '较低区间';
+            return `${meta.name}：${raw}分，均分${mean}，${level}（临界值≥${meta.crit}）`;
+        });
+        detailLines.unshift(`总分${totalScore}；总指数${(totalScore/90).toFixed(2)}；阳性项目${positiveItems}；阴性项目${negativeItems}；阳性均分${positiveAvg}`);
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, details:detailLines, completedAt:new Date().toISOString() };
             records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
         } catch (error) {}
         let gridHtml = '';
