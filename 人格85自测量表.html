@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>艾森克人格问卷 EPQ (密码保护结果)</title>
+    <title>人格85自测量表</title>
     <!-- 引入 html2canvas 用于截图 -->
     <script src="html2canvas.min.js"></script>
     <style>
@@ -166,55 +166,6 @@
             background: #ecf5fc;
         }
 
-        /* 密码验证卡片 */
-        .password-card {
-            background: #fff8e7;
-            border: 2px solid #f0b87b;
-            border-radius: 40px;
-            padding: 28px 20px;
-            margin: 16px 0 24px;
-            box-shadow: 0 20px 30px #ecd9c0;
-            text-align: center;
-        }
-        .password-card h3 {
-            font-size: 1.6rem;
-            color: #a35f2a;
-            margin: 0 0 20px;
-        }
-        .password-input {
-            width: 90%;
-            max-width: 400px;
-            padding: 16px 20px;
-            font-size: 1.2rem;
-            border: 2px solid #d49c5b;
-            border-radius: 60px;
-            margin-bottom: 20px;
-            text-align: center;
-            background: white;
-        }
-        .password-btn {
-            background: #e58e3a;
-            border: none;
-            color: white;
-            font-weight: 700;
-            padding: 14px 40px;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-bottom: 4px solid #9f601f;
-            transition: 0.1s;
-        }
-        .password-btn:active {
-            transform: translateY(4px);
-            border-bottom-width: 1px;
-        }
-        .password-error {
-            color: #c0392b;
-            font-weight: 600;
-            margin-top: 16px;
-            font-size: 1rem;
-        }
-
         /* 结果面板 */
         .result-panel {
             background: linear-gradient(145deg, #f0f7fe, #ffffff);
@@ -314,6 +265,7 @@
         .hidden {
             display: none !important;
         }
+        .home-floating { position: fixed; top: 12px; left: 14px; z-index: 20; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.94); color: #1f618b; text-decoration: none; font-size: .85rem; font-weight: 700; box-shadow: 0 4px 14px rgba(0,45,70,.14); }
 
         /* 移动端优化 */
         @media (max-width: 600px) {
@@ -332,11 +284,6 @@
             .nav-panel { gap: 8px; }
             .nav-btn { padding: 8px 16px; min-width: 80px; font-size: 0.95rem; }
 
-            .password-card { padding: 22px 14px; }
-            .password-card h3 { font-size: 1.4rem; }
-            .password-input { padding: 14px 16px; font-size: 1rem; }
-            .password-btn { padding: 12px 30px; font-size: 1.1rem; }
-
             .result-panel { padding: 16px 12px; }
             .scores { gap: 12px; }
             .score-card { padding: 8px 12px; min-width: 100px; }
@@ -351,8 +298,9 @@
     </style>
 </head>
 <body>
+<a class="home-floating" href="index.html" data-html2canvas-ignore="true">← 返回主页</a>
 <div class="container" id="app">
-    <h1>艾森克人格问卷</h1>
+    <h1>人格85自测量表</h1>
     <div class="guide">
         <strong>🧭 指导语：</strong> 请根据第一反应回答，每题选择“是”或“否”后会自动进入下一题。
     </div>
@@ -371,14 +319,6 @@
                 <button class="nav-btn" id="nextBtn" disabled>下一题 ▶</button>
             </div>
         </div>
-    </div>
-
-    <!-- 密码验证卡片 (初始隐藏) -->
-    <div id="passwordContainer" class="password-card hidden">
-        <h3>🔐 请输入密码查看结果</h3>
-        <input type="password" id="passwordInput" class="password-input" placeholder="输入密码" autocomplete="off">
-        <button class="password-btn" id="submitPasswordBtn">确认</button>
-        <div id="passwordError" class="password-error"></div>
     </div>
 
     <!-- 结果面板 (初始隐藏) 包含截图区域和按钮 -->
@@ -403,15 +343,12 @@
 
     <!-- 页脚：仅保留计分说明 -->
     <div class="footnote">
-        * 记分规则依据《艾森克人格问卷[成人85题]》。开发者：DOMINO
+        * 记分规则依据《人格问卷[成人85题]》。
     </div>
 </div>
 
 <script>
 (function() {
-    // ----- 预设密码 -----
-    const RESULT_PASSWORD = "1234";
-
     // ----- 全部85题题干 -----
     const questions = [
         "你是否有广泛的爱好",
@@ -530,11 +467,7 @@
     const nextBtn = document.getElementById('nextBtn');
     const resetBtn = document.getElementById('resetBtn');
     const singleContainer = document.getElementById('singleQuestionContainer');
-    const passwordContainer = document.getElementById('passwordContainer');
     const resultPanel = document.getElementById('resultPanel');
-    const passwordInput = document.getElementById('passwordInput');
-    const submitPasswordBtn = document.getElementById('submitPasswordBtn');
-    const passwordError = document.getElementById('passwordError');
     const scoreCardsDiv = document.getElementById('scoreCards');
     const datetimeDisplay = document.getElementById('datetimeDisplay');
     const interpretDiv = document.getElementById('interpretText');
@@ -603,7 +536,7 @@
         return answers.every(ans => ans !== null);
     }
 
-    // 完成测试：隐藏题目卡片，显示密码卡片，同时隐藏指导语
+    // 完成测试：直接计算并显示结果
     function finishTest() {
         if (!allAnswered()) {
             const missing = answers.reduce((acc, ans, idx) => ans === null ? acc.concat(idx+1) : acc, []);
@@ -613,14 +546,12 @@
         }
 
         singleContainer.classList.add('hidden');
-        passwordContainer.classList.remove('hidden');
-        resultPanel.classList.add('hidden');
+        resultPanel.classList.remove('hidden');
 
         // 隐藏指导语
         if (guide) guide.style.display = 'none';
 
-        passwordInput.value = '';
-        passwordError.textContent = '';
+        renderResults(computeScores());
     }
 
     function computeScores() {
@@ -640,7 +571,7 @@
     function renderResults(scores) {
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-personality85', shortTitle:'人格85自测量表.html', resultTitle:'人格四维度原始分', score:`E:${scores.E} · N:${scores.N} · P:${scores.P} · L:${scores.L}`, scoreLabel:'结果', summary:`E外向-内向 ${scores.E}；N神经质 ${scores.N}；P精神质 ${scores.P}；L掩饰性 ${scores.L}`, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-personality85', shortTitle:'人格85自测量表', resultTitle:'人格四维度原始分', score:`E:${scores.E} · N:${scores.N} · P:${scores.P} · L:${scores.L}`, scoreLabel:'结果', summary:`E外向-内向 ${scores.E}；N神经质 ${scores.N}；P精神质 ${scores.P}；L掩饰性 ${scores.L}`, completedAt:new Date().toISOString() };
             records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
         } catch (error) {}
         // 填充得分卡片
@@ -708,32 +639,16 @@
         resultPanel.classList.remove('hidden');
     }
 
-    function handlePasswordSubmit() {
-        const entered = passwordInput.value.trim();
-        if (entered === RESULT_PASSWORD) {
-            passwordContainer.classList.add('hidden');
-            const scores = computeScores();
-            renderResults(scores);
-        } else {
-            passwordError.textContent = '❌ 密码错误，请重新输入';
-            passwordInput.value = '';
-            passwordInput.focus();
-        }
-    }
-
     function resetTest() {
         for (let i = 0; i < 85; i++) answers[i] = null;
         currentIndex = 0;
         updateQuestionDisplay();
         singleContainer.classList.remove('hidden');
-        passwordContainer.classList.add('hidden');
         resultPanel.classList.add('hidden');
 
         // 恢复指导语显示
         if (guide) guide.style.display = 'block';
 
-        passwordError.textContent = '';
-        passwordInput.value = '';
     }
 
     // 截图功能
@@ -772,15 +687,6 @@
         goToNext();
     });
     resetBtn.addEventListener('click', resetTest);
-    submitPasswordBtn.addEventListener('click', handlePasswordSubmit);
-    // 回车确认密码
-    passwordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handlePasswordSubmit();
-        }
-    });
-
     // 初始化
     resetTest();
 })();

@@ -176,69 +176,6 @@
             border-color: #a1b9cc;
         }
 
-        /* 口令视图 - 输入框改高改窄 */
-        .password-card {
-            background: #f6fbfe;
-            border: 1px solid #c2ddec;
-            border-radius: 24px;
-            padding: 14px 10px;
-            box-shadow: 0 8px 18px -8px #9ebed1;
-            text-align: center;
-            width: 100%;
-        }
-        .password-title {
-            font-size: 1.3rem;
-            font-weight: 500;
-            color: #0b3b54;
-            margin-bottom: 8px;
-        }
-        .password-input {
-            width: 80%;                /* 改窄，占父容器80% */
-            max-width: 260px;           /* 最大宽度限制，防止过宽 */
-            margin: 0 auto 8px auto;    /* 水平居中，底部间距 */
-            padding: 10px 12px;         /* 增加上下内边距，改高 */
-            font-size: 0.9rem;          /* 稍大一点 */
-            border: 2px solid #bad2e9;
-            border-radius: 60px;
-            text-align: center;
-            letter-spacing: 4px;
-            background: white;
-            outline: none;
-            box-sizing: border-box;
-            display: block;              /* 配合margin:auto居中 */
-        }
-        .password-input:focus {
-            border-color: #1c6c96;
-        }
-        .password-btn {
-            background: #1c6c96;
-            color: white;
-            border: none;
-            border-radius: 60px;
-            padding: 8px 12px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            -webkit-tap-highlight-color: transparent;
-            margin-bottom: 4px;
-        }
-        .password-btn:active { background: #0f4a70; }
-        .password-error {
-            color: #c03c2b;
-            font-size: 0.8rem;
-            margin-top: 4px;
-            min-height: 1.5em;
-        }
-        .back-link {
-            color: #30769c;
-            font-size: 0.8rem;
-            text-decoration: none;
-            cursor: pointer;
-            display: inline-block;
-            margin-top: 6px;
-        }
-
         /* 结果视图 */
         .result-header {
             display: flex; align-items: center; justify-content: center;
@@ -338,13 +275,7 @@
             font-size: 0.9rem; font-weight: 600; width: 100%; cursor: pointer; margin-top: 4px;
         }
 
-        .developer {
-            font-size: 0.5rem;
-            color: #5f8baa;
-            text-align: center;
-            padding-top: 2px;
-            border-top: 1px dashed #b8d2e8;
-        }
+        .home-floating { position: fixed; top: 12px; left: 14px; z-index: 20; padding: 8px 12px; border-radius: 999px; background: rgba(255,255,255,.92); color: #1f618b; text-decoration: none; font-size: .8rem; font-weight: 700; box-shadow: 0 4px 14px rgba(0,45,70,.14); }
         .footnote {
             font-size: 0.55rem;
             color: #437a9b;
@@ -354,6 +285,7 @@
     </style>
 </head>
 <body>
+<a class="home-floating" href="index.html" data-html2canvas-ignore="true">← 返回主页</a>
 <div class="phone">
     <!-- 答题视图 -->
     <div id="quizView" class="view active">
@@ -377,24 +309,6 @@
                 <button class="nav-btn" id="prevBtn" disabled>◀ 上一题</button>
                 <button class="nav-btn" id="nextBtn" disabled>下一题 ▶</button>
             </div>
-            <div class="developer">开发者：DOMINO · 版本 1.01</div>
-        </div>
-    </div>
-
-    <!-- 口令验证视图 (输入框已改高改窄) -->
-    <div id="passwordView" class="view">
-        <div class="centered-wrapper">
-            <div class="header">
-                <div class="title-main">验证口令</div>
-            </div>
-            <div class="password-card">
-                <div class="password-title">🔐</div>
-                <input type="password" id="passwordInput" class="password-input" placeholder="口令" maxlength="10" inputmode="numeric">
-                <button class="password-btn" id="submitPasswordBtn">确认查看</button>
-                <div id="passwordError" class="password-error"></div>
-                <a class="back-link" id="backToQuizFromPasswordBtn">← 返回答题页</a>
-            </div>
-            <div class="developer">开发者：DOMINO · 版本 1.01</div>
         </div>
     </div>
 
@@ -409,7 +323,6 @@
                 <!-- 添加评测日期时间元素 -->
                 <div id="resultDatetime" class="result-datetime"></div>
                 <div class="global-row" id="globalStatsResult"></div>
-                <div class="developer">开发者：DOMINO · 版本 1.01</div>
             </div>
             <button class="capture-btn" id="captureResultBtn">📸 保存结果为图片</button>
             <div class="footnote">点击任一因子查看详细解释</div>
@@ -431,14 +344,12 @@
                 <div class="level-desc" id="levelDescription"></div>
             </div>
             <button class="back-from-detail" id="backToResultFromDetailBtn">返回结果总览</button>
-            <div class="developer">开发者：DOMINO · 版本 1.01</div>
         </div>
     </div>
 </div>
 
 <script>
 (function() {
-    const VALID_PASSWORD = "1234";
 
     const items = [
         { num: 1, text: "头痛", factor: "som" },
@@ -550,7 +461,6 @@
     let currentIndex = 0;
 
     const quizView = document.getElementById('quizView');
-    const passwordView = document.getElementById('passwordView');
     const resultView = document.getElementById('resultView');
     const detailView = document.getElementById('detailView');
     const qNumDiv = document.getElementById('qNum');
@@ -570,11 +480,6 @@
     const detailScoreBox = document.getElementById('detailScoreBox');
     const levelDescription = document.getElementById('levelDescription');
     const captureBtn = document.getElementById('captureResultBtn');
-
-    const passwordInput = document.getElementById('passwordInput');
-    const submitPasswordBtn = document.getElementById('submitPasswordBtn');
-    const passwordError = document.getElementById('passwordError');
-    const backToQuizFromPasswordBtn = document.getElementById('backToQuizFromPasswordBtn');
 
     function countAnswered() { return scores.filter(v => v !== null).length; }
     function updateProgress() { progressFill.style.width = (countAnswered() / 90 * 100) + '%'; }
@@ -607,7 +512,7 @@
                 this.classList.add('selected');
                 updateProgress();
                 if (!isAllAnswered() && currentIndex < 89) { currentIndex++; renderCurrent(); }
-                else if (isAllAnswered()) showPasswordView();
+                else if (isAllAnswered()) showResultView();
                 updateNavButtons();
             });
         });
@@ -618,7 +523,7 @@
     function goNext() {
         if (scores[currentIndex] === null) return;
         if (currentIndex < 89) { currentIndex++; renderCurrent(); }
-        else if (currentIndex === 89) showPasswordView();
+        else if (currentIndex === 89) showResultView();
     }
 
     function computeResults() {
@@ -635,7 +540,7 @@
         const { sums, totalScore, positiveItems, negativeItems, positiveAvg } = computeResults();
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表ByDOMINO.html.html', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, completedAt:new Date().toISOString() };
             records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
         } catch (error) {}
         let gridHtml = '';
@@ -643,7 +548,8 @@
             const raw = sums[key];
             const mean = (raw / meta.count).toFixed(2);
             const percent = (raw / meta.max) * 100;
-            gridHtml += `<div class="factor-card" data-factor="${key}"><div class="factor-header"><span>${meta.name}</span> <span>${raw}</span></div><div class="factor-bar"><div class="factor-fill" style="width:${percent}%;"></div></div><div class="factor-score">均分${mean} / 临界≥${meta.crit}</div></div>`;
+            const level = raw >= meta.crit ? '达到临界值' : raw >= meta.crit / 2 ? '中间区间' : '较低区间';
+            gridHtml += `<div class="factor-card" data-factor="${key}"><div class="factor-header"><span>${meta.name}</span> <span>${raw}</span></div><div class="factor-bar"><div class="factor-fill" style="width:${percent}%;"></div></div><div class="factor-score">均分${mean} / ${level} / 临界≥${meta.crit}</div></div>`;
         }
         resultGrid.innerHTML = gridHtml;
         globalStatsResult.innerHTML = `<div>📊 总分: ${totalScore}</div><div>📌 总指数: ${(totalScore/90).toFixed(2)}</div><div>🔹 阳性项目: ${positiveItems}</div><div>🔸 阴性项目: ${negativeItems}</div><div>📈 阳性均分: ${positiveAvg}</div>`;
@@ -660,15 +566,8 @@
         document.querySelectorAll('.factor-card').forEach(card => {
             card.addEventListener('click', (e) => showDetailView(card.dataset.factor, sums));
         });
-        passwordView.classList.remove('active');
-        resultView.classList.add('active');
-    }
-
-    function showPasswordView() {
-        passwordInput.value = ''; passwordError.innerText = '';
         quizView.classList.remove('active');
-        passwordView.classList.add('active');
-        setTimeout(() => passwordInput.focus(), 100);
+        resultView.classList.add('active');
     }
 
     function showDetailView(factorKey, sums) {
@@ -710,14 +609,6 @@
     backToResultBtn.addEventListener('click', backToResult);
     backToResultFromDetailBtn.addEventListener('click', backToResult);
     captureBtn.addEventListener('click', captureResult);
-    submitPasswordBtn.addEventListener('click', () => {
-        const entered = passwordInput.value.trim();
-        if (entered === VALID_PASSWORD) { passwordError.innerText = ''; showResultView(); }
-        else { passwordError.innerText = '❌ 口令错误，请重新输入'; passwordInput.value = ''; passwordInput.focus(); }
-    });
-    passwordInput.addEventListener('keypress', function(e) { if (e.key === 'Enter') { e.preventDefault(); submitPasswordBtn.click(); } });
-    backToQuizFromPasswordBtn.addEventListener('click', () => { passwordView.classList.remove('active'); quizView.classList.add('active'); renderCurrent(); });
-
     renderCurrent();
     updateProgress();
 })();
