@@ -631,7 +631,7 @@
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
             const record = { id:'legacy-personality85', shortTitle:'人格85自测量表', resultTitle:'人格四维度原始分', score:`E:${scores.E} · N:${scores.N} · P:${scores.P} · L:${scores.L}`, scoreLabel:'结果', summary:detailTexts.join('；'), details:detailTexts, completedAt:new Date().toISOString() };
-            records = records.filter(item => item.id !== record.id); records.push(record); sessionStorage.setItem('psyhealth-session-results', JSON.stringify(records));
+            window.PsyHealthStorage.saveResult(record);
         } catch (error) {}
 
         // 添加参考界限脚注
@@ -699,5 +699,8 @@
     resetTest();
 })();
 </script>
+<script src="cloud-config.js"></script>
+<script src="storage.js"></script>
+<script src="access-control.js"></script>
 </body>
 </html>

@@ -54,7 +54,7 @@
     try { records = JSON.parse(sessionStorage.getItem("psyhealth-session-results") || "[]"); } catch (_) {}
     const record = {id:`common-${id}`, shortTitle:scale.filename, resultTitle:result.scoreLabel, score:result.score, scoreLabel:"结果", summary:result.details.join("；"), details:result.details, completedAt:new Date().toISOString()};
     records = records.filter(item => item.id !== record.id); records.push(record);
-    sessionStorage.setItem("psyhealth-session-results", JSON.stringify(records));
+    window.PsyHealthStorage.saveResult(record);
   }
 
   async function saveScreenshot() {
