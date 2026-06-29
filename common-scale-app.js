@@ -37,7 +37,7 @@
     const result = window.PSY_COMMON_SCORING.score(scale.scorer, answers);
     saveResult(result);
     app.innerHTML = `
-      <header class="legacy-quiz-head"><a href="index.html">← 返回主页</a><a href="report.html">查看粗筛报告 →</a></header>
+      <header class="legacy-quiz-head"><a href="index.html">← 返回主页</a><a href="report.html">查看咨询报告 →</a></header>
       <section class="legacy-card result-screen" id="commonResultCapture">
         <p class="legacy-kicker">测评结果</p><h1>${escapeHTML(scale.title)}</h1>
         <div class="legacy-score"><strong>${escapeHTML(result.score)}</strong><span>${escapeHTML(result.scoreLabel)}</span></div>

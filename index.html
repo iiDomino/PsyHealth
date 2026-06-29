@@ -3,28 +3,28 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>PsyHealth 测评量表</title>
+  <title>PsyHealth 心理自测</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body class="library-page">
   <main class="library-shell compact-library">
     <header class="library-hero">
       <div class="hero-tools"><span class="brand-pill">PsyHealth</span></div>
-      <h1>PsyHealth 测评量表</h1>
-      <p>请先填写初筛资料并输入推荐码，再完成已开放的测评。</p>
+      <h1>PsyHealth 心理自测</h1>
+      <p>请先填写来访资料并输入推荐码，再完成已开放的测评。</p>
     </header>
 
-    <a class="intake-card" href="intake.html">
-      <span class="intake-icon">📝</span><span><small>来访资料</small><strong>填写初筛信息</strong><span>姓名、性别、年龄、学历、职业、婚姻状况、出生城市与求助问题。</span></span><span class="card-arrow">→</span>
+    <a class="intake-card" href="intake.html" id="intakeEntryCard">
+      <span class="intake-icon">📝</span><span><strong>填写来访资料</strong></span><span class="card-arrow">→</span>
     </a>
 
     <a class="intake-card report-entry-card" href="report.html" id="currentReportCard">
-      <span class="intake-icon">📊</span><span><small>本次汇总</small><strong>查看粗筛报告</strong><span>汇总来访资料、已使用量表与相应评测结果，并可截图保存。</span></span><span class="card-arrow">→</span>
+      <span class="intake-icon">📊</span><span><small>本次汇总</small><strong>查看咨询报告</strong><span>汇总来访资料、已使用量表与相应评测结果，并可截图保存。</span></span><span class="card-arrow">→</span>
     </a>
 
     <p class="access-notice" id="accessNotice" hidden>完成初筛信息后，已获开放的测评项目会显示在这里。</p>
     <section class="direct-scale-section" id="allScalesSection" aria-labelledby="allScalesTitle">
-      <div class="section-heading"><div><p class="eyebrow">全部测评</p><h2 id="allScalesTitle">10 项测评量表</h2></div></div>
+      <div class="section-heading"><div><p class="eyebrow">全部测评</p><h2 id="allScalesTitle">10 项心理自测</h2></div></div>
       <ol class="direct-scale-list">
         <li><a data-scale="1" href="PsyHealth90自测量表ByDOMINO.html.html">PsyHealth90自测量表</a></li>
         <li><a data-scale="2" href="人格85自测量表.html">人格85自测量表</a></li>
