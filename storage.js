@@ -11,6 +11,11 @@
   function saveAdminSession(payload){const session={accessToken:payload.access_token,refreshToken:payload.refresh_token,expiresAt:Date.now()+(payload.expires_in||3600)*1000,email:payload.user?.email||""};sessionStorage.setItem(ADMIN_KEY,JSON.stringify(session));return session;}
   async function adminSession(){let session=read(ADMIN_KEY,null,sessionStorage);if(!session)return null;if(session.expiresAt>Date.now()+60000)return session;try{return saveAdminSession(await authRequest("token?grant_type=refresh_token",{refresh_token:session.refreshToken}));}catch(_){sessionStorage.removeItem(ADMIN_KEY);return null;}}
   async function adminSignIn(email,password){return saveAdminSession(await authRequest("token?grant_type=password",{email,password}));}
+  async function signUp(email,password,name){return authRequest("signup",{email,password,data:{organization_name:name}});}
+  async function verifyEmail(email,token){return saveAdminSession(await authRequest("verify",{email,token,type:"signup"}));}
+  async function resendSignup(email){return authRequest("resend",{email,type:"signup"});}
+  async function requestPasswordReset(email){return authRequest("recover",{email});}
+  async function verifyRecovery(email,token){return saveAdminSession(await authRequest("verify",{email,token,type:"recovery"}));}
   async function adminSignOut(){const session=await adminSession();try{if(session)await authRequest("logout",null,session.accessToken);}finally{sessionStorage.removeItem(ADMIN_KEY);}}
   async function adminChangePassword(password){const session=await adminSession();if(!session)throw new Error("请重新登录。");await authRequest("user",{password},session.accessToken,"PUT");}
   async function rpc(name,body={},needsAdmin=false){const session=needsAdmin?await adminSession():null;if(needsAdmin&&!session)throw new Error("请先登录管理员账户。");return request(`${config.url}/rest/v1/rpc/${name}`,{method:"POST",headers:{apikey:config.publishableKey,"Content-Type":"application/json",...(session?{Authorization:`Bearer ${session.accessToken}`}:{})},body:JSON.stringify(body)});}
@@ -27,6 +32,12 @@
   async function adminInvites(){return rpc("psyhealth_admin_invites",{},true);}
   async function saveInvite(invite){return rpc("psyhealth_admin_save_invite",{p_id:invite.id||null,p_code:invite.code,p_label:invite.label,p_allowed_scales:invite.allowedScales,p_active:invite.active},true);}
   async function deleteInvite(id){return rpc("psyhealth_admin_delete_invite",{p_id:id},true);}
+  async function myRole(){return rpc("psyhealth_my_role",{},true);}
+  async function orgCodes(){return rpc("psyhealth_org_codes",{},true);}
+  async function saveOrgCode(item){return rpc("psyhealth_org_save_code",{p_id:item.id||null,p_label:item.label,p_allowed_scales:item.allowedScales,p_active:item.active},true);}
+  async function deleteOrgCode(id){return rpc("psyhealth_org_delete_code",{p_id:id},true);}
+  async function organizations(){return rpc("psyhealth_system_organizations",{},true);}
+  async function updateOrganization(userId,status,months){return rpc("psyhealth_system_update_organization",{p_user_id:userId,p_status:status,p_add_months:months},true);}
   window.addEventListener("online",syncPending);syncPending().catch(()=>{});
-  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
+  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyEmail,resendSignup,requestPasswordReset,verifyRecovery,myRole,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
 })();

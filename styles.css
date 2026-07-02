@@ -33,6 +33,9 @@
 .library-hero .admin-entry-link { display: inline-flex; align-items: center; min-height: 40px; padding: 0 4px; }
 .admin-login-panel { width: min(100%,520px); margin: auto; }
 .admin-login-panel form,.compact-form { display: grid; gap: 16px; }
+.auth-links { display:flex; justify-content:space-between; gap:16px; margin-top:18px; }
+.auth-links a,.site-contact a { color:var(--brand-dark); font-weight:700; }
+.site-contact { max-width:920px; margin:0 auto; padding:18px; text-align:center; color:var(--muted); }
 .admin-section { margin-top: 18px; }
 .admin-identity { padding: 11px 14px; border-radius: 12px; background: #edf6fa; color: var(--brand-dark); font-weight: 700; }
 .invite-list { display: grid; gap: 16px; }
