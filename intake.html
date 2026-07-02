@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>初筛信息 · PsyHealth</title><link rel="stylesheet" href="styles.css"></head>
-<body><main class="app-shell"><header class="topbar"><a class="home-link" href="index.html">← 返回首页</a><a class="admin-entry-link" href="admin-login.html">管理员入口</a></header>
-  <section class="panel" id="intakeApp"><p class="eyebrow">来访资料</p><h1>初筛信息</h1><p class="lead">填写来访者基本资料和本次咨询问题。</p>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>来访者信息 · PsyHealth</title><link rel="stylesheet" href="styles.css"></head>
+<body><main class="app-shell"><header class="topbar"><a class="home-link" href="index.html">← 返回首页</a></header>
+  <section class="panel" id="intakeApp"><p class="eyebrow">来访资料</p><h1>来访者信息</h1><p class="lead">填写来访者基本资料和本次咨询问题。</p>
     <form id="intakeForm">
       <div class="profile-grid">
         <label class="text-field"><span>来访者姓名</span><input name="name" autocomplete="name" required></label>
@@ -21,7 +21,7 @@
         <label class="choice-row"><input type="checkbox" name="topic" value="法律相关"><span>5、法律相关</span></label>
         <label class="choice-row"><input type="checkbox" name="topic" value="其它"><span>6、其它</span></label>
       </fieldset>
-      <label class="text-field referral-field"><span>受试者邀请码</span><input name="referralCode" autocomplete="off" minlength="4" maxlength="24" placeholder="请输入邀请码" required><small>邀请码仅用于开放相应的测评项目，与管理员登录密码无关。</small></label>
-      <p id="formError" class="error-text" role="alert"></p><button class="primary-btn full-btn" type="submit">保存初筛信息</button>
+      <label class="text-field referral-field"><span>机构代码</span><input name="referralCode" autocomplete="off" minlength="4" maxlength="24" placeholder="请输入机构代码" required><small>机构代码仅用于开放相应的测评项目，与管理员登录密码无关。</small></label>
+      <p id="formError" class="error-text" role="alert"></p><button class="primary-btn full-btn" type="submit">保存来访者信息</button>
     </form>
   </section></main><script src="cloud-config.js"></script><script src="storage.js"></script><script src="intake.js"></script></body></html>
