@@ -51,6 +51,7 @@ begin
  select * into v_org from public.psyhealth_organizations where user_id=auth.uid();
  if v_org.status<>'active' or v_org.expires_at<=now() then raise exception 'organization_inactive'; end if;
  if p_id is null then
+   if (select count(*) from public.psyhealth_invites where organization_id=auth.uid())>=3 then raise exception 'organization_code_limit'; end if;
    loop v_code:=lpad((floor(random()*1000000))::int::text,6,'0'); exit when not exists(select 1 from public.psyhealth_invites where code=v_code); end loop;
    insert into public.psyhealth_invites(code,label,allowed_scales,active,organization_id) values(v_code,p_label,p_allowed_scales,p_active,auth.uid()) returning id into v_id;
  else
