@@ -89,7 +89,8 @@ create or replace function public.psyhealth_admin_delete(p_ids uuid[]) returns i
 declare n int; begin delete from public.psyhealth_participants where id=any(p_ids) and (public.psyhealth_is_system_admin() or organization_id=auth.uid()); get diagnostics n=row_count; return n; end $$;
 
 create or replace function public.psyhealth_system_organizations() returns jsonb language sql security definer set search_path=public,pg_temp as $$
- select case when public.psyhealth_is_system_admin() then coalesce(jsonb_agg(jsonb_build_object('userId',o.user_id,'email',o.email,'name',o.name,'status',o.status,'expiresAt',o.expires_at,'createdAt',o.created_at) order by o.created_at desc),'[]'::jsonb) else '[]'::jsonb end from public.psyhealth_organizations o
+ select case when public.psyhealth_is_system_admin() then coalesce(jsonb_agg(jsonb_build_object('userId',o.user_id,'email',o.email,'name',o.name,'status',o.status,'expiresAt',o.expires_at,'createdAt',o.created_at) order by o.created_at desc),'[]'::jsonb) else '[]'::jsonb end
+ from public.psyhealth_organizations o join auth.users u on u.id=o.user_id where u.email_confirmed_at is not null
 $$;
 create or replace function public.psyhealth_system_update_organization(p_user_id uuid,p_status text,p_add_months integer) returns boolean language plpgsql security definer set search_path=public,pg_temp as $$
 begin if not public.psyhealth_is_system_admin() then raise exception 'forbidden'; end if;
