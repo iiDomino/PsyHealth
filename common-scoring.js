@@ -55,7 +55,7 @@
     const satisfaction = reversed[8] * 1.1;
     const total = affect + satisfaction;
     const evaluation = total >= 13
-      ? "较高幸福感水平（原文件样本中31%的受试者得分达到13分或以上）"
+      ? "较高幸福感水平（原文件样本中31%的来访者得分达到13分或以上）"
       : total >= 9.6
         ? "处于原文件样本平均值上下1个标准差的范围内"
         : "低于原文件样本平均值1个标准差以上";
