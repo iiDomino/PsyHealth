@@ -8,6 +8,10 @@
   const role = await S.myRole();
   document.getElementById("centerTitle").textContent = role.role === "system_admin" ? "系统管理中心" : "机构管理中心";
   document.getElementById("adminIdentity").textContent = `${role.name || "系统管理员"} · ${role.email}`;
+  if (role.role === "system_admin") {
+    document.getElementById("codeSection").hidden = true;
+    document.getElementById("passwordSectionTitle").textContent = "修改系统管理员密码";
+  }
   document.getElementById("adminLogoutBtn").onclick = async () => {
     await S.adminSignOut();
     location.replace("admin-login.html");
@@ -20,10 +24,7 @@
 
   async function codes(message = "") {
     const app = document.getElementById("inviteAdminApp");
-    if (role.role === "system_admin") {
-      app.innerHTML = '<p class="muted-copy">系统管理员可在机构用户列表中管理机构；历史兼容代码继续有效。</p>';
-      return;
-    }
+    if (role.role === "system_admin") return;
 
     let list;
     try {
@@ -88,14 +89,19 @@
     document.getElementById("organizationsSection").hidden = false;
     const app = document.getElementById("organizationsApp");
     const items = await S.organizations();
-    app.innerHTML = items.map(item => `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.email)} · ${esc(item.status)} · 到期：${item.expiresAt ? new Date(item.expiresAt).toLocaleDateString() : "未赋时"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">加1月</button><button data-u="${item.userId}" data-m="3">加3月</button><button data-u="${item.userId}" data-m="6">加半年</button><button data-u="${item.userId}" data-m="12">加1年</button><button data-u="${item.userId}" data-stop="1">暂停</button></div></article>`).join("");
+    app.innerHTML = items.map(item => {
+      const expires = item.expiresAt ? new Date(item.expiresAt) : null;
+      const expired = expires && expires <= new Date();
+      const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
+      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.email)}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">停止使用</button></div></article>`;
+    }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
       await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", Number(button.dataset.m || 0));
       await organizations();
     });
   }
 
-  await codes();
+  if (role.role !== "system_admin") await codes();
   await organizations();
   document.getElementById("changePasswordForm").onsubmit = async event => {
     event.preventDefault();
