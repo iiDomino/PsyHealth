@@ -30,7 +30,7 @@
 .text-field input,.text-field select { width: 100%; min-height: 48px; border: 1px solid #c7dce3; border-radius: 13px; padding: 10px 13px; background: #fff; color: #173f55; font: inherit; box-sizing: border-box; }
 .text-field small { color: var(--muted); font-weight: 500; }
 .admin-entry-link,.text-button { color: var(--brand-dark); background: none; border: 0; text-decoration: none; font-weight: 750; cursor: pointer; }
-.library-hero .admin-entry-link { display: inline-flex; align-items: center; min-height: 40px; padding: 0 4px; }
+.library-hero .admin-entry-link { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 16px; border-radius: 12px; color: #fff; background: linear-gradient(135deg,var(--brand),var(--brand-dark)); box-shadow: 0 7px 18px rgba(45,111,148,.22); }
 .admin-login-panel { width: min(100%,520px); margin: auto; }
 .admin-login-panel form,.compact-form { display: grid; gap: 16px; }
 .auth-links { display:flex; justify-content:space-between; gap:16px; margin-top:18px; }
@@ -98,6 +98,7 @@
 .legacy-result-lines { padding: 18px 22px; border-radius: 18px; background: #f5fafb; color: #355b6a; }
 .legacy-result-lines p { margin: 8px 0; }
 .result-time,.report-count { color: #708891; font-size: .9rem; }
+.result-summary { grid-column: 1 / -1; margin: 4px 0 0; color: var(--ink); line-height: 1.7; }
 
 @media (max-width: 620px) {
   .profile-grid { grid-template-columns: 1fr; }
