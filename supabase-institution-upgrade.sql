@@ -24,9 +24,9 @@ revoke all on public.psyhealth_participants from anon, authenticated;
 
 create or replace function public.psyhealth_on_auth_user() returns trigger language plpgsql security definer set search_path=public,auth,pg_temp as $$
 begin
-  if not exists(select 1 from public.psyhealth_admins where user_id=new.id) then
-    insert into public.psyhealth_organizations(user_id,email,name)
-    values(new.id,new.email,coalesce(new.raw_user_meta_data->>'organization_name','未命名机构')) on conflict do nothing;
+  if new.email_confirmed_at is not null and not exists(select 1 from public.psyhealth_admins where user_id=new.id) then
+    insert into public.psyhealth_organizations(user_id,email,name,status,expires_at)
+    values(new.id,new.email,coalesce(new.raw_user_meta_data->>'organization_name','未命名机构'),'active',now()+interval '3 days') on conflict do nothing;
   end if;
   return new;
 end $$;

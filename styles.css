@@ -46,7 +46,7 @@
 .scale-check-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; }
 .scale-check-grid label,.active-toggle { display: flex; align-items: center; gap: 6px; color: var(--muted); font-weight: 650; }
 .scale-check-grid input,.active-toggle input { width: 18px; height: 18px; accent-color: var(--brand); }
-.inline-actions { display: flex; gap: 10px; margin-top: 14px; }
+.inline-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .danger-ghost-btn { border: 1px solid #c56c73; border-radius: 12px; padding: 9px 14px; background: transparent; color: #983c45; font-weight: 700; cursor: pointer; }
 .new-invite { margin-top: 18px; }
 .new-invite summary { color: var(--brand-dark); font-weight: 800; cursor: pointer; }
