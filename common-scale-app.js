@@ -7,7 +7,7 @@
 
   let index = 0;
   let answers = Array(scale.questions.length).fill(null);
-  document.title = `${scale.filename} · PsyHealth`;
+  document.title = `${scale.filename} · 心理测试工具`;
 
   function renderQuestion() {
     const answered = answers.filter(value => value !== null).length;

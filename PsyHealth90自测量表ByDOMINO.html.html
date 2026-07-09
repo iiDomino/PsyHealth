@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>PsyHealth自测量表</title>
+    <title>心理健康自测量表</title>
     <!-- 引入 html2canvas 用于截图 -->
     <script src="html2canvas.min.js"></script>
     <style>
@@ -295,7 +295,7 @@
     <div id="quizView" class="view active">
         <div class="centered-wrapper">
             <div class="header">
-                <div class="title-main">PsyHealth自测量表</div>
+                <div class="title-main">心理健康自测量表</div>
             </div>
             <div class="progress-section">
                 <div class="progress-track">
@@ -551,7 +551,7 @@
         detailLines.unshift(`总分${totalScore}；总指数${(totalScore/90).toFixed(2)}；阳性项目${positiveItems}；阴性项目${negativeItems}；阳性均分${positiveAvg}`);
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-psy90', shortTitle:'PsyHealth90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, details:detailLines, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-psy90', shortTitle:'心理健康90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, details:detailLines, completedAt:new Date().toISOString() };
             window.PsyHealthStorage.saveResult(record);
         } catch (error) {}
         let gridHtml = '';
@@ -609,7 +609,7 @@
         if (!element) return;
         html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
             const link = document.createElement('a');
-            link.download = 'PsyHealth自测量表结果.png';
+            link.download = '心理健康自测量表结果.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         }).catch(error => alert('截图生成失败，请重试。' + error));
