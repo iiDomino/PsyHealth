@@ -7,7 +7,7 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const role = await S.myRole();
   document.getElementById("centerTitle").textContent = role.role === "system_admin" ? "系统管理中心" : "机构管理中心";
-  document.getElementById("adminIdentity").textContent = `${role.name || "系统管理员"} · ${role.email}`;
+  document.getElementById("adminIdentity").textContent = `${role.name || "系统管理员"} · ${role.phone || role.email || ""}`;
   if (role.role === "system_admin") {
     document.getElementById("codeSection").hidden = true;
     document.getElementById("passwordSectionTitle").textContent = "修改系统管理员密码";
@@ -93,7 +93,7 @@
       const expires = item.expiresAt ? new Date(item.expiresAt) : null;
       const expired = expires && expires <= new Date();
       const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
-      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.email)}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">停止使用</button></div></article>`;
+      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">停止使用</button></div></article>`;
     }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
       await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", Number(button.dataset.m || 0));

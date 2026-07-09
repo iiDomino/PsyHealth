@@ -8,14 +8,15 @@
   function friendlyError(response,payload){if(response.status===401||response.status===403)return new Error("登录已失效或没有管理权限。");if(payload?.message?.includes("invalid_invite"))return new Error("机构代码无效或已停用，请核对后重试。");if(payload?.message?.includes("organization_code_limit"))return new Error("每个机构最多只能设置 3 组机构代码。");if(payload?.message?.includes("organization_inactive"))return new Error("机构账号已暂停、到期或尚未开通。");if(payload?.code==="23505")return new Error("该机构代码已存在。");return new Error(payload?.msg||payload?.message||"云端连接失败，请稍后重试。");}
   async function request(url,options={}){if(!config?.url||!config?.publishableKey)throw new Error("云数据库尚未配置。");const response=await fetch(url,options);const text=await response.text();let payload=null;try{payload=text?JSON.parse(text):null;}catch(_){payload=text;}if(!response.ok)throw friendlyError(response,payload);return payload;}
   async function authRequest(path,body,token,method="POST"){return request(`${config.url}/auth/v1/${path}`,{method,headers:{apikey:config.publishableKey,"Content-Type":"application/json",...(token?{Authorization:`Bearer ${token}`}:{})},body:body?JSON.stringify(body):undefined});}
-  function saveAdminSession(payload){const session={accessToken:payload.access_token,refreshToken:payload.refresh_token,expiresAt:Date.now()+(payload.expires_in||3600)*1000,email:payload.user?.email||""};sessionStorage.setItem(ADMIN_KEY,JSON.stringify(session));return session;}
+  function normalizePhone(value){let phone=String(value||"").trim().replace(/[\s-]/g,"");if(!phone)return phone;if(phone.startsWith("+"))return phone;if(/^86\d{11}$/.test(phone))return `+${phone}`;if(/^1\d{10}$/.test(phone))return `+86${phone}`;return phone;}
+  function saveAdminSession(payload){const session={accessToken:payload.access_token,refreshToken:payload.refresh_token,expiresAt:Date.now()+(payload.expires_in||3600)*1000,email:payload.user?.email||"",phone:payload.user?.phone||""};sessionStorage.setItem(ADMIN_KEY,JSON.stringify(session));return session;}
   async function adminSession(){let session=read(ADMIN_KEY,null,sessionStorage);if(!session)return null;if(session.expiresAt>Date.now()+60000)return session;try{return saveAdminSession(await authRequest("token?grant_type=refresh_token",{refresh_token:session.refreshToken}));}catch(_){sessionStorage.removeItem(ADMIN_KEY);return null;}}
-  async function adminSignIn(email,password){return saveAdminSession(await authRequest("token?grant_type=password",{email,password}));}
-  async function signUp(email,password,name){return authRequest("signup",{email,password,data:{organization_name:name}});}
-  async function verifyEmail(email,token){return saveAdminSession(await authRequest("verify",{email,token,type:"signup"}));}
-  async function resendSignup(email){return authRequest("resend",{email,type:"signup"});}
-  async function requestPasswordReset(email){return authRequest("recover",{email});}
-  async function verifyRecovery(email,token){return saveAdminSession(await authRequest("verify",{email,token,type:"recovery"}));}
+  async function adminSignIn(identifier,password){const account=String(identifier).trim();const body=account.includes("@")?{email:account,password}:{phone:normalizePhone(account),password};return saveAdminSession(await authRequest("token?grant_type=password",body));}
+  async function signUp(phone,password,name){return authRequest("signup",{phone:normalizePhone(phone),password,data:{organization_name:name}});}
+  async function verifyPhone(phone,token){return saveAdminSession(await authRequest("verify",{phone:normalizePhone(phone),token,type:"sms"}));}
+  async function resendSignup(phone){return authRequest("otp",{phone:normalizePhone(phone),should_create_user:false});}
+  async function requestPasswordReset(phone){return authRequest("otp",{phone:normalizePhone(phone),should_create_user:false});}
+  async function verifyRecovery(phone,token){return saveAdminSession(await authRequest("verify",{phone:normalizePhone(phone),token,type:"sms"}));}
   async function adminSignOut(){const session=await adminSession();try{if(session)await authRequest("logout",null,session.accessToken);}finally{sessionStorage.removeItem(ADMIN_KEY);}}
   async function adminChangePassword(password){const session=await adminSession();if(!session)throw new Error("请重新登录。");await authRequest("user",{password},session.accessToken,"PUT");}
   async function rpc(name,body={},needsAdmin=false){const session=needsAdmin?await adminSession():null;if(needsAdmin&&!session)throw new Error("请先登录管理员账户。");return request(`${config.url}/rest/v1/rpc/${name}`,{method:"POST",headers:{apikey:config.publishableKey,"Content-Type":"application/json",...(session?{Authorization:`Bearer ${session.accessToken}`}:{})},body:JSON.stringify(body)});}
@@ -39,5 +40,5 @@
   async function organizations(){return rpc("psyhealth_system_organizations",{},true);}
   async function updateOrganization(userId,status,months){return rpc("psyhealth_system_update_organization",{p_user_id:userId,p_status:status,p_add_months:months},true);}
   window.addEventListener("online",syncPending);syncPending().catch(()=>{});
-  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyEmail,resendSignup,requestPasswordReset,verifyRecovery,myRole,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
+  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyPhone,resendSignup,requestPasswordReset,verifyRecovery,myRole,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
 })();

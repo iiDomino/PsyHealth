@@ -3,13 +3,16 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.psyhealth_organizations (
   user_id uuid primary key references auth.users(id) on delete cascade,
-  email text not null,
+  email text,
+  phone text,
   name text not null default '未命名机构',
   status text not null default 'pending' check (status in ('pending','active','suspended')),
   expires_at timestamptz,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+alter table public.psyhealth_organizations add column if not exists phone text;
+alter table public.psyhealth_organizations alter column email drop not null;
 alter table public.psyhealth_invites add column if not exists organization_id uuid references public.psyhealth_organizations(user_id) on delete cascade;
 alter table public.psyhealth_participants add column if not exists organization_id uuid references public.psyhealth_organizations(user_id) on delete set null;
 alter table public.psyhealth_participants add column if not exists invite_id uuid references public.psyhealth_invites(id) on delete set null;
@@ -24,21 +27,22 @@ revoke all on public.psyhealth_participants from anon, authenticated;
 
 create or replace function public.psyhealth_on_auth_user() returns trigger language plpgsql security definer set search_path=public,auth,pg_temp as $$
 begin
-  if new.email_confirmed_at is not null and not exists(select 1 from public.psyhealth_admins where user_id=new.id) then
-    insert into public.psyhealth_organizations(user_id,email,name,status,expires_at)
-    values(new.id,new.email,coalesce(new.raw_user_meta_data->>'organization_name','未命名机构'),'active',now()+interval '3 days') on conflict do nothing;
+  if (new.phone_confirmed_at is not null or new.email_confirmed_at is not null) and not exists(select 1 from public.psyhealth_admins where user_id=new.id) then
+    insert into public.psyhealth_organizations(user_id,email,phone,name,status,expires_at)
+    values(new.id,new.email,new.phone,coalesce(new.raw_user_meta_data->>'organization_name','未命名机构'),'active',now()+interval '3 days')
+    on conflict(user_id) do update set email=excluded.email,phone=excluded.phone,updated_at=now();
   end if;
   return new;
 end $$;
 drop trigger if exists psyhealth_auth_user_created on auth.users;
-create trigger psyhealth_auth_user_created after insert or update of email_confirmed_at on auth.users for each row execute function public.psyhealth_on_auth_user();
+create trigger psyhealth_auth_user_created after insert or update of email_confirmed_at,phone_confirmed_at on auth.users for each row execute function public.psyhealth_on_auth_user();
 
 create or replace function public.psyhealth_is_system_admin() returns boolean language sql stable security definer set search_path=public,pg_temp as $$
  select exists(select 1 from public.psyhealth_admins where user_id=auth.uid())
 $$;
 create or replace function public.psyhealth_my_role() returns jsonb language sql stable security definer set search_path=public,pg_temp as $$
- select case when public.psyhealth_is_system_admin() then jsonb_build_object('role','system_admin','email',auth.jwt()->>'email')
- else coalesce((select jsonb_build_object('role','organization','email',email,'name',name,'status',status,'expiresAt',expires_at,'usable',status='active' and expires_at>now()) from public.psyhealth_organizations where user_id=auth.uid()),jsonb_build_object('role','none')) end
+ select case when public.psyhealth_is_system_admin() then jsonb_build_object('role','system_admin','email',auth.jwt()->>'email','phone',auth.jwt()->>'phone')
+ else coalesce((select jsonb_build_object('role','organization','email',email,'phone',phone,'name',name,'status',status,'expiresAt',expires_at,'usable',status='active' and expires_at>now()) from public.psyhealth_organizations where user_id=auth.uid()),jsonb_build_object('role','none')) end
 $$;
 
 create or replace function public.psyhealth_org_codes() returns jsonb language sql security definer set search_path=public,pg_temp as $$
@@ -89,8 +93,8 @@ create or replace function public.psyhealth_admin_delete(p_ids uuid[]) returns i
 declare n int; begin delete from public.psyhealth_participants where id=any(p_ids) and (public.psyhealth_is_system_admin() or organization_id=auth.uid()); get diagnostics n=row_count; return n; end $$;
 
 create or replace function public.psyhealth_system_organizations() returns jsonb language sql security definer set search_path=public,pg_temp as $$
- select case when public.psyhealth_is_system_admin() then coalesce(jsonb_agg(jsonb_build_object('userId',o.user_id,'email',o.email,'name',o.name,'status',o.status,'expiresAt',o.expires_at,'createdAt',o.created_at) order by o.created_at desc),'[]'::jsonb) else '[]'::jsonb end
- from public.psyhealth_organizations o join auth.users u on u.id=o.user_id where u.email_confirmed_at is not null
+ select case when public.psyhealth_is_system_admin() then coalesce(jsonb_agg(jsonb_build_object('userId',o.user_id,'email',o.email,'phone',o.phone,'name',o.name,'status',o.status,'expiresAt',o.expires_at,'createdAt',o.created_at) order by o.created_at desc),'[]'::jsonb) else '[]'::jsonb end
+ from public.psyhealth_organizations o join auth.users u on u.id=o.user_id where u.email_confirmed_at is not null or u.phone_confirmed_at is not null
 $$;
 create or replace function public.psyhealth_system_update_organization(p_user_id uuid,p_status text,p_add_months integer) returns boolean language plpgsql security definer set search_path=public,pg_temp as $$
 begin if not public.psyhealth_is_system_admin() then raise exception 'forbidden'; end if;

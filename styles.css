@@ -36,6 +36,8 @@
 .auth-links { display:flex; justify-content:space-between; gap:16px; margin-top:18px; }
 .auth-links a,.site-contact a { color:var(--brand-dark); font-weight:700; }
 .site-contact { max-width:920px; margin:0 auto; padding:18px; text-align:center; color:var(--muted); }
+.phone-code-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:10px; }
+.send-code-inline { min-height:48px; white-space:nowrap; }
 .admin-section { margin-top: 18px; }
 .admin-identity { padding: 11px 14px; border-radius: 12px; background: #edf6fa; color: var(--brand-dark); font-weight: 700; }
 .invite-list { display: grid; gap: 16px; }
