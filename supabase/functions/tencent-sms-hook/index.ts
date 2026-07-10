@@ -28,7 +28,7 @@ async function sendTencentSms(phone: string, otp: string) {
     SmsSdkAppId: appId,
     SignName: signName,
     TemplateId: templateId,
-    TemplateParamSet: [otp]
+    TemplateParamSet: [otp, "5"]
   });
   const canonicalHeaders = `content-type:application/json; charset=utf-8\nhost:${host}\nx-tc-action:${action.toLowerCase()}\n`;
   const signedHeaders = "content-type;host;x-tc-action";
