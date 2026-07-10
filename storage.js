@@ -14,10 +14,10 @@
   async function adminSession(){let session=read(ADMIN_KEY,null,sessionStorage);if(!session)return null;if(session.expiresAt>Date.now()+60000)return session;try{return saveAdminSession(await authRequest("token?grant_type=refresh_token",{refresh_token:session.refreshToken}));}catch(_){sessionStorage.removeItem(ADMIN_KEY);return null;}}
   async function adminSignIn(identifier,password){const account=String(identifier).trim();let body;if(account.includes("@"))body={email:account,password};else if(/^(\+?86)?1\d{10}$/.test(account.replace(/[\s-]/g,"")))body={phone:validPhone(account),password};else{const found=await rpc("psyhealth_login_phone_by_name",{p_name:account});body={phone:found.phone,password};}return saveAdminSession(await authRequest("token?grant_type=password",body));}
   async function checkOrgName(name){return rpc("psyhealth_check_org_name",{p_name:name});}
-  async function signUp(phone,password,name){await checkOrgName(name);return authRequest("otp",{phone:validPhone(phone),data:{organization_name:name},should_create_user:true});}
+  async function signUp(phone,password,name){await checkOrgName(name);return authRequest("otp",{phone:validPhone(phone),data:{organization_name:name},create_user:true});}
   async function verifyPhone(phone,token){return saveAdminSession(await authRequest("verify",{phone:validPhone(phone),token,type:"sms"}));}
-  async function resendSignup(phone){return authRequest("otp",{phone:validPhone(phone),should_create_user:false});}
-  async function requestPasswordReset(phone){return authRequest("otp",{phone:validPhone(phone),should_create_user:false});}
+  async function resendSignup(phone){return authRequest("otp",{phone:validPhone(phone),create_user:false});}
+  async function requestPasswordReset(phone){return authRequest("otp",{phone:validPhone(phone),create_user:false});}
   async function verifyRecovery(phone,token){return saveAdminSession(await authRequest("verify",{phone:validPhone(phone),token,type:"sms"}));}
   async function adminSignOut(){const session=await adminSession();try{if(session)await authRequest("logout",null,session.accessToken);}finally{sessionStorage.removeItem(ADMIN_KEY);}}
   async function adminChangePassword(password){const session=await adminSession();if(!session)throw new Error("请重新登录。");await authRequest("user",{password},session.accessToken,"PUT");}
