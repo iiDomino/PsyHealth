@@ -57,7 +57,17 @@ async function sendTencentSms(phone: string, otp: string) {
   const result = await response.json();
   const status = result?.Response?.SendStatusSet?.[0];
   if (!response.ok || result?.Response?.Error || status?.Code !== "Ok") {
-    throw new Error(result?.Response?.Error?.Message || status?.Message || "腾讯云短信发送失败");
+    const code = result?.Response?.Error?.Code || status?.Code || "UNKNOWN";
+    const message = result?.Response?.Error?.Message || status?.Message || "腾讯云短信发送失败";
+    console.error(JSON.stringify({
+      provider: "tencent-sms",
+      code,
+      message,
+      signName,
+      templateId,
+      paramCount: 2
+    }));
+    throw new Error(`${code}: ${message}`);
   }
 }
 
