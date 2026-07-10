@@ -12,7 +12,7 @@ async function sendTencentSms(phone: string, otp: string) {
   const secretId = Deno.env.get("TENCENT_SECRET_ID")!;
   const secretKey = Deno.env.get("TENCENT_SECRET_KEY")!;
   const appId = Deno.env.get("TENCENT_SMS_SDK_APP_ID")!;
-  const signName = Deno.env.get("TENCENT_SMS_SIGN_NAME")!;
+  const signName = "南京市建邺区银焰谷电子";
   const templateId = Deno.env.get("TENCENT_SMS_TEMPLATE_ID")!;
   if (![secretId, secretKey, appId, signName, templateId].every(Boolean)) throw new Error("腾讯云短信配置不完整");
 
