@@ -82,7 +82,7 @@ Deno.serve(async request => {
     const otp = payload?.sms?.otp;
     if (!/^\+861\d{10}$/.test(phone || "") || !/^\d{6}$/.test(otp || "")) throw new Error("手机号或验证码格式无效");
     await sendTencentSms(phone, otp);
-    return new Response(null, { status: 200 });
+    return Response.json({ ok: true }, { status: 200 });
   } catch (error) {
     console.error(error);
     return Response.json({ error: { http_code: 500, message: "短信发送失败，请稍后重试。" } }, { status: 500 });
