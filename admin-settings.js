@@ -91,9 +91,10 @@
     const items = await S.organizations();
     app.innerHTML = items.map(item => {
       const expires = item.expiresAt ? new Date(item.expiresAt) : null;
+      const expiryValue = expires ? expires.toISOString().slice(0, 10) : "";
       const expired = expires && expires <= new Date();
       const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
-      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">立即停用</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
+      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><label class="text-field"><span>手动修改到期日</span><input type="date" data-expiry-for="${item.userId}" value="${expiryValue}" required></label><div class="inline-actions"><button data-u="${item.userId}" data-save-expiry="1">保存到期日</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">立即停用</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
     }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
       if (button.dataset.deleteOrg) {
@@ -106,8 +107,15 @@
           alert(error.message || "管理员密码验证失败，未删除。");
           return;
         }
+      } else if (button.dataset.saveExpiry) {
+        const input = app.querySelector(`[data-expiry-for="${button.dataset.u}"]`);
+        if (!input.value) {
+          alert("请先选择到期日。");
+          return;
+        }
+        await S.setOrganizationExpiry(button.dataset.u, input.value);
       } else {
-        await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", Number(button.dataset.m || 0));
+        await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", 0);
       }
       await organizations();
     });

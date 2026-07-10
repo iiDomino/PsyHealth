@@ -42,7 +42,8 @@
   async function deleteOrgCode(id){return rpc("psyhealth_org_delete_code",{p_id:id},true);}
   async function organizations(){return rpc("psyhealth_system_organizations",{},true);}
   async function updateOrganization(userId,status,months){return rpc("psyhealth_system_update_organization",{p_user_id:userId,p_status:status,p_add_months:months},true);}
+  async function setOrganizationExpiry(userId,expiresOn){return rpc("psyhealth_system_set_organization_expiry",{p_user_id:userId,p_expires_on:expiresOn},true);}
   async function deleteOrganization(userId){return rpc("psyhealth_system_delete_organization",{p_user_id:userId},true);}
   window.addEventListener("online",syncPending);syncPending().catch(()=>{});
-  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyPhone,resendSignup,requestPasswordReset,verifyRecovery,myRole,ensureOrganization,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,deleteOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
+  window.PsyHealthStorage={validateInvite,begin,saveResult,history,getRecord,deleteRecords,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyPhone,resendSignup,requestPasswordReset,verifyRecovery,myRole,ensureOrganization,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,setOrganizationExpiry,deleteOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
 })();
