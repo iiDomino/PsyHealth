@@ -48,7 +48,7 @@
       setMessage("验证码已发送，请查看手机短信。");
       startCooldown();
     } catch (error) {
-      if (error.message.includes("短信发送状态暂未确认")) {
+      if (error.message.includes("验证码暂时发送失败")) {
         setMessage(error.message);
         startCooldown();
         return;

@@ -8,6 +8,25 @@ const hmac = async (key: ArrayBuffer | Uint8Array, value: string) => {
   return crypto.subtle.sign("HMAC", cryptoKey, encoder.encode(value));
 };
 
+async function recordDiagnostic(entry: Record<string, string>) {
+  const url = Deno.env.get("SUPABASE_URL");
+  const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !serviceKey) return;
+  try {
+    await fetch(`${url}/rest/v1/psyhealth_sms_diagnostics`, {
+      method: "POST",
+      headers: {
+        apikey: serviceKey,
+        Authorization: `Bearer ${serviceKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(entry)
+    });
+  } catch (_) {
+    // 诊断记录失败不应影响短信主流程。
+  }
+}
+
 async function sendTencentSms(phone: string, otp: string) {
   const secretId = Deno.env.get("TENCENT_SECRET_ID")!;
   const secretKey = Deno.env.get("TENCENT_SECRET_KEY")!;
@@ -72,16 +91,23 @@ async function sendTencentSms(phone: string, otp: string) {
 }
 
 Deno.serve(async request => {
+  let stage = "start";
+  let phoneSuffix = "";
   try {
+    stage = "read_webhook";
     const raw = await request.text();
     const secret = Deno.env.get("SEND_SMS_HOOK_SECRET")!;
     if (!secret) throw new Error("短信钩子密钥缺失");
+    stage = "verify_webhook";
     const payload = await new Webhook(secret.replace("v1,whsec_", "")).verify(raw, Object.fromEntries(request.headers));
     const rawPhone = payload?.user?.phone;
     const phone = typeof rawPhone === "string" && !rawPhone.startsWith("+") ? `+${rawPhone}` : rawPhone;
+    phoneSuffix = typeof phone === "string" ? phone.slice(-4) : "";
     const otp = payload?.sms?.otp;
     if (!/^\+861\d{10}$/.test(phone || "") || !/^\d{6}$/.test(otp || "")) throw new Error("手机号或验证码格式无效");
+    stage = "send_tencent";
     await sendTencentSms(phone, otp);
+    await recordDiagnostic({ stage, status: "sent", phone_suffix: phoneSuffix });
     console.log(JSON.stringify({
       provider: "tencent-sms",
       status: "sent",
@@ -89,6 +115,12 @@ Deno.serve(async request => {
     }));
     return new Response(null, { status: 200 });
   } catch (error) {
+    await recordDiagnostic({
+      stage,
+      status: "failed",
+      phone_suffix: phoneSuffix,
+      message: error instanceof Error ? error.message : String(error)
+    });
     console.error(error);
     return Response.json({ error: { http_code: 500, message: "短信发送失败，请稍后重试。" } }, { status: 500 });
   }
