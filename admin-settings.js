@@ -93,10 +93,22 @@
       const expires = item.expiresAt ? new Date(item.expiresAt) : null;
       const expired = expires && expires <= new Date();
       const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
-      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">停止使用</button></div></article>`;
+      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><div class="inline-actions"><button data-u="${item.userId}" data-m="1">授权1个月</button><button data-u="${item.userId}" data-m="3">授权3个月</button><button data-u="${item.userId}" data-m="6">授权半年</button><button data-u="${item.userId}" data-m="12">授权1年</button><button class="danger-ghost-btn" data-u="${item.userId}" data-stop="1">立即停用</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
     }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
-      await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", Number(button.dataset.m || 0));
+      if (button.dataset.deleteOrg) {
+        const password = prompt("删除机构账户会移除该机构登录账号和机构代码。请输入系统管理员密码确认：");
+        if (!password) return;
+        try {
+          await S.adminSignIn(session.email || session.phone, password);
+          await S.deleteOrganization(button.dataset.u);
+        } catch (error) {
+          alert(error.message || "管理员密码验证失败，未删除。");
+          return;
+        }
+      } else {
+        await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", Number(button.dataset.m || 0));
+      }
       await organizations();
     });
   }
