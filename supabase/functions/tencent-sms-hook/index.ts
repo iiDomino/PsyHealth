@@ -113,7 +113,7 @@ Deno.serve(async request => {
       status: "sent",
       phoneSuffix: phone.slice(-4)
     }));
-    return new Response(null, { status: 200 });
+    return Response.json({});
   } catch (error) {
     await recordDiagnostic({
       stage,
@@ -122,6 +122,12 @@ Deno.serve(async request => {
       message: error instanceof Error ? error.message : String(error)
     });
     console.error(error);
-    return Response.json({ error: { http_code: 500, message: "短信发送失败，请稍后重试。" } }, { status: 500 });
+    return Response.json({
+      error: {
+        http_code: 500,
+        message: error instanceof Error ? error.message : String(error),
+        stage
+      }
+    }, { status: 500 });
   }
 });

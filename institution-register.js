@@ -86,7 +86,13 @@
     try {
       await PsyHealthStorage.verifyPhone(value("phone"), token);
       setMessage("正在设置登录密码…");
-      await PsyHealthStorage.adminChangePassword(value("password"));
+      try {
+        await PsyHealthStorage.adminChangePassword(value("password"));
+      } catch (error) {
+        if (error.message !== "新密码与当前密码相同。") {
+          throw error;
+        }
+      }
       setMessage("正在开通机构账号…");
       await PsyHealthStorage.ensureOrganization(value("name"));
       setMessage("注册成功，已自动获得 3 天免费使用时长。");
