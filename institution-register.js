@@ -85,8 +85,8 @@
     submitButton.textContent = "正在注册…";
     try {
       await PsyHealthStorage.verifyPhone(value("phone"), token);
-      setMessage("正在确认登录状态…");
-      await PsyHealthStorage.adminSignIn(value("phone"), value("password"));
+      setMessage("正在设置登录密码…");
+      await PsyHealthStorage.adminChangePassword(value("password"));
       setMessage("正在开通机构账号…");
       await PsyHealthStorage.ensureOrganization(value("name"));
       setMessage("注册成功，已自动获得 3 天免费使用时长。");
