@@ -7,7 +7,12 @@
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   const role = await S.myRole();
   document.getElementById("centerTitle").textContent = role.role === "system_admin" ? "系统管理中心" : "机构管理中心";
-  document.getElementById("adminIdentity").textContent = `${role.name || "系统管理员"} · ${role.phone || role.email || ""}`;
+  const identityLines = [`${esc(role.name || "系统管理员")} · ${esc(role.phone || role.email || "")}`];
+  if (role.role === "organization") {
+    const expires = role.expiresAt ? new Date(role.expiresAt) : null;
+    identityLines.push(`账户使用到期日：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}`);
+  }
+  document.getElementById("adminIdentity").innerHTML = identityLines.map(line => `<span>${line}</span>`).join("");
   if (role.role === "system_admin") {
     document.getElementById("codeSection").hidden = true;
     document.getElementById("passwordSectionTitle").textContent = "修改系统管理员密码";

@@ -45,6 +45,7 @@
 .auth-links a,.site-contact a { color:var(--brand-dark); font-weight:700; }
 .site-contact { max-width:920px; margin:0 auto; padding:18px; text-align:center; color:var(--muted); line-height:1.8; }
 .site-legal { display:inline-flex; gap:12px; margin-left:12px; }
+.site-contact > .site-legal:first-child { margin-left:0; }
 .site-legal a,.consent-notice a { color:var(--brand-dark); font-weight:800; text-decoration:none; }
 .legal-shell { max-width:860px; }
 .legal-panel h2 { margin-top:24px; font-size:1.18rem; }
@@ -54,6 +55,8 @@
 .send-code-inline { min-height:48px; white-space:nowrap; }
 .admin-section { margin-top: 18px; }
 .admin-identity { padding: 11px 14px; border-radius: 12px; background: #edf6fa; color: var(--brand-dark); font-weight: 700; }
+.admin-identity span { display:block; }
+.admin-identity span + span { margin-top:4px; color:#4f7182; font-weight:800; }
 .invite-list { display: grid; gap: 16px; }
 .invite-form { padding: 18px; border: 1px solid var(--line); border-radius: 16px; background: #f8fbfc; }
 .invite-fields { display: grid; grid-template-columns: 1fr 2fr; gap: 12px; }
