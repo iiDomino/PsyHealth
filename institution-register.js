@@ -54,7 +54,7 @@
     setMessage("正在发送验证码，请稍候…");
     try {
       await PsyHealthStorage.signUp(value("phone"), value("password"), value("name"));
-      setMessage("验证码已发送，请查看手机短信。");
+      setMessage("验证码已发送，请查看手机短信；收到后在下方输入即可完成注册。");
       startCooldown();
     } catch (error) {
       if (error.message.includes("验证码暂时发送失败")) {
@@ -85,7 +85,7 @@
     submitButton.textContent = "正在注册…";
     try {
       await PsyHealthStorage.verifyPhone(value("phone"), token);
-      setMessage("正在设置登录密码…");
+      setMessage("验证码已通过，正在设置登录密码…");
       try {
         await PsyHealthStorage.adminChangePassword(value("password"));
       } catch (error) {
@@ -95,12 +95,12 @@
       }
       setMessage("正在开通机构账号…");
       await PsyHealthStorage.ensureOrganization(value("name"));
-      setMessage("注册成功，已自动获得 3 天免费使用时长。");
+      setMessage("注册成功，已自动获得 3 天试用时长，即将进入机构管理中心。");
       setTimeout(() => location.href = "history.html", 1000);
     } catch (error) {
       setMessage(error.message);
       submitButton.disabled = false;
-      submitButton.textContent = "验证并注册";
+      submitButton.textContent = "验证并完成注册";
     }
   };
 })();

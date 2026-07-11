@@ -20,20 +20,20 @@
     (map[key] ||= []).push(result);
     return map;
   }, {});
-  const facts = `<dl class="report-facts"><div><dt>姓名</dt><dd>${esc(profile.name || intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${esc(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${esc(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${esc(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${esc(intake.education)}</dd></div><div><dt>职业</dt><dd>${esc(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${esc(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${esc(intake.birthCity)}</dd></div><div class="wide"><dt>咨询问题</dt><dd>${esc((intake.topics || []).join("、"))}</dd></div><div class="wide"><dt>所属机构</dt><dd>${esc(profile.organizationName || "系统直属")} · ${esc(profile.institutionCode || "-")}</dd></div></dl>`;
+  const facts = `<dl class="report-facts"><div><dt>姓名</dt><dd>${esc(profile.name || intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${esc(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${esc(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${esc(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${esc(intake.education)}</dd></div><div><dt>职业</dt><dd>${esc(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${esc(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${esc(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${esc((intake.topics || []).join("、"))}</dd></div><div class="wide"><dt>所属机构</dt><dd>${esc(profile.organizationName || "系统直属")} · ${esc(profile.institutionCode || "-")}</dd></div></dl>`;
   const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list.sort((a,b) => new Date(a.completedAt || a.sessionAt) - new Date(b.completedAt || b.sessionAt)))).join("") || '<p class="muted-copy">尚未完成测评。</p>';
   const messages = sessions.filter(s => s.message).map(s => `<article class="note-card"><time>${esc(fmt(s.updatedAt || s.createdAt))}</time><p>${esc(s.message)}</p></article>`).join("") || '<p class="muted-copy">暂无来访者留言。</p>';
   const logs = (profile.workLogs || []).map(log => renderLog(log)).join("") || '<p class="muted-copy" id="emptyLogs">暂无工作日志。</p>';
-  app.innerHTML = `<section class="panel report-panel"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评题目分类与趋势分析</h2><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message"></p><button class="secondary-btn" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
+  app.innerHTML = `<section class="panel report-panel"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message"></p><button class="secondary-btn" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
   document.getElementById("saveWorkLogBtn").addEventListener("click", async () => {
     const input = document.getElementById("workLogInput");
     const msg = document.getElementById("workLogMessage");
-    msg.textContent = "正在保存…";
+    msg.textContent = "正在保存工作日志…";
     try {
       await S.saveWorkLog(profile.id, null, input.value);
       location.reload();
     } catch (error) {
-      msg.textContent = error.message || "保存失败。";
+      msg.textContent = error.message || "工作日志暂未保存成功，请稍后重试。";
     }
   });
   document.querySelectorAll("[data-edit-log]").forEach(button => button.addEventListener("click", async () => {
@@ -45,9 +45,15 @@
     catch (error) { alert(error.message || "修改失败。"); }
   }));
   document.querySelectorAll("[data-delete-log]").forEach(button => button.addEventListener("click", async () => {
-    if (!confirm("确认删除这条工作日志吗？")) return;
-    try { await S.deleteWorkLog(button.dataset.deleteLog); location.reload(); }
-    catch (error) { alert(error.message || "删除失败。"); }
+    if (!confirm("确认删除这条工作日志吗？删除后无法恢复。")) return;
+    const password = prompt("请输入当前管理账号密码确认删除：");
+    if (!password) return;
+    try {
+      await S.adminSignIn(session.email || session.phone, password);
+      await S.deleteWorkLog(button.dataset.deleteLog);
+      location.reload();
+    }
+    catch (error) { alert(error.message || "密码验证失败，未删除。"); }
   }));
 
   function renderScaleGroup(key, list) {
@@ -59,7 +65,7 @@
     return `<article class="report-result compact-result"><div><span class="report-scale">第 ${index + 1} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.slice(0, 6).map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
   }
   function trendText(list) {
-    if (list.length < 2) return "仅有 1 次结果，暂不形成趋势判断。";
+    if (list.length < 2) return "目前仅有 1 次结果，暂不形成趋势判断。";
     const nums = list.map(item => Number(String(item.score).match(/-?\d+(\.\d+)?/)?.[0])).filter(Number.isFinite);
     if (nums.length < 2) return `共 ${list.length} 次结果，分数格式不统一，建议结合详细内容人工比较。`;
     const first = nums[0], last = nums[nums.length - 1], diff = last - first;

@@ -45,7 +45,7 @@
     setMessage("正在发送验证码，请稍候…");
     try {
       await PsyHealthStorage.requestPasswordReset(value("phone"));
-      setMessage("验证码已发送，请查看手机短信。");
+      setMessage("验证码已发送，请查看手机短信；收到后在下方输入并设置新密码。");
       startCooldown();
     } catch (error) {
       if (error.message.includes("验证码暂时发送失败")) {
@@ -81,7 +81,7 @@
     } catch (error) {
       setMessage(error.message);
       submitButton.disabled = false;
-      submitButton.textContent = "验证并修改密码";
+      submitButton.textContent = "验证并更新密码";
     }
   };
 })();

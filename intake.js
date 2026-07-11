@@ -42,7 +42,7 @@
     }
     form.querySelectorAll('input[name="topic"]').forEach(box => { box.checked = (profile.topics || []).includes(box.value); });
     if (profile.organizationName) showOrganization(profile.organizationName);
-    formError.textContent = source === "云端" ? "已从云端读取上次资料，可按需手动修改。" : "已自动填入本机保存的信息，可按需手动修改。";
+    formError.textContent = source === "云端" ? "已从云端读取上次填写的资料，可核对后继续，也可以手动修改。" : "已自动填入本机保存的信息，可核对后继续，也可以手动修改。";
   }
 
   function rememberProfile(intake, code) {
@@ -88,7 +88,7 @@
     formError.innerHTML = `${escapeHTML(message)} 推荐使用：<button class="text-button" type="button" id="useSuggestedName">${escapeHTML(suggestedName)}</button>`;
     document.getElementById("useSuggestedName").onclick = () => {
       nameInput.value = suggestedName;
-      formError.textContent = "已使用推荐姓名，请继续填写资料。";
+      formError.textContent = "已填入推荐姓名，请继续核对资料。";
       nameInput.focus();
     };
   }
@@ -110,7 +110,7 @@
       if (result?.organizationName) showOrganization(result.organizationName);
       if (result?.found && result.intake) {
         applyProfile({...result.intake, referralCode: result.accessGroup, organizationName: result.organizationName}, "云端");
-        if (result.suggestedName && result.suggestedName !== name) showSuggested("已找到同名同手机号后四位档案。如这不是本人，", result.suggestedName);
+        if (result.suggestedName && result.suggestedName !== name) showSuggested("已找到同名且手机号后四位相同的档案。如这不是本人，", result.suggestedName);
       } else if (result?.ambiguous) {
         formError.textContent = result.message || "找到多个匹配档案，请填写机构代码后再继续。";
       } else if (result?.duplicateName) {
@@ -131,7 +131,7 @@
     event.preventDefault();
     const data = new FormData(form);
     const topics = data.getAll("topic");
-    if (!topics.length) { formError.textContent = "请至少选择一个咨询问题分类。"; return; }
+    if (!topics.length) { formError.textContent = "请至少选择一个主要咨询议题。"; return; }
     const phoneLast4 = normalizePhoneLast4(data.get("phoneLast4"));
     if (phoneLast4.length !== 4) { formError.textContent = "请填写手机号后四位。"; return; }
     const code = String(data.get("referralCode") || "").trim();
@@ -152,17 +152,17 @@
         topics
       }, code);
     } catch (error) {
-      formError.textContent = error.message;
+      formError.textContent = error.message || "资料暂未保存成功，请稍后重试。";
       submitButton.disabled = false;
       submitButton.textContent = "保存来访者信息";
       return;
     }
     rememberProfile(intake, code);
-    const existingNotice = intake.isExisting ? '<div class="notice consent-notice"><strong>已进入原有档案。</strong>系统已按姓名和手机号后四位读取你的个人档案，可继续测评。</div>' : "";
+    const existingNotice = intake.isExisting ? '<div class="notice consent-notice"><strong>已进入原有档案。</strong>系统已按姓名和手机号后四位读取你的个人档案，可继续完成测评。</div>' : "";
     const org = intake.organizationName || "系统直属";
-    app.innerHTML = `<div class="institution-badge">所属机构：${escapeHTML(org)}</div><p class="eyebrow">${intake.isExisting ? "档案已读取" : "已建立档案"}</p><h1>${escapeHTML(intake.name)}的来访者档案</h1>${existingNotice}<dl class="report-facts"><div><dt>所属机构</dt><dd>${escapeHTML(org)}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4)}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear)} 年</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>咨询问题</dt><dd>${escapeHTML(intake.topics.join("、"))}</dd></div></dl><div class="actions"><a class="primary-btn button-link" href="index.html#allScalesTitle">开始选择测评</a><a class="secondary-btn button-link" href="report.html">查看我的测评结果</a></div>`;
+    app.innerHTML = `<div class="institution-badge">所属机构：${escapeHTML(org)}</div><p class="eyebrow">${intake.isExisting ? "档案已读取" : "已建立档案"}</p><h1>${escapeHTML(intake.name)}的来访者档案</h1>${existingNotice}<dl class="report-facts"><div><dt>所属机构</dt><dd>${escapeHTML(org)}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4)}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear)} 年</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${escapeHTML(intake.topics.join("、"))}</dd></div></dl><div class="actions"><a class="primary-btn button-link" href="index.html#allScalesTitle">开始选择测评</a><a class="secondary-btn button-link" href="report.html">查看我的测评结果</a></div>`;
   });
 
-  if (new URLSearchParams(location.search).has("required")) formError.textContent = "请先完整填写来访者信息并输入有效机构代码。";
+  if (new URLSearchParams(location.search).has("required")) formError.textContent = "请先填写来访者信息，并输入有效的机构代码。";
   function escapeHTML(value) { return String(value ?? "").replace(/[&<>"']/gu, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]); }
 })();
