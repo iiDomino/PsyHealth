@@ -102,7 +102,7 @@
       const expiryValue = expires ? expires.toISOString().slice(0, 10) : "";
       const expired = expires && expires <= new Date();
       const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
-      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><label class="text-field"><span>手动修改到期日</span><input type="date" data-expiry-for="${item.userId}" value="${expiryValue}" required></label><div class="inline-actions"><button data-u="${item.userId}" data-save-expiry="1">保存到期日</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
+      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><label class="text-field"><span>手动修改到期日</span><input type="date" data-expiry-for="${item.userId}" value="${expiryValue}" required></label><label class="text-field"><span>系统管理员备注</span><textarea class="note-textarea" data-note-for="${item.userId}" rows="3" placeholder="可记录服务情况、商务备注或内部提醒">${esc(item.adminNote || "")}</textarea></label><div class="inline-actions"><button data-u="${item.userId}" data-save-expiry="1">保存到期日</button><button data-u="${item.userId}" data-save-note="1">保存备注</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
     }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
       if (button.dataset.deleteOrg) {
@@ -122,6 +122,9 @@
           return;
         }
         await S.setOrganizationExpiry(button.dataset.u, input.value);
+      } else if (button.dataset.saveNote) {
+        const input = app.querySelector(`[data-note-for="${button.dataset.u}"]`);
+        await S.setOrganizationNote(button.dataset.u, input.value);
       } else {
         await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", 0);
       }
