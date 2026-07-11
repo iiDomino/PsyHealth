@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="zh-CN">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>来访者信息 · 心理测试工具</title><link rel="stylesheet" href="styles.css?v=20260711f"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>来访者信息 · 心理测试工具</title><link rel="stylesheet" href="styles.css?v=20260711g"></head>
 <body><main class="app-shell"><header class="topbar"><a class="home-link" href="index.html">← 返回首页</a></header>
-  <section class="panel" id="intakeApp"><p class="eyebrow">来访资料</p><h1>来访者信息</h1><p class="lead">填写来访者基本资料和本次咨询问题。</p><div class="notice consent-notice"><strong>姓名说明：</strong>姓名将作为下次进入个人档案的凭证，提交后基本信息无法自行更改。若提示或发现同名档案但并非本人，请更换一个便于机构识别的姓名。</div>
+  <section class="panel" id="intakeApp"><p class="eyebrow">来访资料</p><h1>来访者信息</h1><p class="lead">第一次填写后会建立云端档案；下次只需填写姓名和手机号后四位，即可自动带出上次资料。</p><div class="notice consent-notice"><strong>姓名说明：</strong>姓名将作为下次进入个人档案的凭证，提交后基本信息无法自行更改。若提示或发现同名档案但并非本人，请使用系统推荐的后缀姓名。</div>
     <form id="intakeForm">
       <div class="profile-grid">
-        <label class="text-field"><span>来访者姓名</span><input name="name" autocomplete="name" required></label>
+        <label class="text-field"><span>来访者姓名</span><input name="name" autocomplete="name" required><small>下次可用姓名和手机号后四位快速找回资料。</small></label>
+        <label class="text-field"><span>手机号后四位</span><input name="phoneLast4" inputmode="numeric" autocomplete="off" pattern="\d{4}" maxlength="4" placeholder="例如 9573" required></label>
         <label class="text-field"><span>性别</span><select name="gender" required><option value="">请选择</option><option>男</option><option>女</option><option>其他</option><option>不愿说明</option></select></label>
-        <label class="text-field"><span>年龄</span><input name="age" type="number" min="1" max="120" inputmode="numeric" required></label>
+        <label class="text-field"><span>出生年</span><select name="birthYear" required><option value="">请选择出生年</option></select></label>
         <label class="text-field"><span>最高学历</span><select name="education" required><option value="">请选择</option><option>小学及以下</option><option>初中</option><option>高中／中专</option><option>大专</option><option>本科</option><option>硕士</option><option>博士及以上</option></select></label>
         <label class="text-field"><span>职业</span><input name="occupation" required></label>
         <label class="text-field"><span>婚姻状况</span><select name="marital" required><option value="">请选择</option><option>未婚</option><option>已婚</option><option>分居</option><option>离异</option><option>丧偶</option><option>其他</option></select></label>
@@ -25,4 +26,4 @@
       <div class="notice consent-notice"><strong>提交前请确认：</strong>来访资料、机构代码和测评结果会保存至云端，并可由对应机构账号查看和管理。继续提交表示你已阅读并同意<a href="privacy-policy.html">《隐私政策》</a>和<a href="terms.html">《用户协议》</a>。</div>
       <p id="formError" class="error-text" role="alert"></p><button class="primary-btn full-btn" type="submit">保存来访者信息</button>
     </form>
-  </section></main><footer class="site-contact">如有任何疑问请与您的机构管理方联系。<span class="site-legal"><a href="privacy-policy.html">隐私政策</a><a href="terms.html">用户协议</a></span></footer><script src="cloud-config.js?v=20260711f"></script><script src="storage.js?v=20260711f"></script><script src="intake.js?v=20260711f"></script></body></html>
+  </section></main><footer class="site-contact">如有任何疑问请与您的机构管理方联系。<span class="site-legal"><a href="privacy-policy.html">隐私政策</a><a href="terms.html">用户协议</a></span></footer><script src="cloud-config.js?v=20260711g"></script><script src="storage.js?v=20260711g"></script><script src="intake.js?v=20260711g"></script></body></html>

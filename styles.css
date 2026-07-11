@@ -71,6 +71,8 @@
 .new-invite summary { color: var(--brand-dark); font-weight: 800; cursor: pointer; }
 .new-invite .invite-form { margin-top: 12px; }
 .form-message { min-height: 1.4em; margin: 8px 0 0; color: var(--brand-dark); font-weight: 700; }
+.institution-badge { display:inline-flex; align-items:center; width:max-content; max-width:100%; margin:0 0 14px; padding:8px 12px; border-radius:999px; background:#e7f4f8; color:var(--brand-dark); font-weight:800; line-height:1.4; }
+.participant-institution-banner { position:sticky; top:0; z-index:20; margin:0 auto 12px; width:min(100%,760px); padding:10px 14px; border:1px solid rgba(57,126,163,.2); border-radius:0 0 16px 16px; background:rgba(255,255,255,.94); color:var(--brand-dark); font-weight:800; text-align:center; box-shadow:0 8px 22px rgba(42,78,101,.08); }
 .note-textarea { width:100%; border:2px solid #c6e0ea; border-radius:16px; padding:13px 14px; font:inherit; color:var(--ink); background:#fff; resize:vertical; box-sizing:border-box; }
 .note-card { border:1px solid #d9e9ef; border-radius:16px; padding:14px; background:#f9fdff; display:grid; gap:8px; }
 .note-card time { color:var(--muted); font-size:.9rem; }

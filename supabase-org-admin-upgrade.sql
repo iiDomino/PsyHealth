@@ -149,6 +149,47 @@ begin
   );
 end $$;
 
+create or replace function public.psyhealth_org_rename(p_name text)
+returns jsonb
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+  clean_name text := trim(coalesce(p_name,''));
+  org public.psyhealth_organizations;
+begin
+  if not public.psyhealth_current_org_usable() then
+    raise exception 'organization_inactive';
+  end if;
+  if clean_name = '' then
+    raise exception 'organization_name_required';
+  end if;
+  if exists(
+    select 1
+    from public.psyhealth_organizations
+    where lower(trim(name)) = lower(clean_name)
+      and user_id <> auth.uid()
+  ) then
+    raise exception 'organization_name_exists';
+  end if;
+
+  update public.psyhealth_organizations
+     set name=clean_name,
+         updated_at=now()
+   where user_id=auth.uid()
+   returning * into org;
+
+  return jsonb_build_object(
+    'role','organization',
+    'name',org.name,
+    'phone',org.phone,
+    'status',org.status,
+    'expiresAt',org.expires_at,
+    'usable',org.status='active' and org.expires_at>now()
+  );
+end $$;
+
 create or replace function public.psyhealth_admin_list()
 returns jsonb
 language sql
@@ -212,4 +253,4 @@ end $$;
 
 grant execute on function public.psyhealth_check_org_name(text), public.psyhealth_login_phone_by_name(text) to anon, authenticated;
 grant execute on function public.psyhealth_current_org_usable() to authenticated;
-grant execute on function public.psyhealth_ensure_organization(text), public.psyhealth_org_codes(), public.psyhealth_org_delete_code(uuid), public.psyhealth_admin_list(), public.psyhealth_admin_get(uuid), public.psyhealth_admin_delete(uuid[]), public.psyhealth_system_delete_organization(uuid) to authenticated;
+grant execute on function public.psyhealth_ensure_organization(text), public.psyhealth_org_codes(), public.psyhealth_org_delete_code(uuid), public.psyhealth_org_rename(text), public.psyhealth_admin_list(), public.psyhealth_admin_get(uuid), public.psyhealth_admin_delete(uuid[]), public.psyhealth_system_delete_organization(uuid) to authenticated;

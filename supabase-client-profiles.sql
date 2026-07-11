@@ -58,6 +58,165 @@ as $$
   select lower(regexp_replace(trim(coalesce(p_name,'')), '\s+', ' ', 'g'))
 $$;
 
+create or replace function public.psyhealth_client_suggest_name(p_organization_id uuid, p_name text)
+returns text
+language plpgsql
+stable
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+  base_name text := trim(coalesce(p_name,''));
+  candidate text;
+  suffix int := 2;
+begin
+  if base_name = '' then
+    return '';
+  end if;
+  candidate := base_name || '-' || suffix;
+  while exists (
+    select 1
+    from public.psyhealth_clients
+    where organization_id is not distinct from p_organization_id
+      and name_key = public.psyhealth_name_key(candidate)
+  ) loop
+    suffix := suffix + 1;
+    candidate := base_name || '-' || suffix;
+  end loop;
+  return candidate;
+end $$;
+
+create or replace function public.psyhealth_client_lookup(p_name text, p_phone_last4 text, p_code text default null)
+returns jsonb
+language plpgsql
+security definer
+set search_path=public,pg_temp
+as $$
+declare
+  clean_name text := trim(coalesce(p_name,''));
+  clean_phone_last4 text := regexp_replace(coalesce(p_phone_last4,''), '\D', '', 'g');
+  clean_code text := trim(coalesce(p_code,''));
+  key text;
+  matches_count int := 0;
+  client public.psyhealth_clients;
+  inv public.psyhealth_invites;
+  org_name text;
+  suggested text;
+begin
+  if clean_name = '' then
+    raise exception 'client_name_required';
+  end if;
+  if clean_phone_last4 !~ '^\d{4}$' then
+    raise exception 'phone_last4_required';
+  end if;
+  key := public.psyhealth_name_key(clean_name);
+
+  if clean_code <> '' then
+    select i.* into inv
+    from public.psyhealth_invites i
+    left join public.psyhealth_organizations o on o.user_id=i.organization_id
+    where i.code=clean_code
+      and i.active
+      and (i.organization_id is null or (o.status='active' and o.expires_at>now()))
+    limit 1;
+    if inv.id is null then
+      raise exception 'invalid_invite';
+    end if;
+
+    select c.* into client
+    from public.psyhealth_clients c
+    where c.organization_id is not distinct from inv.organization_id
+      and c.name_key=key
+      and coalesce(c.intake->>'phoneLast4','')=clean_phone_last4
+    limit 1;
+
+    select o.name into org_name from public.psyhealth_organizations o where o.user_id=inv.organization_id;
+    suggested := public.psyhealth_client_suggest_name(inv.organization_id, clean_name);
+
+    if client.id is not null then
+      return jsonb_build_object(
+        'found',true,
+        'ambiguous',false,
+        'clientId',client.id,
+        'intake',client.intake,
+        'accessGroup',client.access_group,
+        'allowedScales',client.allowed_scales,
+        'organizationName',coalesce(org_name,'系统直属'),
+        'suggestedName',suggested
+      );
+    end if;
+
+    if exists (
+      select 1
+      from public.psyhealth_clients c
+      where c.organization_id is not distinct from inv.organization_id
+        and c.name_key=key
+    ) then
+      return jsonb_build_object(
+        'found',false,
+        'ambiguous',false,
+        'duplicateName',true,
+        'message','该姓名已存在，但手机号后四位不一致。如不是本人，请使用推荐姓名。',
+        'suggestedName',suggested,
+        'accessGroup',inv.code,
+        'allowedScales',inv.allowed_scales,
+        'organizationName',coalesce(org_name,'系统直属')
+      );
+    end if;
+
+    return jsonb_build_object(
+      'found',false,
+      'ambiguous',false,
+      'duplicateName',false,
+      'suggestedName',clean_name,
+      'accessGroup',inv.code,
+      'allowedScales',inv.allowed_scales,
+      'organizationName',coalesce(org_name,'系统直属')
+    );
+  end if;
+
+  select count(*) into matches_count
+  from public.psyhealth_clients c
+  left join public.psyhealth_organizations o on o.user_id=c.organization_id
+  where c.name_key=key
+    and coalesce(c.intake->>'phoneLast4','')=clean_phone_last4
+    and (c.organization_id is null or (o.status='active' and o.expires_at>now()));
+
+  if matches_count = 1 then
+    select c.* into client
+    from public.psyhealth_clients c
+    left join public.psyhealth_organizations o on o.user_id=c.organization_id
+    where c.name_key=key
+      and coalesce(c.intake->>'phoneLast4','')=clean_phone_last4
+      and (c.organization_id is null or (o.status='active' and o.expires_at>now()))
+    limit 1;
+    select o.name into org_name from public.psyhealth_organizations o where o.user_id=client.organization_id;
+    return jsonb_build_object(
+      'found',true,
+      'ambiguous',false,
+      'clientId',client.id,
+      'intake',client.intake,
+      'accessGroup',client.access_group,
+      'allowedScales',client.allowed_scales,
+      'organizationName',coalesce(org_name,'系统直属'),
+      'suggestedName',public.psyhealth_client_suggest_name(client.organization_id, clean_name)
+    );
+  elsif matches_count > 1 then
+    return jsonb_build_object(
+      'found',false,
+      'ambiguous',true,
+      'message','找到多个匹配档案，请补充机构代码后再继续。'
+    );
+  end if;
+
+  return jsonb_build_object(
+    'found',false,
+    'ambiguous',false,
+    'duplicateName',false,
+    'suggestedName',clean_name
+  );
+end $$;
+
 -- 将旧的单次记录合并进新档案层；同机构同姓名会自动归入同一档案。
 insert into public.psyhealth_clients(organization_id, invite_id, access_group, name, name_key, intake, allowed_scales, created_at, updated_at)
 select distinct on (p.organization_id, public.psyhealth_name_key(p.intake->>'name'))
@@ -95,14 +254,19 @@ declare
   inv public.psyhealth_invites;
   org public.psyhealth_organizations;
   clean_name text := trim(coalesce(p_intake->>'name',''));
+  phone_last4 text := regexp_replace(coalesce(p_intake->>'phoneLast4',''), '\D', '', 'g');
   key text;
   client public.psyhealth_clients;
   session_id uuid;
   token uuid := gen_random_uuid();
   existed boolean := false;
+  suggested text;
 begin
   if clean_name = '' then
     raise exception 'client_name_required';
+  end if;
+  if phone_last4 !~ '^\d{4}$' then
+    raise exception 'phone_last4_required';
   end if;
   key := public.psyhealth_name_key(clean_name);
 
@@ -116,6 +280,7 @@ begin
   if inv.id is null then
     raise exception 'invalid_invite';
   end if;
+  select * into org from public.psyhealth_organizations where user_id=inv.organization_id;
 
   select * into client
   from public.psyhealth_clients
@@ -126,6 +291,9 @@ begin
     insert into public.psyhealth_clients(organization_id, invite_id, access_group, name, name_key, intake, allowed_scales)
     values(inv.organization_id, inv.id, inv.code, clean_name, key, p_intake, inv.allowed_scales)
     returning * into client;
+  elsif coalesce(client.intake->>'phoneLast4','') <> '' and coalesce(client.intake->>'phoneLast4','') <> phone_last4 then
+    suggested := public.psyhealth_client_suggest_name(inv.organization_id, clean_name);
+    raise exception 'client_name_exists:%', suggested;
   else
     existed := true;
     update public.psyhealth_clients
@@ -147,6 +315,7 @@ begin
     'editToken', token,
     'intake', client.intake,
     'allowedScales', client.allowed_scales,
+    'organizationName', coalesce(org.name,'系统直属'),
     'createdAt', now(),
     'isExisting', existed
   );
@@ -363,5 +532,5 @@ begin
   return found;
 end $$;
 
-grant execute on function public.psyhealth_client_begin(jsonb,text), public.psyhealth_client_save_message(uuid,uuid,text) to anon, authenticated;
+grant execute on function public.psyhealth_client_suggest_name(uuid,text), public.psyhealth_client_lookup(text,text,text), public.psyhealth_client_begin(jsonb,text), public.psyhealth_client_save_message(uuid,uuid,text) to anon, authenticated;
 grant execute on function public.psyhealth_client_profiles(), public.psyhealth_client_profile(uuid), public.psyhealth_client_save_work_log(uuid,uuid,text), public.psyhealth_client_delete_work_log(uuid), public.psyhealth_system_set_org_note(uuid,text) to authenticated;

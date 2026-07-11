@@ -18,7 +18,7 @@
   }
   const renderClient = client => {
     const i = client.intake || {};
-    return `<article class="history-card client-card"><a href="client-detail.html?id=${encodeURIComponent(client.id)}"><strong>${esc(client.name || i.name || "未命名")}</strong><span>${esc(i.gender || "-")} · ${esc(i.age || "-")} 岁 · ${esc(i.education || "-")} · ${esc(i.occupation || "-")}</span><span>机构：${esc(client.organizationName || "系统直属")} · 代码：${esc(client.institutionCode || "-")}</span><span>测评批次：${client.sessionCount || 0} 次 · 留言：${client.messageCount || 0} 条 · 工作日志：${client.workLogCount || 0} 条</span><time>最近更新：${esc(fmt(client.latestAt || client.updatedAt))}</time></a></article>`;
+    return `<article class="history-card client-card"><a href="client-detail.html?id=${encodeURIComponent(client.id)}"><strong>${esc(client.name || i.name || "未命名")}</strong><span>${esc(i.gender || "-")} · 出生年：${esc(i.birthYear || "-")} · ${esc(i.education || "-")} · ${esc(i.occupation || "-")}</span><span>机构：${esc(client.organizationName || "系统直属")} · 代码：${esc(client.institutionCode || "-")}</span><span>测评批次：${client.sessionCount || 0} 次 · 留言：${client.messageCount || 0} 条 · 工作日志：${client.workLogCount || 0} 条</span><time>最近更新：${esc(fmt(client.latestAt || client.updatedAt))}</time></a></article>`;
   };
   if (role.role === "system_admin") {
     const groups = clients.reduce((map, client) => {

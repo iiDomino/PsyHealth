@@ -5,7 +5,7 @@
   if (!session) return;
 
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
-  const role = await S.myRole();
+  let role = await S.myRole();
   document.getElementById("centerTitle").textContent = role.role === "system_admin" ? "系统管理中心" : "机构管理中心";
   const identityLines = [`${esc(role.name || "系统管理员")} · ${esc(role.phone || role.email || "")}`];
   if (role.role === "organization") {
@@ -16,6 +16,38 @@
   if (role.role === "system_admin") {
     document.getElementById("codeSection").hidden = true;
     document.getElementById("passwordSectionTitle").textContent = "修改系统管理员密码";
+  } else {
+    const profileSection = document.getElementById("orgProfileSection");
+    const renameForm = document.getElementById("renameOrganizationForm");
+    const renameMessage = document.getElementById("renameOrganizationMessage");
+    profileSection.hidden = false;
+    renameForm.elements.name.value = role.name || "";
+    renameForm.onsubmit = async event => {
+      event.preventDefault();
+      const newName = String(new FormData(renameForm).get("name") || "").trim();
+      if (!newName) {
+        renameMessage.textContent = "请填写机构名称。";
+        return;
+      }
+      const password = prompt("请输入当前机构登录密码确认修改机构名称：");
+      if (!password) return;
+      const button = renameForm.querySelector("button");
+      button.disabled = true;
+      button.textContent = "正在保存…";
+      renameMessage.textContent = "";
+      try {
+        await S.adminSignIn(session.phone || session.email, password);
+        const updated = await S.renameOrganization(newName);
+        role = {...role, ...updated};
+        document.getElementById("adminIdentity").innerHTML = [`${esc(role.name || "机构") } · ${esc(role.phone || role.email || "")}`, identityLines[1]].filter(Boolean).map(line => `<span>${line}</span>`).join("");
+        renameMessage.textContent = "机构名称已更新。";
+      } catch (error) {
+        renameMessage.textContent = error.message || "密码验证失败，未修改。";
+      } finally {
+        button.disabled = false;
+        button.textContent = "保存机构名称";
+      }
+    };
   }
   document.getElementById("adminLogoutBtn").onclick = async () => {
     await S.adminSignOut();

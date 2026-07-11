@@ -9,6 +9,13 @@
     return null;
   }
   const intake = window.PsyHealthStorage?.readSessionIntake();
+  if (intake?.organizationName && !document.getElementById("participantInstitutionBanner")) {
+    const banner = document.createElement("div");
+    banner.id = "participantInstitutionBanner";
+    banner.className = "participant-institution-banner";
+    banner.textContent = `所属机构：${intake.organizationName}`;
+    document.body.insertBefore(banner, document.body.firstChild);
+  }
   const scale = currentScale();
   const allowedScales = Array.isArray(intake?.allowedScales) ? intake.allowedScales.map(Number) : [];
   if (scale && (!intake || !allowedScales.includes(scale))) location.replace("intake.html?required=1");
