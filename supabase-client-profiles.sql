@@ -446,6 +446,44 @@ as $$
     and (public.psyhealth_is_system_admin() or (c.organization_id=auth.uid() and public.psyhealth_current_org_usable()))
 $$;
 
+create or replace function public.psyhealth_client_self_profile(p_id uuid, p_edit_token uuid)
+returns jsonb
+language sql
+security definer
+set search_path=public,pg_temp
+as $$
+  with current_session as (
+    select *
+    from public.psyhealth_client_sessions
+    where id=p_id and edit_token=p_edit_token
+    limit 1
+  )
+  select jsonb_build_object(
+    'id', c.id,
+    'name', c.name,
+    'intake', c.intake,
+    'organizationName', o.name,
+    'institutionCode', c.access_group,
+    'createdAt', c.created_at,
+    'updatedAt', c.updated_at,
+    'sessions', coalesce((
+      select jsonb_agg(jsonb_build_object(
+        'id', s.id,
+        'isCurrent', s.id = p_id,
+        'results', s.results,
+        'message', s.client_message,
+        'createdAt', s.created_at,
+        'updatedAt', s.updated_at
+      ) order by s.created_at desc)
+      from public.psyhealth_client_sessions s
+      where s.client_id=c.id
+    ),'[]'::jsonb)
+  )
+  from current_session cs
+  join public.psyhealth_clients c on c.id=cs.client_id
+  left join public.psyhealth_organizations o on o.user_id=c.organization_id
+$$;
+
 create or replace function public.psyhealth_client_save_work_log(p_client_id uuid, p_log_id uuid, p_content text)
 returns jsonb
 language plpgsql
@@ -532,5 +570,5 @@ begin
   return found;
 end $$;
 
-grant execute on function public.psyhealth_client_suggest_name(uuid,text), public.psyhealth_client_lookup(text,text,text), public.psyhealth_client_begin(jsonb,text), public.psyhealth_client_save_message(uuid,uuid,text) to anon, authenticated;
+grant execute on function public.psyhealth_client_suggest_name(uuid,text), public.psyhealth_client_lookup(text,text,text), public.psyhealth_client_begin(jsonb,text), public.psyhealth_client_self_profile(uuid,uuid), public.psyhealth_client_save_message(uuid,uuid,text) to anon, authenticated;
 grant execute on function public.psyhealth_client_profiles(), public.psyhealth_client_profile(uuid), public.psyhealth_client_save_work_log(uuid,uuid,text), public.psyhealth_client_delete_work_log(uuid), public.psyhealth_system_set_org_note(uuid,text) to authenticated;

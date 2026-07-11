@@ -34,6 +34,7 @@
   async function getRecord(id){return rpc("psyhealth_admin_get",{p_id:id},true);}
   async function deleteRecords(ids){await rpc("psyhealth_admin_delete",{p_ids:ids},true);const selected=new Set(ids);writeHistory(localHistory().filter(item=>!selected.has(item.id)));}
   async function saveClientMessage(id,token,message){return rpc("psyhealth_client_save_message",{p_id:id,p_edit_token:token,p_message:message});}
+  async function clientSelfProfile(id,token){return rpc("psyhealth_client_self_profile",{p_id:id,p_edit_token:token});}
   async function clientProfiles(){return rpc("psyhealth_client_profiles",{},true);}
   async function clientProfile(id){return rpc("psyhealth_client_profile",{p_client_id:id},true);}
   async function saveWorkLog(clientId,logId,content){return rpc("psyhealth_client_save_work_log",{p_client_id:clientId,p_log_id:logId||null,p_content:content},true);}
@@ -53,5 +54,5 @@
   async function renameOrganization(name){return rpc("psyhealth_org_rename",{p_name:name},true);}
   async function deleteOrganization(userId){return rpc("psyhealth_system_delete_organization",{p_user_id:userId},true);}
   window.addEventListener("online",syncPending);syncPending().catch(()=>{});
-  window.PsyHealthStorage={validateInvite,lookupClientProfile,begin,saveResult,saveClientMessage,history,getRecord,deleteRecords,clientProfiles,clientProfile,saveWorkLog,deleteWorkLog,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyPhone,resendSignup,requestPasswordReset,verifyRecovery,myRole,ensureOrganization,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,setOrganizationExpiry,setOrganizationNote,renameOrganization,deleteOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
+  window.PsyHealthStorage={validateInvite,lookupClientProfile,begin,saveResult,saveClientMessage,clientSelfProfile,history,getRecord,deleteRecords,clientProfiles,clientProfile,saveWorkLog,deleteWorkLog,adminInvites,saveInvite,deleteInvite,adminSignIn,adminSignOut,adminChangePassword,adminSession,signUp,verifyPhone,resendSignup,requestPasswordReset,verifyRecovery,myRole,ensureOrganization,orgCodes,saveOrgCode,deleteOrgCode,organizations,updateOrganization,setOrganizationExpiry,setOrganizationNote,renameOrganization,deleteOrganization,readSessionIntake:()=>read(INTAKE_KEY,null,sessionStorage)};
 })();
