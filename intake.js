@@ -41,7 +41,6 @@
       if ([...birthYearSelect.options].some(option => option.value === guessedYear)) form.elements.birthYear.value = guessedYear;
     }
     form.querySelectorAll('input[name="topic"]').forEach(box => { box.checked = (profile.topics || []).includes(box.value); });
-    if (profile.organizationName) showOrganization(profile.organizationName);
     formError.textContent = source === "云端" ? "已从云端读取上次填写的资料，可核对后继续，也可以手动修改。" : "已自动填入本机保存的信息，可核对后继续，也可以手动修改。";
   }
 
@@ -58,7 +57,6 @@
       birthCity: intake.birthCity,
       topics: intake.topics || [],
       referralCode: code,
-      organizationName: intake.organizationName,
       updatedAt: new Date().toISOString()
     };
     localStorage.setItem(PROFILE_KEY, JSON.stringify(profiles));
@@ -96,6 +94,7 @@
   async function lookupProfile() {
     const name = nameInput.value.trim();
     const phoneLast4 = normalizePhoneLast4(phoneLast4Input.value);
+    const code = codeInput.value.trim();
     if (phoneLast4Input.value !== phoneLast4) phoneLast4Input.value = phoneLast4;
     if (!name || phoneLast4.length !== 4) return;
 
@@ -105,9 +104,9 @@
     if (!window.PsyHealthStorage?.lookupClientProfile) return;
     const token = ++lookupToken;
     try {
-      const result = await window.PsyHealthStorage.lookupClientProfile(name, phoneLast4, codeInput.value.trim());
+      const result = await window.PsyHealthStorage.lookupClientProfile(name, phoneLast4, code);
       if (token !== lookupToken) return;
-      if (result?.organizationName) showOrganization(result.organizationName);
+      if (code && result?.organizationName) showOrganization(result.organizationName);
       if (result?.found && result.intake) {
         applyProfile({...result.intake, referralCode: result.accessGroup, organizationName: result.organizationName}, "云端");
         if (result.suggestedName && result.suggestedName !== name) showSuggested("已找到同名且手机号后四位相同的档案。如这不是本人，", result.suggestedName);

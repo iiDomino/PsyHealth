@@ -60,7 +60,7 @@
   document.getElementById("saveReportBtn").addEventListener("click", async () => {
     const canvas = await html2canvas(document.getElementById("reportCapture"),{scale:Math.min(devicePixelRatio*2,3),backgroundColor:"#fff"});
     const link=document.createElement("a");
-    link.download=`心理测试工具-测评结果-${new Date().toISOString().slice(0,10)}.png`;
+    link.download=`心理健康工作平台-测评结果-${new Date().toISOString().slice(0,10)}.png`;
     link.href=canvas.toDataURL("image/png");
     link.click();
   });
