@@ -78,19 +78,6 @@
     badge.textContent = `所属机构：${name}`;
   }
 
-  function showSuggested(message, suggestedName) {
-    if (!suggestedName || suggestedName === nameInput.value.trim()) {
-      formError.textContent = message;
-      return;
-    }
-    formError.innerHTML = `${escapeHTML(message)} 推荐使用：<button class="text-button" type="button" id="useSuggestedName">${escapeHTML(suggestedName)}</button>`;
-    document.getElementById("useSuggestedName").onclick = () => {
-      nameInput.value = suggestedName;
-      formError.textContent = "已填入推荐姓名，请继续核对资料。";
-      nameInput.focus();
-    };
-  }
-
   async function lookupProfile() {
     const name = nameInput.value.trim();
     const phoneLast4 = normalizePhoneLast4(phoneLast4Input.value);
@@ -109,11 +96,8 @@
       if (code && result?.organizationName) showOrganization(result.organizationName);
       if (result?.found && result.intake) {
         applyProfile({...result.intake, referralCode: result.accessGroup, organizationName: result.organizationName}, "云端");
-        if (result.suggestedName && result.suggestedName !== name) showSuggested("已找到同名且手机号后四位相同的档案。如这不是本人，", result.suggestedName);
       } else if (result?.ambiguous) {
         formError.textContent = result.message || "找到多个匹配档案，请填写机构代码后再继续。";
-      } else if (result?.duplicateName) {
-        showSuggested(result.message || "该姓名已存在，但手机号后四位不一致。如不是本人，请使用推荐姓名。", result.suggestedName);
       }
     } catch (error) {
       if (!local && !String(error.message || "").includes("数据库升级")) formError.textContent = error.message;
