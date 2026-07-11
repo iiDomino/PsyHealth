@@ -4,17 +4,27 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>心理测试工具</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260711b">
 </head>
 <body class="library-page">
   <main class="library-shell compact-library">
     <header class="library-hero">
-      <div class="hero-tools"><span class="brand-pill">心理测试工具</span><a class="admin-entry-link" href="admin-login.html">机构入口</a></div>
+      <div class="hero-tools"><span></span><a class="admin-entry-link" href="admin-login.html">机构入口</a></div>
       <h1>心理测试工具</h1>
       <p>请先填写来访资料并输入机构代码，再完成已开放的测评。</p>
     </header>
 
-    <a class="intake-card" href="intake.html" id="intakeEntryCard">
+    <section class="disclaimer-panel" aria-labelledby="disclaimerTitle">
+      <h2 id="disclaimerTitle">免责声明与风险提示</h2>
+      <p>本工具用于心理状态自我了解、咨询前资料整理和机构服务中的辅助参考。测评结果受填写环境、理解差异、近期事件、身体状态和作答真实性影响，仅代表当前作答时的倾向，不构成医学诊断、心理疾病诊断、治疗建议或危机干预结论。</p>
+      <p>如你正在经历强烈痛苦、自伤或伤人想法、现实感明显异常、长期失眠或功能受损，请优先联系专业心理咨询师、精神科医生或当地紧急援助资源。请勿仅依据本工具结果自行用药、停药或作出重大决定。</p>
+      <label class="consent-line" for="autoConsentCheck">
+        <input id="autoConsentCheck" type="checkbox" disabled>
+        <span>点击“填写来访资料”即表示已阅读并同意以上说明。</span>
+      </label>
+    </section>
+
+    <a class="intake-card" href="intake.html" id="intakeEntryCard" onclick="event.preventDefault();document.getElementById('autoConsentCheck').checked=true;try{localStorage.setItem('psyhealth-disclaimer-agreed-v1','yes')}catch(e){};setTimeout(()=>{location.href=this.href},150);">
       <span class="intake-icon">📝</span><span><strong>填写来访资料</strong></span><span class="card-arrow">→</span>
     </a>
 
@@ -26,20 +36,20 @@
     <section class="direct-scale-section" id="allScalesSection" aria-labelledby="allScalesTitle">
       <div class="section-heading"><div><p class="eyebrow">全部测评</p><h2 id="allScalesTitle">10 项心理测试工具</h2></div></div>
       <ol class="direct-scale-list">
-        <li><a data-scale="1" href="PsyHealth90自测量表ByDOMINO.html.html">心理健康90自测量表</a></li>
-        <li><a data-scale="2" href="人格85自测量表.html">人格85自测量表</a></li>
-        <li><a data-scale="3" href="爱情关系合适度测评.html">爱情关系合适度测评</a></li>
-        <li><a data-scale="4" href="common-scale.html?scale=psq">父母问卷（PSQ）</a></li>
-        <li><a data-scale="5" href="common-scale.html?scale=interpersonal">人际关系综合诊断量表</a></li>
-        <li><a data-scale="6" href="common-scale.html?scale=sds">抑郁自评量表（SDS）</a></li>
-        <li><a data-scale="7" href="common-scale.html?scale=enrich">婚姻质量问卷</a></li>
-        <li><a data-scale="8" href="common-scale.html?scale=wellbeing">幸福感指数量表</a></li>
-        <li><a data-scale="9" href="common-scale.html?scale=sas">焦虑自评量表（SAS）</a></li>
-        <li><a data-scale="10" href="common-scale.html?scale=ucla">孤独感自评量表（UCLA）</a></li>
+        <li><a data-scale="1" href="PsyHealth90自测量表ByDOMINO.html.html"><span class="scale-copy"><strong>心理健康90自测量表</strong><small>用于了解近期躯体化、强迫、人际敏感、抑郁、焦虑等多维心理症状表现，适合咨询前整体状态梳理。</small></span></a></li>
+        <li><a data-scale="2" href="人格85自测量表.html"><span class="scale-copy"><strong>人格85自测量表</strong><small>用于观察外向性、情绪性、精神质倾向和作答掩饰性等人格维度，为沟通方式和咨询目标提供参考。</small></span></a></li>
+        <li><a data-scale="3" href="爱情关系合适度测评.html"><span class="scale-copy"><strong>爱情关系合适度测评</strong><small>用于梳理亲密关系中的相处匹配、互动感受和潜在冲突点，帮助来访者更清楚地表达关系议题。</small></span></a></li>
+        <li><a data-scale="4" href="common-scale.html?scale=psq"><span class="scale-copy"><strong>父母问卷（PSQ）</strong><small>用于从照护者视角了解儿童近期行为、情绪、注意力、社交和躯体不适表现，适合作为儿童咨询前资料。</small></span></a></li>
+        <li><a data-scale="5" href="common-scale.html?scale=interpersonal"><span class="scale-copy"><strong>人际关系综合诊断量表</strong><small>用于了解社交紧张、表达困难、关系疏离、异性交往和沟通困扰，辅助定位人际咨询主题。</small></span></a></li>
+        <li><a data-scale="6" href="common-scale.html?scale=sds"><span class="scale-copy"><strong>抑郁自评量表（SDS）</strong><small>用于自评近期低落、兴趣下降、睡眠食欲和疲乏等抑郁相关表现，适合作为进一步专业评估的线索。</small></span></a></li>
+        <li><a data-scale="7" href="common-scale.html?scale=enrich"><span class="scale-copy"><strong>婚姻质量问卷</strong><small>用于了解伴侣沟通、冲突处理、角色分工、亲密关系、经济和家庭互动等婚姻质量维度。</small></span></a></li>
+        <li><a data-scale="8" href="common-scale.html?scale=wellbeing"><span class="scale-copy"><strong>幸福感指数量表</strong><small>用于了解主观幸福感、生活满意度和积极体验水平，可辅助观察个人资源与生活状态。</small></span></a></li>
+        <li><a data-scale="9" href="common-scale.html?scale=sas"><span class="scale-copy"><strong>焦虑自评量表（SAS）</strong><small>用于自评近期紧张、担忧、惊恐及相关躯体反应，帮助判断是否需要进一步关注焦虑风险。</small></span></a></li>
+        <li><a data-scale="10" href="common-scale.html?scale=ucla"><span class="scale-copy"><strong>孤独感自评量表（UCLA）</strong><small>用于了解主观孤独、陪伴缺失和社会连接感，适合辅助识别关系支持与孤独体验。</small></span></a></li>
       </ol>
     </section>
   </main>
   <footer class="site-contact">客服微信号：iiDomino</footer>
-  <script src="cloud-config.js?v=20260710k"></script><script src="storage.js?v=20260710k"></script><script src="access-control.js?v=20260710k"></script><script src="index.js?v=20260710k"></script>
+  <script src="cloud-config.js?v=20260711b"></script><script src="storage.js?v=20260711b"></script><script src="access-control.js?v=20260711b"></script><script src="index.js?v=20260711b"></script>
 </body>
 </html>

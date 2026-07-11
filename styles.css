@@ -19,9 +19,17 @@
 .direct-scale-section { margin-top: 30px; }
 .direct-scale-list { list-style: none; counter-reset: scale; display: grid; gap: 12px; padding: 0; margin: 0; }
 .direct-scale-list li { counter-increment: scale; }
-.direct-scale-list a { display: flex; align-items: center; gap: 14px; padding: 17px 20px; border-radius: 18px; background: #fff; color: #173f55; text-decoration: none; font-weight: 750; box-shadow: 0 10px 28px rgba(31,101,136,.09); border: 1px solid rgba(31,101,136,.1); }
+.direct-scale-list a { display: flex; align-items: flex-start; gap: 14px; padding: 17px 20px; border-radius: 18px; background: #fff; color: #173f55; text-decoration: none; font-weight: 750; box-shadow: 0 10px 28px rgba(31,101,136,.09); border: 1px solid rgba(31,101,136,.1); }
 .direct-scale-list a::before { content: counter(scale, decimal-leading-zero); display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 13px; background: linear-gradient(135deg,#2a8ab3,#69c3bc); color: white; font-size: .88rem; }
 .direct-scale-list a:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(31,101,136,.14); }
+.scale-copy { display: grid; gap: 6px; min-width: 0; }
+.scale-copy strong { color: #173f55; line-height: 1.35; }
+.scale-copy small { color: var(--muted); font-weight: 560; line-height: 1.65; }
+.disclaimer-panel { margin: 18px 0; padding: 18px 20px; border: 1px solid rgba(219,181,113,.45); border-radius: 20px; background: linear-gradient(135deg,rgba(255,247,232,.92),rgba(255,255,255,.86)); color: var(--warning-ink); box-shadow: 0 10px 28px rgba(115,81,30,.06); }
+.disclaimer-panel h2 { margin-bottom: 10px; font-size: clamp(1.08rem,3.4vw,1.34rem); color: #6f4e1d; }
+.disclaimer-panel p { margin: 8px 0; line-height: 1.75; font-size: .94rem; }
+.consent-line { display: flex; align-items: flex-start; gap: 9px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(219,181,113,.35); color: #684816; font-weight: 750; line-height: 1.55; }
+.consent-line input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--brand); }
 
 /* 来访者资料 */
 .profile-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 24px 0; }
