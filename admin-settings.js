@@ -74,11 +74,14 @@
       const deleteButton = form.querySelector(".delete-code");
       if (deleteButton) deleteButton.onclick = async () => {
         if (!confirm("确认删除这组机构代码吗？删除后将不能再用于进入测评。")) return;
+        const password = prompt("请输入当前机构管理账号密码确认删除：");
+        if (!password) return;
         try {
+          await S.adminSignIn(session.email || session.phone, password);
           await S.deleteOrgCode(form.dataset.id);
           await codes("机构代码已删除。");
         } catch (error) {
-          await codes(error.message);
+          await codes(error.message || "密码验证失败，未删除。");
         }
       };
     });
@@ -98,7 +101,7 @@
     }).join("");
     app.querySelectorAll("button").forEach(button => button.onclick = async () => {
       if (button.dataset.deleteOrg) {
-        const password = prompt("删除机构账户会移除该机构登录账号和机构代码。请输入系统管理员密码确认：");
+        const password = prompt("删除机构账户会移除该机构登录账号和机构代码。请输入当前系统管理员密码确认：");
         if (!password) return;
         try {
           await S.adminSignIn(session.email || session.phone, password);

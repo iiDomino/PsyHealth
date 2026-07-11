@@ -12,6 +12,12 @@
   if (readConsent() && consentCheck) {
     consentCheck.checked = true;
   }
+  intakeEntry?.addEventListener("click", event => {
+    event.preventDefault();
+    try { localStorage.setItem("psyhealth-disclaimer-agreed-v1", "yes"); } catch (_) {}
+    if (consentCheck) consentCheck.checked = true;
+    setTimeout(() => { location.href = intakeEntry.href; }, 120);
+  });
   if (!access?.intake) {
     section.hidden = true; report.hidden = true; notice.hidden = false; return;
   }

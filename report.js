@@ -15,6 +15,12 @@
   }).join("") : '<p class="muted-copy">尚未完成测评。</p>';
   const completionText = results.length >= 10 ? "10 项测评已全部完成" : `已记录 ${results.length} / 10 项测评结果`;
   app.innerHTML = `<section class="panel report-panel" id="reportCapture"><header class="report-header"><p class="eyebrow">心理测试工具</p><h1>咨询报告</h1><p>生成时间：${new Date().toLocaleString("zh-CN",{hour12:false})}</p></header><section class="report-block"><h2>来访者资料</h2>${facts}</section><section class="report-block"><h2>已使用量表与评测结果</h2><p class="report-count">${completionText}</p><div class="report-results">${items}</div></section><div class="actions" data-html2canvas-ignore="true"><button class="secondary-btn" id="clearReportBtn">清空本次数据</button><button class="primary-btn" id="saveReportBtn">截图保存报告</button></div></section>`;
-  document.getElementById("clearReportBtn").addEventListener("click", () => { if (confirm("确认清空本次来访者信息和测评结果吗？")) { sessionStorage.clear(); location.reload(); } });
+  document.getElementById("clearReportBtn").addEventListener("click", () => {
+    const confirmation = prompt("这是本机临时数据清空操作，不涉及云端账号。请输入“清空”确认：");
+    if (confirmation === "清空") {
+      sessionStorage.clear();
+      location.reload();
+    }
+  });
   document.getElementById("saveReportBtn").addEventListener("click", async () => { const canvas = await html2canvas(document.getElementById("reportCapture"),{scale:Math.min(devicePixelRatio*2,3),backgroundColor:"#fff"}); const link=document.createElement("a"); link.download=`心理测试工具-咨询报告-${new Date().toISOString().slice(0,10)}.png`; link.href=canvas.toDataURL("image/png"); link.click(); });
 })();

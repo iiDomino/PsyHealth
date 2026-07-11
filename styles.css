@@ -43,7 +43,13 @@
 .admin-login-panel form,.compact-form { display: grid; gap: 16px; }
 .auth-links { display:flex; justify-content:space-between; gap:16px; margin-top:18px; }
 .auth-links a,.site-contact a { color:var(--brand-dark); font-weight:700; }
-.site-contact { max-width:920px; margin:0 auto; padding:18px; text-align:center; color:var(--muted); }
+.site-contact { max-width:920px; margin:0 auto; padding:18px; text-align:center; color:var(--muted); line-height:1.8; }
+.site-legal { display:inline-flex; gap:12px; margin-left:12px; }
+.site-legal a,.consent-notice a { color:var(--brand-dark); font-weight:800; text-decoration:none; }
+.legal-shell { max-width:860px; }
+.legal-panel h2 { margin-top:24px; font-size:1.18rem; }
+.legal-panel p { color:#425f70; line-height:1.8; }
+.consent-notice { margin:18px 0 22px; }
 .phone-code-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:end; gap:10px; }
 .send-code-inline { min-height:48px; white-space:nowrap; }
 .admin-section { margin-top: 18px; }
