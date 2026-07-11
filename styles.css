@@ -80,6 +80,8 @@
 .scale-group h3 { margin:0 0 6px; }
 .compact-result { background:#fff; }
 .client-card strong { font-size:1.2rem; }
+.organization-client-group { display:grid; gap:10px; margin:0 0 26px; }
+.organization-client-group h2 { margin:0; color:var(--ink); }
 .referral-field { margin: 24px 0 8px; padding-top: 22px; border-top: 1px solid var(--line); }
 .access-notice { margin: 28px 0 0; padding: 18px 20px; border-radius: 18px; background: rgba(255,255,255,.82); color: var(--muted); line-height: 1.65; text-align: center; }
 .history-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 20px 0 14px; }

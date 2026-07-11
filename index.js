@@ -14,11 +14,7 @@
   }
   intakeEntry?.addEventListener("click", event => {
     event.preventDefault();
-    if (consentCheck && !consentCheck.checked) {
-      alert("请先勾选已阅读并同意免责声明与风险提示。");
-      consentCheck.focus();
-      return;
-    }
+    if (consentCheck) consentCheck.checked = true;
     try { localStorage.setItem("psyhealth-disclaimer-agreed-v1", "yes"); } catch (_) {}
     location.href = intakeEntry.href;
   });
