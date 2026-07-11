@@ -27,21 +27,21 @@
   }
 
   if (!intake && !localResults.length) {
-    app.innerHTML = '<section class="panel empty-report"><p class="eyebrow">测评结果</p><h1>暂无可查看的测评记录</h1><p class="lead">请先填写来访者信息，并在完成测评后返回这里查看结果。</p><a class="primary-btn button-link" href="intake.html">填写来访者信息</a></section>';
+    app.innerHTML = '<section class="panel empty-report"><p class="eyebrow">测评结果</p><h1>暂无可查看的测评记录</h1><p class="lead">请先通过来访入口填写资料，并在完成测评后返回这里查看结果。</p><a class="primary-btn button-link" href="intake.html">来访入口</a></section>';
     return;
   }
 
   const sessions = buildSessions();
   const allResults = sessions.flatMap(session => session.results || []);
   const completionText = allResults.length ? `当前档案共记录 ${sessions.length} 次测评批次，${allResults.length} 项测评结果。` : "当前档案尚未记录测评结果。";
-  const facts = intake ? `<dl class="report-facts"><div class="wide"><dt>所属机构</dt><dd>${escapeHTML(intake.organizationName || selfProfile?.organizationName || "系统直属")}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${escapeHTML(formatTopics(intake.topics))}</dd></div></dl>` : '<p class="muted-copy">尚未填写来访者信息。</p>';
+  const facts = intake ? `<dl class="report-facts"><div class="wide"><dt>所属机构</dt><dd>${escapeHTML(intake.organizationName || selfProfile?.organizationName || "系统直属")}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${escapeHTML(formatTopics(intake.topics))}</dd></div></dl>` : '<p class="muted-copy">尚未填写来访资料。</p>';
   const sessionBlocks = sessions.length ? sessions.map(renderSession).join("") : '<p class="muted-copy">尚未完成测评。</p>';
 
   app.innerHTML = `<section class="panel report-panel" id="reportCapture"><header class="report-header"><p class="eyebrow">测评结果</p><h1>我的测评结果</h1><p>所属机构：${escapeHTML(intake?.organizationName || selfProfile?.organizationName || "系统直属")} · 生成时间：${fmt(new Date().toISOString())}</p></header><section class="report-block"><h2>来访者资料</h2>${facts}</section><section class="report-block"><h2>既往测评记录</h2><p class="report-count">${escapeHTML(completionText)}</p><p class="muted-copy">以下结果仅用于自我了解和咨询辅助参考，建议结合个人情况与机构专业人员共同理解。</p><div class="report-results">${sessionBlocks}</div></section><section class="report-block" data-html2canvas-ignore="true"><h2>给机构留言（可选）</h2><p class="muted-copy">如有补充情况、咨询诉求或对测评结果的疑问，可在这里留言，所属机构和系统管理员可在必要范围内查看。</p><textarea class="note-textarea" id="clientMessage" rows="4" placeholder="可补充当前状态、希望讨论的问题或对结果的疑问"></textarea><p id="messageState" class="form-message"></p><button class="secondary-btn" id="saveMessageBtn" type="button">保存留言</button></section><div class="actions" data-html2canvas-ignore="true"><button class="secondary-btn" id="clearReportBtn">清空本机临时数据</button><button class="primary-btn" id="saveReportBtn">截图保存结果</button></div></section>`;
 
   document.getElementById("saveMessageBtn").addEventListener("click", async () => {
     const state = document.getElementById("messageState");
-    if (!intake?.recordId || !intake?.editToken) { state.textContent = "请先填写来访者信息并建立档案。"; return; }
+    if (!intake?.recordId || !intake?.editToken) { state.textContent = "请先通过来访入口建立档案。"; return; }
     state.textContent = "正在保存留言…";
     try {
       await window.PsyHealthStorage.saveClientMessage(intake.recordId, intake.editToken, document.getElementById("clientMessage").value);

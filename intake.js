@@ -137,7 +137,7 @@
     } catch (error) {
       formError.textContent = error.message || "资料暂未保存成功，请稍后重试。";
       submitButton.disabled = false;
-      submitButton.textContent = "保存来访者信息";
+      submitButton.textContent = "保存来访资料";
       return;
     }
     rememberProfile(intake, code);
@@ -146,6 +146,6 @@
     app.innerHTML = `<div class="institution-badge">所属机构：${escapeHTML(org)}</div><p class="eyebrow">${intake.isExisting ? "档案已读取" : "已建立档案"}</p><h1>${escapeHTML(intake.name)}的来访者档案</h1>${existingNotice}<dl class="report-facts"><div><dt>所属机构</dt><dd>${escapeHTML(org)}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4)}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear)} 年</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${escapeHTML(intake.topics.join("、"))}</dd></div></dl><div class="actions"><a class="primary-btn button-link" href="index.html#allScalesTitle">开始选择测评</a><a class="secondary-btn button-link" href="report.html">查看我的测评结果</a></div>`;
   });
 
-  if (new URLSearchParams(location.search).has("required")) formError.textContent = "请先填写来访者信息，并输入有效的机构代码。";
+  if (new URLSearchParams(location.search).has("required")) formError.textContent = "请先通过来访入口填写资料，并输入有效的机构代码。";
   function escapeHTML(value) { return String(value ?? "").replace(/[&<>"']/gu, char => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[char]); }
 })();
