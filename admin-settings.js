@@ -164,7 +164,60 @@
     });
   }
 
+  async function trialInvites(message = "") {
+    if (role.role !== "system_admin") return;
+    const section = document.getElementById("trialInviteSection");
+    const app = document.getElementById("trialInviteApp");
+    section.hidden = false;
+    let list;
+    try {
+      list = await S.systemTrialInvites();
+    } catch (error) {
+      app.innerHTML = `<p class="error-text">${esc(error.message)}</p>`;
+      return;
+    }
+    const items = list.map(item => `<article class="invite-form">
+      <div class="invite-fields">
+        <div><span class="trial-invite-code">${esc(item.code)}</span></div>
+        <div class="trial-invite-meta"><strong>${item.active ? "启用中" : "已停用"}</strong><br>已使用：${esc(item.useCount || 0)} 次<br>生成时间：${esc(item.createdAt ? new Date(item.createdAt).toLocaleString("zh-CN",{hour12:false}) : "-")}</div>
+      </div>
+      <div class="inline-actions"><button class="secondary-btn" data-toggle-trial="${esc(item.id)}" data-active="${item.active ? "0" : "1"}" type="button">${item.active ? "停用" : "启用"}</button><button class="danger-ghost-btn" data-delete-trial="${esc(item.id)}" type="button">删除</button></div>
+    </article>`).join("") || '<p class="muted-copy">暂无试用邀请码。</p>';
+    app.innerHTML = `${message ? `<p class="form-message">${esc(message)}</p>` : ""}<div class="inline-actions"><button class="primary-btn" id="createTrialInviteBtn" type="button">生成 4 位邀请码</button></div><div class="invite-list">${items}</div>`;
+    document.getElementById("createTrialInviteBtn").onclick = async () => {
+      const button = document.getElementById("createTrialInviteBtn");
+      button.disabled = true;
+      button.textContent = "正在生成…";
+      try {
+        const saved = await S.systemCreateTrialInvite();
+        await trialInvites(`已生成试用邀请码：${saved.code}`);
+      } catch (error) {
+        await trialInvites(error.message || "生成失败。");
+      }
+    };
+    app.querySelectorAll("[data-toggle-trial]").forEach(button => button.onclick = async () => {
+      try {
+        await S.systemSetTrialInviteActive(button.dataset.toggleTrial, button.dataset.active === "1");
+        await trialInvites("邀请码状态已更新。");
+      } catch (error) {
+        await trialInvites(error.message || "状态更新失败。");
+      }
+    });
+    app.querySelectorAll("[data-delete-trial]").forEach(button => button.onclick = async () => {
+      const password = prompt("删除试用邀请码后，注册页将不能再使用该码。请输入当前系统管理员密码确认：");
+      if (!password) return;
+      try {
+        await S.adminSignIn(session.email || session.phone, password);
+        await S.systemDeleteTrialInvite(button.dataset.deleteTrial);
+        await trialInvites("试用邀请码已删除。");
+      } catch (error) {
+        await trialInvites(error.message || "密码验证失败，未删除。");
+      }
+    });
+  }
+
   if (role.role !== "system_admin") await codes();
+  await trialInvites();
   await organizations();
   document.getElementById("changePasswordForm").onsubmit = async event => {
     event.preventDefault();

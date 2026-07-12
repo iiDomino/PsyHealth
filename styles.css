@@ -43,9 +43,10 @@
 .text-field { display: grid; gap: 8px; color: #244b5d; font-weight: 700; }
 .text-field input,.text-field select { width: 100%; min-height: 48px; border: 1px solid #c7dce3; border-radius: 13px; padding: 10px 13px; background: #fff; color: #173f55; font: inherit; box-sizing: border-box; }
 .text-field small { color: var(--muted); font-weight: 500; }
-.phone-last4-field { align-content: start; }
-.phone-digit-grid { display: flex; align-items: center; gap: 10px; width: 100%; }
-.phone-digit-grid .phone-digit {
+.phone-last4-field,.digit-field { align-content: start; }
+.phone-digit-grid,.digit-grid { display: flex; align-items: center; gap: 10px; width: 100%; }
+.phone-digit-grid .phone-digit,
+.digit-grid .digit-input {
   width: 58px;
   min-width: 0;
   height: 58px;
@@ -58,11 +59,16 @@
   line-height: 1;
   border-radius: 16px;
 }
-.phone-digit-grid .phone-digit:focus {
+.digit-grid-6 .digit-input { width: 48px; flex-basis: 48px; }
+.phone-digit-grid .phone-digit:focus,
+.digit-grid .digit-input:focus {
   border-color: #89b3ff;
   box-shadow: 0 0 0 4px rgba(95,145,255,.28);
   outline: none;
 }
+.trial-invite-code { display:inline-flex; align-items:center; justify-content:center; min-width:88px; padding:8px 12px; border-radius:14px; background:#e9f4f7; color:var(--brand-dark); font-size:1.35rem; font-weight:900; letter-spacing:.18em; }
+.trial-invite-meta { color:var(--muted); line-height:1.6; }
+.trial-invite-meta strong { color:var(--brand-dark); }
 .admin-entry-link,.text-button { color: var(--brand-dark); background: none; border: 0; text-decoration: none; font-weight: 750; cursor: pointer; }
 .library-hero .admin-entry-link { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 16px; border-radius: 12px; color: #fff; background: linear-gradient(135deg,var(--brand),var(--brand-dark)); box-shadow: 0 7px 18px rgba(45,111,148,.22); }
 .admin-login-panel { width: min(100%,520px); margin: auto; }
@@ -198,6 +204,9 @@
   .legacy-nav { margin-top: 12px; }
   .invite-fields { grid-template-columns: 1fr; }
   .scale-check-grid { grid-template-columns: repeat(3,1fr); }
+  .phone-digit-grid,.digit-grid { gap: 8px; }
+  .phone-digit-grid .phone-digit,.digit-grid .digit-input { width: 52px; flex-basis: 52px; height: 52px; min-height: 52px; }
+  .digit-grid-6 .digit-input { width: 42px; flex-basis: 42px; }
 }
 
 * { box-sizing: border-box; }

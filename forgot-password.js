@@ -13,6 +13,50 @@
     message.textContent = text || "";
   }
 
+  function setupDigitGrid(targetName, options = {}) {
+    const hidden = form.elements[targetName];
+    const grid = form.querySelector(`[data-digit-target="${targetName}"]`);
+    if (!hidden || !grid) return;
+    const inputs = [...grid.querySelectorAll(".digit-input")];
+    const sync = () => {
+      const value = inputs.map(input => input.value).join("").replace(/\D/g, "").slice(0, inputs.length);
+      hidden.value = value;
+      return value;
+    };
+    const setDigits = value => {
+      const digits = String(value || "").replace(/\D/g, "").slice(0, inputs.length);
+      inputs.forEach((input, index) => { input.value = digits[index] || ""; });
+      hidden.value = digits;
+      return digits;
+    };
+    const leave = () => {
+      inputs.forEach(input => input.blur());
+      if (options.next) setTimeout(() => options.next.scrollIntoView({behavior:"smooth", block:"center"}), 80);
+    };
+    inputs.forEach((input, index) => {
+      input.addEventListener("input", event => {
+        const digits = event.target.value.replace(/\D/g, "");
+        event.target.value = digits.slice(-1);
+        const value = sync();
+        if (event.target.value && index < inputs.length - 1) inputs[index + 1].focus();
+        if (value.length === inputs.length) leave();
+      });
+      input.addEventListener("keydown", event => {
+        if (event.key === "Backspace" && !input.value && index > 0) inputs[index - 1].focus();
+      });
+      input.addEventListener("paste", event => {
+        const digits = (event.clipboardData || window.clipboardData).getData("text").replace(/\D/g, "");
+        if (!digits) return;
+        event.preventDefault();
+        const value = setDigits(digits);
+        if (value.length === inputs.length) leave();
+        else inputs[Math.max(0, value.length - 1)]?.focus();
+      });
+    });
+  }
+
+  setupDigitGrid("token", {next: form.elements.password});
+
   function checkPhone() {
     if (!/^1\d{10}$/.test(value("phone").replace(/[\s-]/g, ""))) {
       setMessage("请输入正确的手机号。");
@@ -62,7 +106,7 @@
   form.onsubmit = async event => {
     event.preventDefault();
     if (!checkPhone()) return;
-    if (value("token").length < 4) {
+    if (value("token").length !== 6) {
       setMessage("请输入收到的短信验证码。");
       return;
     }
