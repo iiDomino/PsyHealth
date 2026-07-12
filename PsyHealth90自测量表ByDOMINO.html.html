@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>心理健康自测量表</title>
+    <title>心理健康90自测量表</title>
     <!-- 引入 html2canvas 用于截图 -->
     <script src="html2canvas.min.js"></script>
     <style>
@@ -340,6 +340,217 @@
             .home-floating { top: 8px; left: 10px; }
         }
         .hidden { display: none; }
+        /* 与后续通用量表统一的卡片式测评模板 */
+        html, body { min-height: 100%; height: auto; }
+        body {
+            display: block;
+            padding: max(18px, env(safe-area-inset-top)) 10px max(18px, env(safe-area-inset-bottom));
+            background: linear-gradient(145deg,#d9f4f4 0%,#f7e8ef 48%,#e4effb 100%);
+            color: #14394d;
+        }
+        .home-floating {
+            position: static;
+            display: inline-flex;
+            align-items: center;
+            margin: 0 auto 12px;
+            background: rgba(255,255,255,.78);
+            color: #255e78;
+            box-shadow: none;
+        }
+        .phone {
+            max-width: 760px;
+            width: 100%;
+            height: auto;
+            min-height: calc(100vh - 66px);
+            min-height: calc(100dvh - 66px);
+            margin: 0 auto;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+            background: transparent;
+            overflow: visible;
+        }
+        .view { min-height: inherit; overflow: visible; }
+        .centered-wrapper {
+            margin: auto 0;
+            gap: 14px;
+            padding: clamp(24px,5vw,46px);
+            border-radius: 28px;
+            background: rgba(255,255,255,.95);
+            box-shadow: 0 20px 60px rgba(40,82,104,.16);
+        }
+        .header,.result-header { justify-content: flex-start; text-align: left; }
+        .title-main {
+            color: #174d68;
+            font-size: clamp(1.45rem,4vw,2.2rem);
+            font-weight: 850;
+            letter-spacing: -.02em;
+        }
+        .progress-section { margin: 0; }
+        .progress-track { height: 8px; background: rgba(211,234,239,.9); }
+        .progress-fill { height: 8px; background: linear-gradient(90deg,#2b9eb3,#ef91a9); }
+        .card {
+            display: grid;
+            align-content: center;
+            gap: 10px;
+            min-height: 190px;
+            padding: 24px;
+            border: 0;
+            border-radius: 20px;
+            background: linear-gradient(135deg,#f1fbfc,#fff4f7);
+            box-shadow: none;
+        }
+        .question-num {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            color: #4a8ba0;
+            font-size: .88rem;
+            font-weight: 850;
+        }
+        .question-text {
+            height: auto;
+            min-height: 0;
+            max-height: none;
+            margin: 0;
+            color: #163f52;
+            font-size: clamp(1.1rem,3vw,1.4rem);
+            font-weight: 800;
+            line-height: 1.65;
+        }
+        .question-hint {
+            margin: 0;
+            color: #607984;
+            font-size: .92rem;
+            font-style: normal;
+        }
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(128px,1fr));
+            gap: 10px;
+        }
+        .option-btn {
+            min-height: 50px;
+            padding: 10px 12px;
+            border: 1px solid #bddde2;
+            border-radius: 15px;
+            background: #fff;
+            box-shadow: none;
+            color: #24576a;
+        }
+        .option-btn:hover,.option-btn.selected {
+            border-color: #2b9eb3;
+            background: #e5f8f8;
+            color: #17677c;
+            transform: translateY(-1px);
+        }
+        .option-marker {
+            width: 28px;
+            height: 28px;
+            background: #edf7f8;
+            color: #2b7890;
+            font-size: .88rem;
+        }
+        .option-btn.selected .option-marker {
+            background: #2b9eb3;
+            color: #fff;
+        }
+        .option-text,.option-btn.selected .option-text {
+            color: inherit;
+            font-weight: 800;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-top: 8px;
+        }
+        .nav-btn,.capture-btn,.back-from-detail {
+            min-height: 50px;
+            border: 1px solid #bddde2;
+            border-radius: 15px;
+            box-shadow: none;
+            font-weight: 800;
+        }
+        .nav-btn {
+            background: #fff;
+            color: #24576a;
+        }
+        .nav-btn:not(.disabled):hover {
+            border-color: #2b9eb3;
+            background: #e5f8f8;
+            color: #17677c;
+        }
+        .capture-btn,.back-from-detail {
+            background: linear-gradient(135deg,#2b7c9d,#226f8c);
+            color: #fff;
+        }
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2,minmax(0,1fr));
+            gap: 12px;
+        }
+        .factor-card,.global-row,.detail-card {
+            border: 1px solid #d3e7ed;
+            border-radius: 18px;
+            background: #f5fafb;
+            box-shadow: none;
+        }
+        .factor-card { padding: 14px; border-left: 0; }
+        .factor-header { font-size: .96rem; color: #174d68; gap: 10px; }
+        .factor-score { font-size: .8rem; color: #607984; line-height: 1.5; }
+        .factor-bar { height: 7px; background: #d3e7ed; }
+        .factor-fill { height: 7px; background: linear-gradient(90deg,#2b9eb3,#ef91a9); }
+        .result-datetime {
+            background: transparent;
+            color: #708891;
+            padding: 0;
+            text-align: left;
+        }
+        .global-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(180px,1fr));
+            padding: 16px;
+            font-size: .9rem;
+        }
+        .detail-card {
+            max-height: none;
+            padding: 18px;
+            overflow: visible;
+        }
+        .detail-content,.detail-score,.level-desc {
+            border-radius: 16px;
+            background: #fff;
+            color: #355b6a;
+            font-size: .92rem;
+            line-height: 1.65;
+        }
+        .footnote {
+            color: #708891;
+            font-size: .86rem;
+        }
+        @media (max-width: 620px) {
+            body { padding: max(8px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); }
+            .home-floating { margin-bottom: 8px; padding: 6px 8px; }
+            .phone { min-height: calc(100vh - 48px); min-height: calc(100dvh - 48px); }
+            .centered-wrapper { margin: 0; padding: 16px 12px; border-radius: 20px; gap: 10px; }
+            .title-main { font-size: 1.25rem; }
+            .card { min-height: 92px; padding: 12px; gap: 6px; }
+            .question-num { font-size: .78rem; }
+            .question-text { font-size: .98rem; line-height: 1.42; }
+            .question-hint { font-size: .8rem; }
+            .option-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+            .option-btn { min-height: 40px; padding: 8px 9px; border-radius: 13px; gap: 7px; }
+            .option-marker { width: 24px; height: 24px; font-size: .78rem; }
+            .option-text { font-size: .88rem; }
+            .nav-buttons { position: sticky; bottom: 0; padding-top: 6px; background: rgba(255,255,255,.95); }
+            .nav-btn,.capture-btn,.back-from-detail { min-height: 40px; border-radius: 13px; font-size: .9rem; }
+            .result-grid { grid-template-columns: 1fr; gap: 8px; }
+            .factor-card { padding: 10px; }
+            .global-row { grid-template-columns: 1fr; padding: 12px; font-size: .8rem; }
+            .detail-content,.detail-score,.level-desc { font-size: .82rem; }
+        }
     </style>
 </head>
 <body>
@@ -349,7 +560,7 @@
     <div id="quizView" class="view active">
         <div class="centered-wrapper">
             <div class="header">
-                <div class="title-main">心理健康自测量表</div>
+                <div class="title-main">心理健康90自测量表</div>
             </div>
             <div class="progress-section">
                 <div class="progress-track">
@@ -383,7 +594,7 @@
                 <div class="global-row" id="globalStatsResult"></div>
             </div>
             <button class="capture-btn" id="captureResultBtn">📸 保存结果为图片</button>
-            <div class="footnote">点击任一因子查看详细解释</div>
+            <div class="footnote">点击任一因子查看详细结果</div>
         </div>
     </div>
 
@@ -397,7 +608,7 @@
             </div>
             <div class="detail-card">
                 <div class="detail-sub" id="detailSub">得分与临界</div>
-                <div class="detail-content" id="detailDescription">详细解释载入中...</div>
+                <div class="detail-content" id="detailDescription">详细结果载入中...</div>
                 <div class="detail-score" id="detailScoreBox"></div>
                 <div class="level-desc" id="levelDescription"></div>
             </div>
@@ -696,7 +907,7 @@
         if (!element) return;
         html2canvas(element, { scale: 2, backgroundColor: '#ffffff' }).then(canvas => {
             const link = document.createElement('a');
-            link.download = '心理健康自测量表结果.png';
+            link.download = '心理健康90自测量表结果.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         }).catch(error => alert('截图生成失败，请重试。' + error));
