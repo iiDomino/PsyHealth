@@ -7,6 +7,7 @@
     <!-- 引入 html2canvas 用于截图 -->
     <script src="html2canvas.min.js"></script>
     <style>
+        * { box-sizing: border-box; }
         /* 基础重置，确保全屏高度 */
         html, body {
             height: 100%;
@@ -289,41 +290,47 @@
             html, body { height: auto; min-height: 100%; }
             body {
                 display: block;
-                padding: max(42px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom));
+                padding: max(38px, env(safe-area-inset-top)) 6px max(8px, env(safe-area-inset-bottom));
                 overflow-x: hidden;
             }
             .phone {
                 width: 100%;
                 max-width: none;
-                min-height: calc(100vh - 56px);
-                min-height: calc(100dvh - 56px);
+                min-height: calc(100vh - 48px);
+                min-height: calc(100dvh - 48px);
                 height: auto;
-                border-radius: 24px;
-                padding: 0 8px;
+                border-radius: 22px;
+                padding: 0 7px;
             }
             .view {
-                min-height: calc(100vh - 64px);
-                min-height: calc(100dvh - 64px);
+                min-height: calc(100vh - 56px);
+                min-height: calc(100dvh - 56px);
                 overflow-y: auto;
             }
             .centered-wrapper {
                 margin: 0;
-                padding: 10px 0 12px;
-                gap: 8px;
+                padding: 8px 0 10px;
+                gap: 5px;
             }
-            .title-main { font-size: 1.28rem; }
-            .card { padding: 12px; border-radius: 20px; }
+            .title-main { font-size: 1.18rem; }
+            .progress-track,.progress-fill { height: 5px; }
+            .card { padding: 9px; border-radius: 18px; }
+            .question-num { margin-bottom: 5px; padding: 3px 12px; font-size: .76rem; }
             .question-text {
                 height: auto;
-                min-height: 4.5rem;
-                max-height: 32vh;
-                font-size: 1.08rem;
-                line-height: 1.55;
+                min-height: 2.7rem;
+                max-height: 18vh;
+                margin-bottom: 6px;
+                font-size: 1.02rem;
+                line-height: 1.35;
             }
-            .option-grid { gap: 7px; }
-            .option-btn { min-height: 50px; padding: 8px 10px; border-radius: 18px; }
-            .option-marker { width: 30px; height: 30px; }
-            .nav-buttons { position: sticky; bottom: 0; padding: 6px 0; background: #fff; }
+            .question-hint { margin: -2px 0 6px 2px; font-size: .72rem; }
+            .option-grid { gap: 4px; }
+            .option-btn { min-height: 43px; padding: 5px 8px; border-radius: 15px; gap: 7px; }
+            .option-marker { width: 26px; height: 26px; font-size: .86rem; }
+            .option-text { font-size: .88rem; }
+            .nav-buttons { position: sticky; bottom: 0; padding: 4px 0; background: #fff; }
+            .nav-btn { padding: 6px 0; min-width: 64px; font-size: .84rem; }
             .result-grid { grid-template-columns: 1fr; gap: 8px; }
             .factor-card { padding: 10px 9px; border-radius: 16px; }
             .factor-header { font-size: .9rem; gap: 8px; }
@@ -704,8 +711,8 @@
     updateProgress();
 })();
 </script>
-<script src="cloud-config.js?v=20260712j"></script>
-<script src="storage.js?v=20260712j"></script>
-<script src="access-control.js?v=20260712j"></script>
+<script src="cloud-config.js?v=20260712k"></script>
+<script src="storage.js?v=20260712k"></script>
+<script src="access-control.js?v=20260712k"></script>
 </body>
 </html>

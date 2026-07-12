@@ -189,19 +189,21 @@
 @media (max-width: 620px) {
   .profile-grid { grid-template-columns: 1fr; }
   .profile-wide { grid-column: auto; }
-  .legacy-quiz-shell { padding: max(10px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom)); }
-  .legacy-card { margin: 0; padding: 20px 14px; border-radius: 22px; }
-  .legacy-card h1 { font-size: 1.35rem; }
-  .legacy-instruction { max-height: 3.2em; margin: 6px 0; overflow-y: auto; font-size: .88rem; line-height: 1.55; }
-  .legacy-question { height: 160px; min-height: 160px; margin: 14px 0; padding: 16px; }
-  .legacy-question strong { font-size: 1.03rem; line-height: 1.5; }
-  .legacy-options:not(.wellbeing-options) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 8px; }
-  .legacy-options button,.legacy-nav button { min-height: 44px; }
+  .legacy-quiz-shell { padding: max(8px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom)); }
+  .legacy-card { margin: 0; padding: 16px 12px; border-radius: 20px; }
+  .legacy-card h1 { font-size: 1.25rem; margin-bottom: 6px; }
+  .legacy-kicker { font-size: .76rem; }
+  .legacy-instruction { max-height: 2.8em; margin: 4px 0; overflow-y: auto; font-size: .82rem; line-height: 1.45; }
+  .legacy-question { height: auto; min-height: 92px; max-height: 20vh; margin: 10px 0; padding: 12px; gap: 6px; }
+  .legacy-question small { font-size: .78rem; }
+  .legacy-question strong { font-size: .98rem; line-height: 1.42; }
+  .legacy-options:not(.wellbeing-options) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+  .legacy-options button,.legacy-nav button { min-height: 40px; border-radius: 13px; font-size: .9rem; }
   .wellbeing-options { gap: 5px; }
-  .wellbeing-options button { min-height: 44px; border-radius: 12px; }
+  .wellbeing-options button { min-height: 40px; border-radius: 12px; }
   .wellbeing-scale-line { grid-template-columns: minmax(0,1fr) 94px minmax(0,1fr); gap: 4px; }
   .double-arrow { font-size: .82rem; }
-  .legacy-nav { margin-top: 12px; }
+  .legacy-nav { margin-top: 10px; gap: 8px; }
   .invite-fields { grid-template-columns: 1fr; }
   .scale-check-grid { grid-template-columns: repeat(3,1fr); }
   .phone-digit-grid,.digit-grid { gap: 8px; }

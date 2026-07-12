@@ -43,6 +43,7 @@
   const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list)).join("") || '<p class="muted-copy">尚未完成测评。</p>';
 
   app.innerHTML = `<section class="panel report-panel" id="reportCapture"><header class="report-header"><p class="eyebrow">测评结果</p><h1>我的测评结果</h1><p>所属机构：${escapeHTML(intake?.organizationName || selfProfile?.organizationName || "系统直属")} · 生成时间：${fmt(new Date().toISOString())}</p></header><section class="report-block"><h2>来访者资料</h2>${facts}</section><section class="report-block"><h2>既往测评记录</h2><p class="report-count">${escapeHTML(completionText)}</p><p class="muted-copy">相同测评项目已自动堆叠。点击项目可按时间查看全部历史结果。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block" data-html2canvas-ignore="true"><h2>给机构留言（可选）</h2><p class="muted-copy">如有补充情况、咨询诉求或对测评结果的疑问，可在这里留言，所属机构和系统管理员可在必要范围内查看。</p><textarea class="note-textarea" id="clientMessage" rows="4" placeholder="可补充当前状态、希望讨论的问题或对结果的疑问"></textarea><p id="messageState" class="form-message"></p><button class="secondary-btn" id="saveMessageBtn" type="button">保存留言</button></section><div class="actions" data-html2canvas-ignore="true"><button class="secondary-btn" id="clearReportBtn">清空本机临时数据</button><button class="primary-btn" id="saveReportBtn">截图保存结果</button></div></section>`;
+  document.querySelectorAll(".stacked-scale-group").forEach(item => { item.open = false; });
 
   document.getElementById("saveMessageBtn").addEventListener("click", async () => {
     const state = document.getElementById("messageState");
