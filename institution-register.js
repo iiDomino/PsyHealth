@@ -157,7 +157,7 @@
     setMessage("正在发送验证码，请稍候…");
     try {
       await PsyHealthStorage.signUp(value("phone"), value("password"), value("name"));
-      setMessage("验证码已发送，请查看手机短信；收到后在下方输入即可完成注册。");
+      setMessage("");
       startCooldown();
     } catch (error) {
       if (error.message.includes("验证码暂时发送失败")) {

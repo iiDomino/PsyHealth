@@ -123,6 +123,8 @@
 .stacked-scale-group[open] summary b { font-size:0; }
 .stacked-scale-group[open] summary b::before { content:"收起"; font-size:.82rem; }
 .stacked-scale-group .result-comparison { padding:0 14px 14px; }
+.organization-account-detail { display:grid; gap:12px; padding:16px 18px 18px; border-top:1px solid var(--line); color:var(--muted); }
+.organization-account-detail p { margin:0; line-height:1.6; }
 .trend-chart-card { margin:14px; padding:16px; border-radius:16px; background:linear-gradient(135deg,#f3fafb,#f8fbff); border:1px solid #dceaf0; }
 .trend-chart-card h4 { margin:0 0 6px; color:var(--brand-dark); }
 .trend-chart-card p { margin:0 0 10px; color:var(--muted); line-height:1.6; }

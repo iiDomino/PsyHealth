@@ -15,6 +15,7 @@
   document.getElementById("adminIdentity").innerHTML = identityLines.map(line => `<span>${line}</span>`).join("");
   if (role.role === "system_admin") {
     document.getElementById("codeSection").hidden = true;
+    document.getElementById("organizationsSection").hidden = false;
     document.getElementById("passwordSectionTitle").textContent = "修改系统管理员密码";
   } else {
     const profileSection = document.getElementById("orgProfileSection");
@@ -124,46 +125,6 @@
     });
   }
 
-  async function organizations() {
-    if (role.role !== "system_admin") return;
-    document.getElementById("organizationsSection").hidden = false;
-    const app = document.getElementById("organizationsApp");
-    const items = await S.organizations();
-    app.innerHTML = items.map(item => {
-      const expires = item.expiresAt ? new Date(item.expiresAt) : null;
-      const expiryValue = expires ? expires.toISOString().slice(0, 10) : "";
-      const expired = expires && expires <= new Date();
-      const state = item.status === "suspended" ? "已停止" : expired ? "已到期（暂停）" : item.status === "active" ? "正常使用" : "等待授权";
-      return `<article class="invite-form"><b>${esc(item.name)}</b><p>${esc(item.phone || item.email || "")}</p><p><strong>状态：${state}</strong> · 到期时间：${expires ? expires.toLocaleDateString("zh-CN") : "未授权"}</p><label class="text-field"><span>手动修改到期日</span><input type="date" data-expiry-for="${item.userId}" value="${expiryValue}" required></label><label class="text-field"><span>系统管理员备注</span><textarea class="note-textarea" data-note-for="${item.userId}" rows="3" placeholder="可记录服务情况、商务备注或内部提醒">${esc(item.adminNote || "")}</textarea></label><div class="inline-actions"><button data-u="${item.userId}" data-save-expiry="1">保存到期日</button><button data-u="${item.userId}" data-save-note="1">保存备注</button><button class="danger-ghost-btn" data-u="${item.userId}" data-delete-org="1">删除机构账户</button></div></article>`;
-    }).join("");
-    app.querySelectorAll("button").forEach(button => button.onclick = async () => {
-      if (button.dataset.deleteOrg) {
-        const password = prompt("删除机构账户会移除该机构登录账号和机构代码。请输入当前系统管理员密码确认：");
-        if (!password) return;
-        try {
-          await S.adminSignIn(session.email || session.phone, password);
-          await S.deleteOrganization(button.dataset.u);
-        } catch (error) {
-          alert(error.message || "管理员密码验证失败，未删除。");
-          return;
-        }
-      } else if (button.dataset.saveExpiry) {
-        const input = app.querySelector(`[data-expiry-for="${button.dataset.u}"]`);
-        if (!input.value) {
-          alert("请先选择到期日。");
-          return;
-        }
-        await S.setOrganizationExpiry(button.dataset.u, input.value);
-      } else if (button.dataset.saveNote) {
-        const input = app.querySelector(`[data-note-for="${button.dataset.u}"]`);
-        await S.setOrganizationNote(button.dataset.u, input.value);
-      } else {
-        await S.updateOrganization(button.dataset.u, button.dataset.stop ? "suspended" : "active", 0);
-      }
-      await organizations();
-    });
-  }
-
   async function trialInvites(message = "") {
     if (role.role !== "system_admin") return;
     const section = document.getElementById("trialInviteSection");
@@ -218,7 +179,6 @@
 
   if (role.role !== "system_admin") await codes();
   await trialInvites();
-  await organizations();
   document.getElementById("changePasswordForm").onsubmit = async event => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
