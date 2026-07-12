@@ -6,12 +6,6 @@
   const intakeEntry = document.getElementById("intakeEntryCard");
   const notice = document.getElementById("accessNotice");
   const consentCheck = document.getElementById("autoConsentCheck");
-  function readConsent() {
-    try { return localStorage.getItem("psyhealth-disclaimer-agreed-v1") === "yes"; } catch (_) { return false; }
-  }
-  if (readConsent() && consentCheck) {
-    consentCheck.checked = true;
-  }
   intakeEntry?.addEventListener("click", event => {
     event.preventDefault();
     if (consentCheck) consentCheck.checked = true;

@@ -6,6 +6,7 @@
   const PROFILE_KEY = "psyhealth-client-profile-memory-v1";
   const nameInput = form.elements.name;
   const phoneLast4Input = form.elements.phoneLast4;
+  const phoneDigitInputs = [...form.querySelectorAll(".phone-digit")];
   const codeInput = form.elements.referralCode;
   const birthYearSelect = form.elements.birthYear;
   let lookupToken = 0;
@@ -66,6 +67,18 @@
     return String(value || "").replace(/\D/g, "").slice(-4);
   }
 
+  function setPhoneDigits(value) {
+    const digits = normalizePhoneLast4(value).padEnd(4, " ");
+    phoneDigitInputs.forEach((input, index) => { input.value = digits[index].trim(); });
+    phoneLast4Input.value = normalizePhoneLast4(value);
+  }
+
+  function syncPhoneDigits() {
+    const value = normalizePhoneLast4(phoneDigitInputs.map(input => input.value).join(""));
+    phoneLast4Input.value = value;
+    return value;
+  }
+
   function showOrganization(name) {
     if (!name) return;
     let badge = document.getElementById("currentOrganizationBadge");
@@ -106,13 +119,27 @@
 
   ["change","blur"].forEach(eventName => {
     nameInput.addEventListener(eventName, lookupProfile);
-    phoneLast4Input.addEventListener(eventName, lookupProfile);
     codeInput.addEventListener(eventName, lookupProfile);
   });
-  phoneLast4Input.addEventListener("input", () => {
-    const phoneLast4 = normalizePhoneLast4(phoneLast4Input.value);
-    if (phoneLast4Input.value !== phoneLast4) phoneLast4Input.value = phoneLast4;
-    if (phoneLast4.length === 4) lookupProfile();
+  phoneDigitInputs.forEach((input, index) => {
+    input.addEventListener("input", event => {
+      const digits = normalizePhoneLast4(event.target.value);
+      event.target.value = digits.slice(-1);
+      const phoneLast4 = syncPhoneDigits();
+      if (event.target.value && index < phoneDigitInputs.length - 1) phoneDigitInputs[index + 1].focus();
+      if (phoneLast4.length === 4) lookupProfile();
+    });
+    input.addEventListener("keydown", event => {
+      if (event.key === "Backspace" && !input.value && index > 0) phoneDigitInputs[index - 1].focus();
+    });
+    input.addEventListener("paste", event => {
+      const digits = normalizePhoneLast4(event.clipboardData?.getData("text") || "");
+      if (!digits) return;
+      event.preventDefault();
+      setPhoneDigits(digits);
+      phoneDigitInputs[Math.min(digits.length, 4) - 1]?.focus();
+      if (digits.length >= 4) lookupProfile();
+    });
   });
 
   form.addEventListener("submit", async event => {
