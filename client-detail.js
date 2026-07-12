@@ -24,15 +24,22 @@
   const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list)).join("") || '<p class="muted-copy">尚未完成测评。</p>';
   const messages = sessions.filter(s => s.message).map(s => `<article class="note-card"><time>${esc(fmt(s.updatedAt || s.createdAt))}</time><p>${esc(s.message)}</p></article>`).join("") || '<p class="muted-copy">暂无来访者留言。</p>';
   const logs = (profile.workLogs || []).map(log => renderLog(log)).join("") || '<p class="muted-copy" id="emptyLogs">暂无工作日志。</p>';
-  app.innerHTML = `<section class="panel report-panel" id="clientProfileExport"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p><div class="actions no-print"><button class="primary-btn" id="exportClientPdfBtn" type="button">导出个人档案 PDF</button></div></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea no-print" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message no-print"></p><button class="secondary-btn no-print" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
-  document.getElementById("exportClientPdfBtn").addEventListener("click", () => {
+  app.innerHTML = `<section class="panel report-panel" id="clientProfileExport"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p><div class="actions no-print"><button class="primary-btn" id="exportClientPdfBtn" type="button">导出个人档案 PDF</button></div></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea no-print" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message no-print"></p><button class="secondary-btn no-print" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section></section>`;
+  document.getElementById("exportClientPdfBtn").addEventListener("click", async () => {
+    const button = document.getElementById("exportClientPdfBtn");
     const opened = [...document.querySelectorAll(".stacked-scale-group")].filter(item => item.open);
     document.querySelectorAll(".stacked-scale-group").forEach(item => { item.open = true; });
-    document.title = `${profile.name || intake.name || "来访者"}-个人档案`;
-    window.print();
-    setTimeout(() => {
+    button.disabled = true;
+    button.textContent = "正在生成 PDF…";
+    try {
+      await exportProfilePdf(`${profile.name || intake.name || "来访者"}-个人档案.pdf`);
+    } catch (error) {
+      alert(error.message || "PDF 导出失败，请稍后重试。");
+    } finally {
       document.querySelectorAll(".stacked-scale-group").forEach(item => { item.open = opened.includes(item); });
-    }, 600);
+      button.disabled = false;
+      button.textContent = "导出个人档案 PDF";
+    }
   });
   document.getElementById("saveWorkLogBtn").addEventListener("click", async () => {
     const input = document.getElementById("workLogInput");
@@ -114,5 +121,78 @@
   }
   function renderLog(log) {
     return `<article class="note-card"><time>生成日期：${esc(fmt(log.createdAt))}${log.updatedAt && log.updatedAt !== log.createdAt ? ` · 更新：${esc(fmt(log.updatedAt))}` : ""}</time><p>${esc(log.content)}</p><div class="inline-actions"><button class="secondary-btn" data-edit-log="${esc(log.id)}" type="button">修改</button><button class="danger-ghost-btn" data-delete-log="${esc(log.id)}" type="button">删除</button></div></article>`;
+  }
+  async function exportProfilePdf(filename) {
+    if (typeof html2canvas !== "function") throw new Error("PDF 导出组件尚未加载完成，请刷新后重试。");
+    const target = document.getElementById("clientProfileExport");
+    target.classList.add("exporting-pdf");
+    let canvas;
+    try {
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      canvas = await html2canvas(target, {scale:2, backgroundColor:"#ffffff", useCORS:true});
+    } finally {
+      target.classList.remove("exporting-pdf");
+    }
+    const pdfBytes = canvasToPdf(canvas);
+    const blob = new Blob([pdfBytes], {type:"application/pdf"});
+    const link = document.createElement("a");
+    link.download = filename;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  }
+  function canvasToPdf(canvas) {
+    const pageW = 595.28, pageH = 841.89;
+    const pageHPx = Math.floor(canvas.width * pageH / pageW);
+    const images = [];
+    for (let y = 0; y < canvas.height; y += pageHPx) {
+      const slice = document.createElement("canvas");
+      slice.width = canvas.width;
+      slice.height = pageHPx;
+      const ctx = slice.getContext("2d");
+      ctx.fillStyle = "#fff";
+      ctx.fillRect(0, 0, slice.width, slice.height);
+      ctx.drawImage(canvas, 0, y, canvas.width, Math.min(pageHPx, canvas.height - y), 0, 0, canvas.width, Math.min(pageHPx, canvas.height - y));
+      images.push({data:base64ToBytes(slice.toDataURL("image/jpeg", 0.92).split(",")[1]), width:slice.width, height:slice.height});
+    }
+    return buildPdf(images, pageW, pageH);
+  }
+  function base64ToBytes(base64) {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) bytes[i] = binary.charCodeAt(i);
+    return bytes;
+  }
+  function buildPdf(images, pageW, pageH) {
+    const chunks = [];
+    const offsets = [0];
+    let length = 0;
+    const addText = text => { const bytes = new TextEncoder().encode(text); chunks.push(bytes); length += bytes.length; };
+    const addBytes = bytes => { chunks.push(bytes); length += bytes.length; };
+    const addObj = (num, body) => { offsets[num] = length; addText(`${num} 0 obj\n${body}\nendobj\n`); };
+    addText("%PDF-1.4\n");
+    const pageNums = images.map((_, index) => 3 + index * 3);
+    addObj(1, "<< /Type /Catalog /Pages 2 0 R >>");
+    addObj(2, `<< /Type /Pages /Count ${images.length} /Kids [${pageNums.map(num => `${num} 0 R`).join(" ")}] >>`);
+    images.forEach((image, index) => {
+      const pageNum = 3 + index * 3;
+      const contentNum = pageNum + 1;
+      const imageNum = pageNum + 2;
+      addObj(pageNum, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageW} ${pageH}] /Resources << /XObject << /Im${index} ${imageNum} 0 R >> >> /Contents ${contentNum} 0 R >>`);
+      const content = `q\n${pageW} 0 0 ${pageH} 0 0 cm\n/Im${index} Do\nQ`;
+      addObj(contentNum, `<< /Length ${content.length} >>\nstream\n${content}\nendstream`);
+      offsets[imageNum] = length;
+      addText(`${imageNum} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${image.width} /Height ${image.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${image.data.length} >>\nstream\n`);
+      addBytes(image.data);
+      addText("\nendstream\nendobj\n");
+    });
+    const xref = length;
+    addText(`xref\n0 ${offsets.length}\n0000000000 65535 f \n`);
+    for (let i = 1; i < offsets.length; i += 1) addText(`${String(offsets[i]).padStart(10, "0")} 00000 n \n`);
+    addText(`trailer\n<< /Size ${offsets.length} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF`);
+    const output = new Uint8Array(length);
+    let cursor = 0;
+    chunks.forEach(chunk => { output.set(chunk, cursor); cursor += chunk.length; });
+    return output;
   }
 })();

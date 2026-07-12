@@ -127,6 +127,7 @@
 .trend-chart .trend-axis { stroke:#cbdde5; stroke-width:2; }
 .trend-chart .trend-y-label { text-anchor:start; fill:var(--muted); font-size:12px; }
 .trend-chart .trend-x-label { fill:var(--muted); font-size:12px; }
+.exporting-pdf .no-print,.exporting-pdf .inline-actions { display:none !important; }
 .compact-result { background:#fff; }
 .client-card strong { font-size:1.2rem; }
 .organization-client-group { display:grid; gap:10px; margin:0 0 26px; }
