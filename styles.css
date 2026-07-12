@@ -43,8 +43,25 @@
 .text-field input,.text-field select { width: 100%; min-height: 48px; border: 1px solid #c7dce3; border-radius: 13px; padding: 10px 13px; background: #fff; color: #173f55; font: inherit; box-sizing: border-box; }
 .text-field small { color: var(--muted); font-weight: 500; }
 .phone-last4-field { align-content: start; }
-.phone-digit-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
-.phone-digit-grid .phone-digit { min-height: 56px; text-align: center; font-size: 1.25rem; font-weight: 850; padding: 8px; }
+.phone-digit-grid { display: flex; align-items: center; gap: 10px; width: 100%; }
+.phone-digit-grid .phone-digit {
+  width: 58px;
+  min-width: 0;
+  height: 58px;
+  min-height: 58px;
+  flex: 0 0 58px;
+  padding: 0;
+  text-align: center;
+  font-size: 1.35rem;
+  font-weight: 850;
+  line-height: 1;
+  border-radius: 16px;
+}
+.phone-digit-grid .phone-digit:focus {
+  border-color: #89b3ff;
+  box-shadow: 0 0 0 4px rgba(95,145,255,.28);
+  outline: none;
+}
 .admin-entry-link,.text-button { color: var(--brand-dark); background: none; border: 0; text-decoration: none; font-weight: 750; cursor: pointer; }
 .library-hero .admin-entry-link { display: inline-flex; align-items: center; min-height: 40px; padding: 8px 16px; border-radius: 12px; color: #fff; background: linear-gradient(135deg,var(--brand),var(--brand-dark)); box-shadow: 0 7px 18px rgba(45,111,148,.22); }
 .admin-login-panel { width: min(100%,520px); margin: auto; }

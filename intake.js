@@ -169,7 +169,7 @@
     } catch (error) {
       formError.textContent = error.message || "资料暂未保存成功，请稍后重试。";
       submitButton.disabled = false;
-      submitButton.textContent = "保存来访资料";
+      submitButton.textContent = "下一步";
       return;
     }
     rememberProfile(intake, code);
