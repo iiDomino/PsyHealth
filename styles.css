@@ -528,9 +528,11 @@ h2 { font-size: clamp(1.35rem, 4vw, 1.8rem); line-height: 1.35; }
 
 @media print {
   body { background: white; }
-  .topbar, .actions, .privacy-pill { display: none !important; }
+  .topbar, .actions, .privacy-pill, .no-print, footer { display: none !important; }
   .app-shell { width: 100%; padding: 0; }
   .panel { box-shadow: none; border: 0; }
+  .stacked-scale-group { break-inside: avoid; box-shadow: none; }
+  .report-result, .note-card, .trend-chart-card { break-inside: avoid; }
 }
 
 @media (prefers-reduced-motion: reduce) {

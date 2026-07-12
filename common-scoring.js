@@ -16,7 +16,6 @@
       `重点维度：${topFactors.join("、")}。${highFactors.length ? `其中${highFactors.join("、")}均分达到2.00或以上，建议结合访谈重点了解。` : "未见均分达到2.00或以上的突出维度。"}`
     ];
     factorScores.forEach(item => details.push(`${item.name}均分：${item.score.toFixed(2)}`));
-    details.push("解释说明：原文件未提供统一临界值，本页按各维度均分进行描述性呈现，适合作为儿童咨询前资料整理和进一步访谈线索。");
     return {score:totalAvg.toFixed(2), scoreLabel:level, details};
   }
 
@@ -68,7 +67,6 @@
       `优先沟通维度：${low.join("、")}。建议结合伴侣双方作答、访谈材料和实际冲突情境共同理解。`
     ];
     factorScores.forEach(item => details.push(`${item.name}：${item.score}/${item.max}分。${item.meaning}。`));
-    details.push("解释说明：该结果用于婚姻关系质量的结构化梳理，各因子应结合双方结果分别查看，不宜单独作为关系决策依据。");
     return {score:`${total} / 620`, scoreLabel:level, details};
   }
 
@@ -83,7 +81,7 @@
         ? "处于原文件样本平均值上下1个标准差的范围内"
         : "低于原文件样本平均值1个标准差以上";
     const level = total >= 13 ? "幸福感水平较高" : total >= 9.6 ? "幸福感处于常见范围" : "幸福感偏低，建议关注";
-    return {score:total.toFixed(2), scoreLabel:level, details:[`总体评价：${level}。${evaluation}。`,`幸福感指数：${total.toFixed(2)}`,`理论范围：2.10（最低）—14.70（最高）`,`原文件样本：平均分11.8，标准差2.2。`,`解释说明：分数反映当前主观幸福体验，可结合生活事件、社会支持、睡眠和压力水平进一步理解。`]};
+    return {score:total.toFixed(2), scoreLabel:level, details:[`总体评价：${level}。${evaluation}。`,`幸福感指数：${total.toFixed(2)}`,`理论范围：2.10（最低）—14.70（最高）`,`原文件样本：平均分11.8，标准差2.2。`]};
   }
 
   function ucla(values) {

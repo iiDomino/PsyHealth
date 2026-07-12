@@ -24,7 +24,16 @@
   const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list)).join("") || '<p class="muted-copy">尚未完成测评。</p>';
   const messages = sessions.filter(s => s.message).map(s => `<article class="note-card"><time>${esc(fmt(s.updatedAt || s.createdAt))}</time><p>${esc(s.message)}</p></article>`).join("") || '<p class="muted-copy">暂无来访者留言。</p>';
   const logs = (profile.workLogs || []).map(log => renderLog(log)).join("") || '<p class="muted-copy" id="emptyLogs">暂无工作日志。</p>';
-  app.innerHTML = `<section class="panel report-panel"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message"></p><button class="secondary-btn" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
+  app.innerHTML = `<section class="panel report-panel" id="clientProfileExport"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p><div class="actions no-print"><button class="primary-btn" id="exportClientPdfBtn" type="button">导出个人档案 PDF</button></div></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea no-print" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message no-print"></p><button class="secondary-btn no-print" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
+  document.getElementById("exportClientPdfBtn").addEventListener("click", () => {
+    const opened = [...document.querySelectorAll(".stacked-scale-group")].filter(item => item.open);
+    document.querySelectorAll(".stacked-scale-group").forEach(item => { item.open = true; });
+    document.title = `${profile.name || intake.name || "来访者"}-个人档案`;
+    window.print();
+    setTimeout(() => {
+      document.querySelectorAll(".stacked-scale-group").forEach(item => { item.open = opened.includes(item); });
+    }, 600);
+  });
   document.getElementById("saveWorkLogBtn").addEventListener("click", async () => {
     const input = document.getElementById("workLogInput");
     const msg = document.getElementById("workLogMessage");
@@ -66,8 +75,12 @@
     return `<details class="scale-group stacked-scale-group"${openAttr}><summary><span><strong>${esc(title)}</strong><small>${esc(latestFirst.length)} 次测试 · 最新：${esc(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${esc(trend)}</em></span><b>展开</b></summary>${renderTrendChart(chronological)}<div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
   }
   function renderResult(result, index, total) {
-    const details = Array.isArray(result.details) && result.details.length ? result.details : String(result.summary || "").split("；").filter(Boolean);
+    const details = cleanDetails(Array.isArray(result.details) && result.details.length ? result.details : String(result.summary || "").split("；").filter(Boolean));
     return `<article class="report-result compact-result"><div><span class="report-scale">${index === 0 ? "最新" : `倒数第 ${index + 1} 次`} · 共 ${total} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
+  }
+  function cleanDetails(details) {
+    const removedPrefix = "解释" + "说明";
+    return details.map(line => String(line || "").trim()).filter(line => line && !line.startsWith(removedPrefix));
   }
   function trendText(list) {
     if (list.length < 2) return "目前仅有 1 次结果，暂不形成趋势判断。";

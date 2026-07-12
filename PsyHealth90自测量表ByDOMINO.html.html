@@ -567,8 +567,7 @@
                 `总体评价：${level}。总分${totalScore}，总指数${totalIndex.toFixed(2)}，阳性项目${positiveItems}项，阳性均分${positiveAvg}。`,
                 `达到临界的因子：${criticalText}。`,
                 `接近临界或处于中间区间的因子：${watchText}。`,
-                `相对突出的维度：${top.map(item => `${item.name}（${item.raw}分，均分${item.mean.toFixed(2)}）`).join('、')}。`,
-                '解释说明：本量表反映近期自评症状倾向，结果会受作答状态、近期事件和理解差异影响；请结合访谈、功能受损情况与专业人员意见理解，不等同于医学诊断。'
+                `相对突出的维度：${top.map(item => `${item.name}（${item.raw}分，均分${item.mean.toFixed(2)}）`).join('、')}。`
             ]
         };
     }
@@ -658,8 +657,8 @@
     updateProgress();
 })();
 </script>
-<script src="cloud-config.js?v=20260712f"></script>
-<script src="storage.js?v=20260712f"></script>
-<script src="access-control.js?v=20260712f"></script>
+<script src="cloud-config.js?v=20260712g"></script>
+<script src="storage.js?v=20260712g"></script>
+<script src="access-control.js?v=20260712g"></script>
 </body>
 </html>

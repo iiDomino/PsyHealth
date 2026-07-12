@@ -84,7 +84,11 @@
   }
 
   function renderResult(item, index) {
-    const detailLines = Array.isArray(item.details) && item.details.length ? item.details : String(item.summary || "").split("；").filter(Boolean);
+    const detailLines = cleanDetails(Array.isArray(item.details) && item.details.length ? item.details : String(item.summary || "").split("；").filter(Boolean));
     return `<article class="report-result"><div><span class="report-scale">${index+1}. ${escapeHTML(resultNames[item.id] || item.shortTitle || "未命名测评")}</span><h3>${escapeHTML(item.resultTitle || item.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${escapeHTML(item.score)}</strong><span>${escapeHTML(item.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${detailLines.map(line => `<li>${escapeHTML(line)}</li>`).join("")}</ul><time class="result-time">完成时间：${escapeHTML(fmt(item.completedAt))}</time></article>`;
+  }
+  function cleanDetails(details) {
+    const removedPrefix = "解释" + "说明";
+    return details.map(line => String(line || "").trim()).filter(line => line && !line.startsWith(removedPrefix));
   }
 })();
