@@ -62,7 +62,7 @@
   }
   function renderResult(result, index) {
     const details = Array.isArray(result.details) && result.details.length ? result.details : String(result.summary || "").split("；").filter(Boolean);
-    return `<article class="report-result compact-result"><div><span class="report-scale">第 ${index + 1} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.slice(0, 6).map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
+    return `<article class="report-result compact-result"><div><span class="report-scale">第 ${index + 1} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
   }
   function trendText(list) {
     if (list.length < 2) return "目前仅有 1 次结果，暂不形成趋势判断。";

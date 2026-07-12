@@ -362,6 +362,21 @@
                 if (t >= 50 && t <= 64) return '不合适的爱情，前途不佳。';
                 return '早日结束，快刀斩乱麻，当断不断，必留后患';
             }
+            function relationshipAdvice(total, g1, g2, g3) {
+                const low = [
+                    ['情感基础', g1, '重点核对彼此的亲近感、欣赏、信任、安全感和相处体验。'],
+                    ['价值观契合', g2, '重点讨论生活目标、金钱观、家庭边界、婚恋期待和冲突处理原则。'],
+                    ['理性承诺', g3, '重点评估双方是否愿意承担关系责任、面对现实压力并持续投入。']
+                ].sort((a,b) => a[1] - b[1])[0];
+                const global = total >= 80
+                    ? '整体匹配度较高，可继续维护关系中的优势，同时保持真实沟通。'
+                    : total >= 65
+                        ? '关系具备一定可能性，但需要正视差异并主动调整互动方式。'
+                        : total >= 50
+                            ? '关系中存在较多不确定或阻碍，建议谨慎评估现实条件与长期相处成本。'
+                            : '关系风险较高，建议在安全、尊重和现实评估的基础上慎重决定。';
+                return [`关系理解建议：${global}`, `优先讨论维度：${low[0]}（${low[1]}分）。${low[2]}`, '解释说明：本测评用于梳理亲密关系中的主观匹配体验，不用于替代伴侣沟通、咨询访谈或重大关系决策。'];
+            }
 
             // 当前日期时间字符串
             function getNowDateTime() {
@@ -448,10 +463,11 @@
                 const eval2 = evalGroup2(g2);
                 const eval3 = evalGroup3(g3);
                 const finalMsg = totalEval(total);
+                const advice = relationshipAdvice(total, g1, g2, g3);
                 const dateTime = getNowDateTime();
                 try {
                     let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-                    const details = [`情感基础：${g1}分（${eval1}）`,`价值观契合：${g2}分（${eval2}）`,`理性承诺：${g3}分（${eval3}）`,`总分：${total}分`,`总体评价：${finalMsg}`];
+                    const details = [`总体评价：${finalMsg}`, ...advice, `情感基础：${g1}分（${eval1}）`,`价值观契合：${g2}分（${eval2}）`,`理性承诺：${g3}分（${eval3}）`,`总分：${total}分`];
                     const record = { id:'legacy-love40', shortTitle:'爱情关系合适度测评', resultTitle:finalMsg, score:total, scoreLabel:'总分', summary:details.join('；'), details, completedAt:new Date().toISOString() };
                     window.PsyHealthStorage.saveResult(record);
                 } catch (error) {}
@@ -477,6 +493,10 @@
                                 <div class="total-area">
                                     <div class="total-score">总分 ${total}</div>
                                     <div class="total-verdict">${finalMsg}</div>
+                                </div>
+                                <div class="score-group">
+                                    <div class="group-head">关系理解建议</div>
+                                    ${advice.map(line => `<div class="score-line"><span>${line}</span></div>`).join('')}
                                 </div>
                                 <div class="datetime">📅 ${dateTime}</div>
                                 <button class="capture-btn" id="captureResultBtn">📸 截图保存结果</button>
@@ -511,8 +531,8 @@
 
         })();
     </script>
-    <script src="cloud-config.js?v=20260712d"></script>
-    <script src="storage.js?v=20260712d"></script>
-    <script src="access-control.js?v=20260712d"></script>
+    <script src="cloud-config.js?v=20260712e"></script>
+    <script src="storage.js?v=20260712e"></script>
+    <script src="access-control.js?v=20260712e"></script>
 </body>
 </html>

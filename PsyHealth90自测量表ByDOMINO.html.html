@@ -540,18 +540,52 @@
         return { sums, totalScore, positiveItems, negativeItems, positiveAvg };
     }
 
+    function buildOverallEvaluation(sums, totalScore, positiveItems, positiveAvg) {
+        const totalIndex = Number((totalScore / 90).toFixed(2));
+        const factorRows = Object.entries(factorMeta).map(([key, meta]) => {
+            const raw = sums[key];
+            const mean = Number((raw / meta.count).toFixed(2));
+            const ratio = raw / meta.crit;
+            const level = raw >= meta.crit ? '达到临界值' : raw >= meta.crit / 2 ? '中间区间' : '较低区间';
+            return { key, name: meta.name, raw, mean, crit: meta.crit, ratio, level };
+        });
+        const critical = factorRows.filter(item => item.raw >= item.crit).sort((a,b) => b.ratio - a.ratio);
+        const watch = factorRows.filter(item => item.raw < item.crit && item.raw >= item.crit / 2).sort((a,b) => b.ratio - a.ratio);
+        const top = factorRows.slice().sort((a,b) => b.ratio - a.ratio).slice(0,3);
+        let level = '整体症状负荷较低';
+        if (critical.length >= 3 || totalIndex >= 1.5 || positiveItems >= 43) level = '整体症状负荷较高，建议重点关注';
+        else if (critical.length || totalIndex >= 1 || positiveItems >= 25) level = '存在一定心理症状负荷，建议结合访谈理解';
+        const criticalText = critical.length ? critical.map(item => `${item.name}${item.raw}分`).join('、') : '暂无因子达到临界值';
+        const watchText = watch.length ? watch.map(item => `${item.name}${item.raw}分`).join('、') : '暂无明显接近临界的因子';
+        return {
+            level,
+            totalIndex: totalIndex.toFixed(2),
+            criticalText,
+            watchText,
+            topText: top.map(item => `${item.name}${item.raw}分/临界${item.crit}`).join('、'),
+            details: [
+                `总体评价：${level}。总分${totalScore}，总指数${totalIndex.toFixed(2)}，阳性项目${positiveItems}项，阳性均分${positiveAvg}。`,
+                `达到临界的因子：${criticalText}。`,
+                `接近临界或处于中间区间的因子：${watchText}。`,
+                `相对突出的维度：${top.map(item => `${item.name}（${item.raw}分，均分${item.mean.toFixed(2)}）`).join('、')}。`,
+                '解释说明：本量表反映近期自评症状倾向，结果会受作答状态、近期事件和理解差异影响；请结合访谈、功能受损情况与专业人员意见理解，不等同于医学诊断。'
+            ]
+        };
+    }
+
     function showResultView() {
         const { sums, totalScore, positiveItems, negativeItems, positiveAvg } = computeResults();
+        const overall = buildOverallEvaluation(sums, totalScore, positiveItems, positiveAvg);
         const detailLines = Object.entries(factorMeta).map(([key, meta]) => {
             const raw = sums[key];
             const mean = (raw / meta.count).toFixed(2);
             const level = raw >= meta.crit ? '达到临界值' : raw >= meta.crit / 2 ? '中间区间' : '较低区间';
             return `${meta.name}：${raw}分，均分${mean}，${level}（临界值≥${meta.crit}）`;
         });
-        detailLines.unshift(`总分${totalScore}；总指数${(totalScore/90).toFixed(2)}；阳性项目${positiveItems}；阴性项目${negativeItems}；阳性均分${positiveAvg}`);
+        detailLines.unshift(...overall.details, `阴性项目：${negativeItems}项`);
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-psy90', shortTitle:'心理健康90自测量表', resultTitle:'总分 ' + totalScore, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:`阳性项目：${positiveItems}；阴性项目：${negativeItems}；阳性均分：${positiveAvg}`, details:detailLines, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-psy90', shortTitle:'心理健康90自测量表', resultTitle:overall.level, score:(totalScore/90).toFixed(2), scoreLabel:'总指数', summary:overall.details.join('；'), details:detailLines, completedAt:new Date().toISOString() };
             window.PsyHealthStorage.saveResult(record);
         } catch (error) {}
         let gridHtml = '';
@@ -563,7 +597,7 @@
             gridHtml += `<div class="factor-card" data-factor="${key}"><div class="factor-header"><span>${meta.name}</span> <span>${raw}</span></div><div class="factor-bar"><div class="factor-fill" style="width:${percent}%;"></div></div><div class="factor-score">均分${mean} / ${level} / 临界≥${meta.crit}</div></div>`;
         }
         resultGrid.innerHTML = gridHtml;
-        globalStatsResult.innerHTML = `<div>📊 总分: ${totalScore}</div><div>📌 总指数: ${(totalScore/90).toFixed(2)}</div><div>🔹 阳性项目: ${positiveItems}</div><div>🔸 阴性项目: ${negativeItems}</div><div>📈 阳性均分: ${positiveAvg}</div>`;
+        globalStatsResult.innerHTML = `<div>🧭 总体评价: ${overall.level}</div><div>📊 总分: ${totalScore}</div><div>📌 总指数: ${(totalScore/90).toFixed(2)}</div><div>🔹 阳性项目: ${positiveItems}</div><div>🔸 阴性项目: ${negativeItems}</div><div>📈 阳性均分: ${positiveAvg}</div><div>⚠️ 达到临界: ${overall.criticalText}</div><div>📍 重点维度: ${overall.topText}</div>`;
         
         // 设置评测日期时间
         const now = new Date();
@@ -624,8 +658,8 @@
     updateProgress();
 })();
 </script>
-<script src="cloud-config.js?v=20260712d"></script>
-<script src="storage.js?v=20260712d"></script>
-<script src="access-control.js?v=20260712d"></script>
+<script src="cloud-config.js?v=20260712e"></script>
+<script src="storage.js?v=20260712e"></script>
+<script src="access-control.js?v=20260712e"></script>
 </body>
 </html>

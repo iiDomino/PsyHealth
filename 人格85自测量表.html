@@ -586,34 +586,43 @@
         // 解释文本
         let interp = '';
         const detailTexts = [];
+        const profileParts = [];
         if (scores.E > 15) {
             interp += '🔹 <strong>E量表 (外向)：</strong>分数高于15，表示人格外向，可能是好交际，渴望刺激和冒险，情感易于冲动。';
             detailTexts.push(`E量表：${scores.E}分，外向`);
+            profileParts.push('外向活跃');
         } else if (scores.E < 8) {
             interp += '🔹 <strong>E量表 (内向)：</strong>分数低于8，表示人格内向，如好静，富于内省，不喜欢刺激，喜欢有秩序的生活方式，情绪比较稳定。';
             detailTexts.push(`E量表：${scores.E}分，内向`);
+            profileParts.push('内向审慎');
         } else {
             interp += `🔹 <strong>E量表 (中间型)：</strong>得分 ${scores.E} 在8-15之间，性格倾向不明显，兼具内外向特征。`;
             detailTexts.push(`E量表：${scores.E}分，中间型`);
+            profileParts.push('内外向中间型');
         }
 
         if (scores.N > 14) {
             interp += '<br>🔹 <strong>N量表 (情绪不稳定)：</strong>分数高于14，表示焦虑、忧心忡忡、常郁郁不乐，有强烈情绪反应，甚至出现不够理智的行为。';
             detailTexts.push(`N量表：${scores.N}分，情绪不稳定`);
+            profileParts.push('情绪反应较强');
         } else if (scores.N < 9) {
             interp += '<br>🔹 <strong>N量表 (情绪稳定)：</strong>分数低于9，表示情绪稳定。';
             detailTexts.push(`N量表：${scores.N}分，情绪稳定`);
+            profileParts.push('情绪较稳定');
         } else {
             interp += `<br>🔹 <strong>N量表 (情绪性中等)：</strong>得分 ${scores.N} 在9-14之间，情绪反应适度。`;
             detailTexts.push(`N量表：${scores.N}分，情绪性中等`);
+            profileParts.push('情绪性中等');
         }
 
         if (scores.P > 8) {
             interp += '<br>🔹 <strong>P量表 (精神质倾向)：</strong>分数高于8，表示可能是孤独、不关心他人，难以适应外部环境，不近人情，与别人不友好，喜欢寻衅搅扰，喜欢干奇特的事情，并且不顾危险。';
             detailTexts.push(`P量表：${scores.P}分，精神质倾向`);
+            profileParts.push('人际适应需关注');
         } else {
             interp += `<br>🔹 <strong>P量表 (正常范围)：</strong>得分 ${scores.P} ≤8，无显著精神质倾向。`;
             detailTexts.push(`P量表：${scores.P}分，正常范围`);
+            profileParts.push('精神质维度未见明显升高');
         }
 
         let lWarning = '';
@@ -625,12 +634,15 @@
             interp += `<br>🔹 <strong>L量表 (诚实度正常)：</strong>得分 ${scores.L} ≤18，回答相对真实。`;
             detailTexts.push(`L量表：${scores.L}分，回答相对真实`);
         }
+        const overallProfile = `总体评价：${profileParts.join('、')}。${scores.L > 18 ? '由于L量表较高，本次人格结果需谨慎解释，建议结合访谈和具体情境核对。' : '本次结果可作为了解人格倾向和沟通风格的参考。'}`;
+        detailTexts.unshift(overallProfile);
+        interp = `🧭 <strong>总体人格概貌：</strong>${overallProfile.replace(/^总体评价：/, '')}<br>${interp}`;
 
         interpretDiv.innerHTML = interp;
         extraWarning.innerHTML = lWarning;
         try {
             let records = JSON.parse(sessionStorage.getItem('psyhealth-session-results') || '[]');
-            const record = { id:'legacy-personality85', shortTitle:'人格85自测量表', resultTitle:'人格四维度原始分', score:`E:${scores.E} · N:${scores.N} · P:${scores.P} · L:${scores.L}`, scoreLabel:'结果', summary:detailTexts.join('；'), details:detailTexts, completedAt:new Date().toISOString() };
+            const record = { id:'legacy-personality85', shortTitle:'人格85自测量表', resultTitle:'人格倾向概貌', score:`E:${scores.E} · N:${scores.N} · P:${scores.P} · L:${scores.L}`, scoreLabel:'四维度原始分', summary:detailTexts.join('；'), details:detailTexts, completedAt:new Date().toISOString() };
             window.PsyHealthStorage.saveResult(record);
         } catch (error) {}
 
@@ -699,8 +711,8 @@
     resetTest();
 })();
 </script>
-<script src="cloud-config.js?v=20260712d"></script>
-<script src="storage.js?v=20260712d"></script>
-<script src="access-control.js?v=20260712d"></script>
+<script src="cloud-config.js?v=20260712e"></script>
+<script src="storage.js?v=20260712e"></script>
+<script src="access-control.js?v=20260712e"></script>
 </body>
 </html>
