@@ -42,7 +42,7 @@
       if ([...birthYearSelect.options].some(option => option.value === guessedYear)) form.elements.birthYear.value = guessedYear;
     }
     form.querySelectorAll('input[name="topic"]').forEach(box => { box.checked = (profile.topics || []).includes(box.value); });
-    formError.textContent = source === "云端" ? "" : "已自动填入本机保存的信息，可核对后继续，也可以手动修改。";
+    formError.textContent = "";
   }
 
   function rememberProfile(intake, code) {
