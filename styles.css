@@ -35,6 +35,7 @@
 .reference-card p:nth-of-type(3) svg { width: 17px; }
 .consent-line { display: flex; align-items: flex-start; gap: 9px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(219,181,113,.35); color: #684816; font-weight: 750; line-height: 1.55; }
 .consent-line input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--brand); }
+.consent-message { margin: 8px 0 0 27px; min-height: 1.4em; color: #9a3412; font-weight: 750; font-size: .9rem; }
 
 /* 来访者资料 */
 .profile-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; margin: 24px 0; }
