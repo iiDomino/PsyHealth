@@ -410,9 +410,10 @@
             font-weight: 850;
         }
         .question-text {
-            height: auto;
-            min-height: 0;
-            max-height: none;
+            height: 4.95em;
+            min-height: 4.95em;
+            max-height: 4.95em;
+            overflow-y: auto;
             margin: 0;
             color: #163f52;
             font-size: clamp(1.1rem,3vw,1.4rem);
@@ -538,7 +539,7 @@
             .title-main { font-size: 1.3rem; }
             .card { min-height: 118px; padding: 16px 14px; gap: 8px; }
             .question-num { font-size: .78rem; }
-            .question-text { font-size: 1rem; line-height: 1.48; }
+            .question-text { height: 4.44em; min-height: 4.44em; max-height: 4.44em; overflow-y: auto; font-size: 1rem; line-height: 1.48; }
             .question-hint { font-size: .8rem; }
             .option-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
             .option-btn { min-height: 46px; padding: 9px 10px; border-radius: 14px; gap: 7px; }

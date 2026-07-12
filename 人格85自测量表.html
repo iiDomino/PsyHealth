@@ -331,13 +331,31 @@
             font-weight: 850;
         }
         .q-text-large {
-            min-height: 0;
-            max-height: none;
+            height: 4.95em;
+            min-height: 4.95em;
+            max-height: 4.95em;
+            overflow-y: auto;
             margin: 0;
             color: #163f52;
             font-size: clamp(1.1rem,3vw,1.4rem);
             font-weight: 800;
             line-height: 1.65;
+        }
+        .progress-section {
+            margin: 0 0 10px;
+        }
+        .progress-track {
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(211,234,239,.9);
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: inherit;
+            background: linear-gradient(90deg,#2b9eb3,#ef91a9);
+            transition: width .2s ease;
         }
         .options-row {
             display: grid;
@@ -460,8 +478,10 @@
                 font-size: 1rem;
                 line-height: 1.48;
                 margin-bottom: 0;
-                min-height: 0;
-                max-height: 24vh;
+                height: 4.44em;
+                min-height: 4.44em;
+                max-height: 4.44em;
+                overflow-y: auto;
             }
 
             .options-row { gap: 9px; margin: 6px 0 0; }
@@ -491,6 +511,9 @@
     <h1>人格85自测量表</h1>
     <div class="guide">
         <strong>使用提示：</strong> 请根据第一反应回答，每题选择“是”或“否”后会自动进入下一题。
+    </div>
+    <div class="progress-section" id="progressSection" aria-label="测评进度">
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     </div>
 
     <!-- 单题区域 (初始显示) -->
@@ -649,6 +672,8 @@
     // DOM 元素
     const qNumberDiv = document.getElementById('questionNumber');
     const qTextDiv = document.getElementById('questionText');
+    const progressFill = document.getElementById('progressFill');
+    const progressSection = document.getElementById('progressSection');
     const radioYes = document.querySelector('input[value="yes"]');
     const radioNo = document.querySelector('input[value="no"]');
     const prevBtn = document.getElementById('prevBtn');
@@ -669,6 +694,7 @@
     function updateQuestionDisplay() {
         qNumberDiv.textContent = `第 ${currentIndex+1} / 85 题`;
         qTextDiv.textContent = questions[currentIndex];
+        updateProgress();
         radioYes.checked = false;
         radioNo.checked = false;
         const saved = answers[currentIndex];
@@ -686,9 +712,15 @@
         }
     }
 
+    function updateProgress() {
+        const answered = answers.filter(ans => ans !== null).length;
+        progressFill.style.width = (answered / 85 * 100) + '%';
+    }
+
     function saveCurrentAnswer() {
         if (radioYes.checked) answers[currentIndex] = 'yes';
         else if (radioNo.checked) answers[currentIndex] = 'no';
+        updateProgress();
     }
 
     function goToIndex(index) {
@@ -738,6 +770,7 @@
 
         // 隐藏指导语
         if (guide) guide.style.display = 'none';
+        if (progressSection) progressSection.style.display = 'none';
 
         renderResults(computeScores());
     }
@@ -859,6 +892,7 @@
 
         // 恢复指导语显示
         if (guide) guide.style.display = 'block';
+        if (progressSection) progressSection.style.display = 'block';
 
     }
 

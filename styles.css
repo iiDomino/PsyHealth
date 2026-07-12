@@ -196,7 +196,7 @@
   .legacy-card h1 { font-size: 1.3rem; margin-bottom: 8px; }
   .legacy-kicker { font-size: .76rem; }
   .legacy-instruction { max-height: 2.8em; margin: 4px 0; overflow-y: auto; font-size: .82rem; line-height: 1.45; }
-  .legacy-question { height: auto; min-height: 118px; max-height: 24vh; margin: 14px 0 12px; padding: 16px 14px; gap: 8px; }
+  .legacy-question { height: clamp(128px,24vh,178px); min-height: 128px; max-height: 24vh; margin: 14px 0 12px; padding: 16px 14px; gap: 8px; }
   .legacy-question small { font-size: .78rem; }
   .legacy-question strong { font-size: .98rem; line-height: 1.42; }
   .legacy-options:not(.wellbeing-options) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
