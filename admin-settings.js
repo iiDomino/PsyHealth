@@ -2,7 +2,7 @@
   "use strict";
   const S = PsyHealthStorage;
   const session = await S.adminSession();
-  if (!session) return;
+  if (!session) { location.replace("admin-login.html"); return; }
 
   const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]);
   let role = await S.myRole();
