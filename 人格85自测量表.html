@@ -314,9 +314,9 @@
             display: grid;
             align-content: center;
             gap: 10px;
-            min-height: 190px;
-            margin: 20px 0;
-            padding: 24px;
+            min-height: 210px;
+            margin: 24px 0;
+            padding: 26px;
             border: 0;
             border-radius: 20px;
             background: linear-gradient(135deg,#f1fbfc,#fff4f7);
@@ -342,13 +342,13 @@
         .options-row {
             display: grid;
             grid-template-columns: repeat(2,minmax(0,1fr));
-            gap: 12px;
-            margin: 8px 0 0;
+            gap: 14px;
+            margin: 10px 0 0;
         }
         .options-row label {
             justify-content: center;
-            min-height: 50px;
-            padding: 10px 12px;
+            min-height: 54px;
+            padding: 11px 12px;
             border: 1px solid #bddde2;
             border-radius: 15px;
             background: #fff;
@@ -448,28 +448,28 @@
 
         /* 移动端优化 */
         @media (max-width: 600px) {
-            body { padding: max(8px, env(safe-area-inset-top)) 8px max(10px, env(safe-area-inset-bottom)); display:block; }
-            .home-floating { margin-bottom: 8px; padding: 6px 8px; }
-            .container { width:100%; min-height: calc(100vh - 48px); min-height: calc(100dvh - 48px); padding: 16px 12px; border-radius: 20px; box-shadow: 0 20px 60px rgba(40,82,104,.16); }
-            h1 { font-size: 1.25rem; margin-bottom: 6px; }
-            .guide { font-size: 0.82rem; margin-bottom: 10px; line-height: 1.5; }
+            body { padding: max(12px, env(safe-area-inset-top)) 10px max(16px, env(safe-area-inset-bottom)); display:block; }
+            .home-floating { margin-bottom: 10px; padding: 7px 9px; }
+            .container { width:100%; min-height: calc(100vh - 54px); min-height: calc(100dvh - 54px); padding: 20px 14px; border-radius: 22px; box-shadow: 0 20px 60px rgba(40,82,104,.16); }
+            h1 { font-size: 1.3rem; margin-bottom: 8px; }
+            .guide { font-size: 0.84rem; margin-bottom: 12px; line-height: 1.55; }
 
-            .question-card { min-height: 92px; padding: 12px; border-radius: 20px; margin: 10px 0; gap: 6px; box-shadow: none; }
+            .question-card { min-height: 118px; padding: 16px 14px; border-radius: 22px; margin: 14px 0; gap: 8px; box-shadow: none; }
             .q-num-large { font-size: .78rem; padding: 0; margin: 0; }
             .q-text-large {
-                font-size: .98rem;
-                line-height: 1.42;
+                font-size: 1rem;
+                line-height: 1.48;
                 margin-bottom: 0;
                 min-height: 0;
-                max-height: 18vh;
+                max-height: 24vh;
             }
 
-            .options-row { gap: 7px; margin: 4px 0 0; }
-            .options-row label { min-height: 40px; padding: 8px 9px; font-size: .9rem; border-radius: 13px; box-shadow: none; }
+            .options-row { gap: 9px; margin: 6px 0 0; }
+            .options-row label { min-height: 46px; padding: 9px 10px; font-size: .92rem; border-radius: 14px; box-shadow: none; }
             input[type="radio"] { width: 18px; height: 18px; }
 
-            .nav-panel { gap: 8px; margin-top: 10px; position: sticky; bottom: 0; background: rgba(255,255,255,.95); padding-top: 6px; }
-            .nav-btn,.reset-btn,.screenshot-btn { min-height: 40px; padding: 8px 10px; min-width: 0; flex: 1; font-size: 0.9rem; border-radius: 13px; }
+            .nav-panel { gap: 10px; margin-top: 14px; position: sticky; bottom: 0; background: rgba(255,255,255,.95); padding-top: 8px; }
+            .nav-btn,.reset-btn,.screenshot-btn { min-height: 46px; padding: 9px 10px; min-width: 0; flex: 1; font-size: 0.92rem; border-radius: 14px; }
 
             .action-bar { margin: 12px 0 4px; }
             .result-panel { padding: 0; margin-top: 14px; border-radius: 0; }

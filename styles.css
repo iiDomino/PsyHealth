@@ -155,25 +155,25 @@
 
 /* 新增量表沿用原始单页测评的全屏卡片语言 */
 .quiz-page { min-height: 100vh; min-height: 100dvh; margin: 0; overflow-y: auto; background: linear-gradient(145deg,#d9f4f4 0%,#f7e8ef 48%,#e4effb 100%); }
-.legacy-quiz-shell { width: min(760px,100%); min-height: 100vh; min-height: 100dvh; margin: auto; padding: max(22px,env(safe-area-inset-top)) 22px max(22px,env(safe-area-inset-bottom)); box-sizing: border-box; display: flex; flex-direction: column; }
+.legacy-quiz-shell { width: min(760px,100%); min-height: 100vh; min-height: 100dvh; margin: auto; padding: max(26px,env(safe-area-inset-top)) 22px max(30px,env(safe-area-inset-bottom)); box-sizing: border-box; display: flex; flex-direction: column; }
 .legacy-quiz-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; color: #255e78; font-weight: 700; }
 .legacy-quiz-head a { color: inherit; text-decoration: none; }
 .legacy-progress { height: 8px; border-radius: 8px; background: rgba(255,255,255,.7); overflow: hidden; margin-bottom: 16px; }
 .legacy-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#2b9eb3,#ef91a9); transition: width .2s ease; }
-.legacy-card { margin: auto 0; padding: clamp(24px,5vw,46px); border-radius: 28px; background: rgba(255,255,255,.95); box-shadow: 0 20px 60px rgba(40,82,104,.16); }
+.legacy-card { margin: auto 0; padding: clamp(28px,5vw,50px); border-radius: 28px; background: rgba(255,255,255,.95); box-shadow: 0 20px 60px rgba(40,82,104,.16); }
 .legacy-card h1 { margin: 4px 0 10px; color: #174d68; font-size: clamp(1.45rem,4vw,2.2rem); }
 .legacy-kicker { margin: 0; color: #39839a; font-size: .82rem; font-weight: 800; letter-spacing: .03em; }
 .legacy-instruction { color: #607984; }
 .question-screen { display: flex; flex-direction: column; }
-.legacy-question { display: grid; align-content: center; gap: 10px; height: 190px; min-height: 190px; margin: 24px 0 20px; padding: 24px; overflow-y: auto; border-radius: 20px; background: linear-gradient(135deg,#f1fbfc,#fff4f7); color: #163f52; }
+.legacy-question { display: grid; align-content: center; gap: 12px; height: 210px; min-height: 210px; margin: 28px 0 22px; padding: 26px; overflow-y: auto; border-radius: 20px; background: linear-gradient(135deg,#f1fbfc,#fff4f7); color: #163f52; }
 .legacy-question small { color: #4a8ba0; font-weight: 800; }
 .legacy-question strong { font-size: clamp(1.1rem,3vw,1.4rem); line-height: 1.65; }
-.legacy-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 12px; }
+.legacy-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(120px,1fr)); gap: 14px; }
 .wellbeing-scale-line { display: grid; grid-template-columns: minmax(0,1fr) minmax(110px,1.25fr) minmax(0,1fr); align-items: center; gap: 8px; width: 100%; text-align: center; }
 .double-arrow { width: 100%; color: #2f8097; font-size: clamp(.9rem,3vw,1.1rem); font-weight: 500; letter-spacing: -1px; line-height: 1; white-space: nowrap; }
 .wellbeing-options { grid-template-columns: repeat(7,minmax(0,1fr)); gap: 8px; }
 .wellbeing-options button { min-width: 0; min-height: 48px; padding: 0; }
-.legacy-options button,.legacy-nav button { min-height: 50px; border: 1px solid #bddde2; border-radius: 15px; background: #fff; color: #24576a; font: inherit; font-weight: 750; cursor: pointer; }
+.legacy-options button,.legacy-nav button { min-height: 54px; border: 1px solid #bddde2; border-radius: 15px; background: #fff; color: #24576a; font: inherit; font-weight: 750; cursor: pointer; }
 .legacy-options button:hover,.legacy-options button.selected { border-color: #2b9eb3; background: #e5f8f8; color: #17677c; transform: translateY(-1px); }
 .legacy-nav { display: flex; justify-content: space-between; gap: 12px; margin-top: 22px; }
 .legacy-nav button { padding: 0 22px; }
@@ -189,21 +189,21 @@
 @media (max-width: 620px) {
   .profile-grid { grid-template-columns: 1fr; }
   .profile-wide { grid-column: auto; }
-  .legacy-quiz-shell { padding: max(8px,env(safe-area-inset-top)) 8px max(10px,env(safe-area-inset-bottom)); }
-  .legacy-card { margin: 0; padding: 16px 12px; border-radius: 20px; }
-  .legacy-card h1 { font-size: 1.25rem; margin-bottom: 6px; }
+  .legacy-quiz-shell { padding: max(12px,env(safe-area-inset-top)) 10px max(16px,env(safe-area-inset-bottom)); }
+  .legacy-card { margin: 0; padding: 20px 14px; border-radius: 22px; }
+  .legacy-card h1 { font-size: 1.3rem; margin-bottom: 8px; }
   .legacy-kicker { font-size: .76rem; }
   .legacy-instruction { max-height: 2.8em; margin: 4px 0; overflow-y: auto; font-size: .82rem; line-height: 1.45; }
-  .legacy-question { height: auto; min-height: 92px; max-height: 20vh; margin: 10px 0; padding: 12px; gap: 6px; }
+  .legacy-question { height: auto; min-height: 118px; max-height: 24vh; margin: 14px 0 12px; padding: 16px 14px; gap: 8px; }
   .legacy-question small { font-size: .78rem; }
   .legacy-question strong { font-size: .98rem; line-height: 1.42; }
-  .legacy-options:not(.wellbeing-options) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
-  .legacy-options button,.legacy-nav button { min-height: 40px; border-radius: 13px; font-size: .9rem; }
-  .wellbeing-options { gap: 5px; }
-  .wellbeing-options button { min-height: 40px; border-radius: 12px; }
+  .legacy-options:not(.wellbeing-options) { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+  .legacy-options button,.legacy-nav button { min-height: 46px; border-radius: 14px; font-size: .92rem; }
+  .wellbeing-options { gap: 6px; }
+  .wellbeing-options button { min-height: 44px; border-radius: 12px; }
   .wellbeing-scale-line { grid-template-columns: minmax(0,1fr) 94px minmax(0,1fr); gap: 4px; }
   .double-arrow { font-size: .82rem; }
-  .legacy-nav { margin-top: 10px; gap: 8px; }
+  .legacy-nav { margin-top: 14px; gap: 10px; }
   .invite-fields { grid-template-columns: 1fr; }
   .scale-check-grid { grid-template-columns: repeat(3,1fr); }
   .phone-digit-grid,.digit-grid { gap: 8px; }
