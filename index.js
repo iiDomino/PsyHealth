@@ -5,6 +5,7 @@
   const report = document.getElementById("currentReportCard");
   const intakeEntry = document.getElementById("intakeEntryCard");
   const notice = document.getElementById("accessNotice");
+  const disclaimer = document.getElementById("homeDisclaimer");
   const consentCheck = document.getElementById("autoConsentCheck");
   const consentMessage = document.getElementById("consentMessage");
   intakeEntry?.addEventListener("click", event => {
@@ -23,6 +24,7 @@
   if (!access?.intake) {
     section.hidden = true; report.hidden = true; notice.hidden = false; return;
   }
+  if (disclaimer) disclaimer.hidden = true;
   intakeEntry.hidden = true;
   document.querySelectorAll("[data-scale]").forEach(item => { item.closest("li").hidden = !access.canAccess(Number(item.dataset.scale)); });
   notice.hidden = true;
