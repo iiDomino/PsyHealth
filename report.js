@@ -32,12 +32,17 @@
   }
 
   const sessions = buildSessions();
-  const allResults = sessions.flatMap(session => session.results || []);
+  const allResults = sessions.flatMap(session => (session.results || []).map(result => ({...result, sessionId:session.id, sessionAt:session.createdAt})));
   const completionText = allResults.length ? `当前档案共记录 ${sessions.length} 次测评批次，${allResults.length} 项测评结果。` : "当前档案尚未记录测评结果。";
   const facts = intake ? `<dl class="report-facts"><div class="wide"><dt>所属机构</dt><dd>${escapeHTML(intake.organizationName || selfProfile?.organizationName || "系统直属")}</dd></div><div><dt>姓名</dt><dd>${escapeHTML(intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${escapeHTML(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${escapeHTML(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${escapeHTML(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${escapeHTML(intake.education)}</dd></div><div><dt>职业</dt><dd>${escapeHTML(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${escapeHTML(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${escapeHTML(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${escapeHTML(formatTopics(intake.topics))}</dd></div></dl>` : '<p class="muted-copy">尚未填写来访资料。</p>';
-  const sessionBlocks = sessions.length ? sessions.map(renderSession).join("") : '<p class="muted-copy">尚未完成测评。</p>';
+  const grouped = allResults.reduce((map, result) => {
+    const key = result.id || "unknown";
+    (map[key] ||= []).push(result);
+    return map;
+  }, {});
+  const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list)).join("") || '<p class="muted-copy">尚未完成测评。</p>';
 
-  app.innerHTML = `<section class="panel report-panel" id="reportCapture"><header class="report-header"><p class="eyebrow">测评结果</p><h1>我的测评结果</h1><p>所属机构：${escapeHTML(intake?.organizationName || selfProfile?.organizationName || "系统直属")} · 生成时间：${fmt(new Date().toISOString())}</p></header><section class="report-block"><h2>来访者资料</h2>${facts}</section><section class="report-block"><h2>既往测评记录</h2><p class="report-count">${escapeHTML(completionText)}</p><p class="muted-copy">以下结果仅用于自我了解和咨询辅助参考，建议结合个人情况与机构专业人员共同理解。</p><div class="report-results">${sessionBlocks}</div></section><section class="report-block" data-html2canvas-ignore="true"><h2>给机构留言（可选）</h2><p class="muted-copy">如有补充情况、咨询诉求或对测评结果的疑问，可在这里留言，所属机构和系统管理员可在必要范围内查看。</p><textarea class="note-textarea" id="clientMessage" rows="4" placeholder="可补充当前状态、希望讨论的问题或对结果的疑问"></textarea><p id="messageState" class="form-message"></p><button class="secondary-btn" id="saveMessageBtn" type="button">保存留言</button></section><div class="actions" data-html2canvas-ignore="true"><button class="secondary-btn" id="clearReportBtn">清空本机临时数据</button><button class="primary-btn" id="saveReportBtn">截图保存结果</button></div></section>`;
+  app.innerHTML = `<section class="panel report-panel" id="reportCapture"><header class="report-header"><p class="eyebrow">测评结果</p><h1>我的测评结果</h1><p>所属机构：${escapeHTML(intake?.organizationName || selfProfile?.organizationName || "系统直属")} · 生成时间：${fmt(new Date().toISOString())}</p></header><section class="report-block"><h2>来访者资料</h2>${facts}</section><section class="report-block"><h2>既往测评记录</h2><p class="report-count">${escapeHTML(completionText)}</p><p class="muted-copy">相同测评项目已自动堆叠。点击项目可按时间查看全部历史结果。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block" data-html2canvas-ignore="true"><h2>给机构留言（可选）</h2><p class="muted-copy">如有补充情况、咨询诉求或对测评结果的疑问，可在这里留言，所属机构和系统管理员可在必要范围内查看。</p><textarea class="note-textarea" id="clientMessage" rows="4" placeholder="可补充当前状态、希望讨论的问题或对结果的疑问"></textarea><p id="messageState" class="form-message"></p><button class="secondary-btn" id="saveMessageBtn" type="button">保存留言</button></section><div class="actions" data-html2canvas-ignore="true"><button class="secondary-btn" id="clearReportBtn">清空本机临时数据</button><button class="primary-btn" id="saveReportBtn">截图保存结果</button></div></section>`;
 
   document.getElementById("saveMessageBtn").addEventListener("click", async () => {
     const state = document.getElementById("messageState");
@@ -78,17 +83,30 @@
     return [];
   }
 
-  function renderSession(session, index) {
-    const title = session.isCurrent ? `本次测评 · ${fmt(session.createdAt)}` : `第 ${sessions.length - index} 次测评 · ${fmt(session.createdAt)}`;
-    return `<article class="scale-group"><h3>${escapeHTML(title)}</h3><p class="muted-copy">本批次记录 ${session.results.length} 项测评结果。</p>${session.results.map((item, i) => renderResult(item, i)).join("")}</article>`;
+  function renderScaleGroup(key, list) {
+    const chronological = list.slice().sort((a,b) => new Date(a.completedAt || a.sessionAt) - new Date(b.completedAt || b.sessionAt));
+    const latestFirst = chronological.slice().reverse();
+    const trend = trendText(chronological);
+    const latest = latestFirst[0];
+    const title = resultNames[key] || list[0]?.shortTitle || "未命名测评";
+    const openAttr = latestFirst.length === 1 ? " open" : "";
+    return `<details class="scale-group stacked-scale-group"${openAttr}><summary><span><strong>${escapeHTML(title)}</strong><small>${escapeHTML(latestFirst.length)} 次测试 · 最新：${escapeHTML(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${escapeHTML(trend)}</em></span><b>展开</b></summary><div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
   }
 
-  function renderResult(item, index) {
+  function renderResult(item, index, total) {
     const detailLines = cleanDetails(Array.isArray(item.details) && item.details.length ? item.details : String(item.summary || "").split("；").filter(Boolean));
-    return `<article class="report-result"><div><span class="report-scale">${index+1}. ${escapeHTML(resultNames[item.id] || item.shortTitle || "未命名测评")}</span><h3>${escapeHTML(item.resultTitle || item.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${escapeHTML(item.score)}</strong><span>${escapeHTML(item.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${detailLines.map(line => `<li>${escapeHTML(line)}</li>`).join("")}</ul><time class="result-time">完成时间：${escapeHTML(fmt(item.completedAt))}</time></article>`;
+    return `<article class="report-result compact-result"><div><span class="report-scale">${index === 0 ? "最新" : `倒数第 ${index + 1} 次`} · 共 ${total} 次 · ${escapeHTML(fmt(item.completedAt || item.sessionAt))}</span><h3>${escapeHTML(item.resultTitle || item.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${escapeHTML(item.score)}</strong><span>${escapeHTML(item.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${detailLines.map(line => `<li>${escapeHTML(line)}</li>`).join("")}</ul></article>`;
   }
   function cleanDetails(details) {
     const removedPrefix = "解释" + "说明";
     return details.map(line => String(line || "").trim()).filter(line => line && !line.startsWith(removedPrefix));
+  }
+  function trendText(list) {
+    if (list.length < 2) return "目前仅有 1 次结果，暂不形成趋势判断。";
+    const nums = list.map(item => Number(String(item.score).match(/-?\d+(\.\d+)?/)?.[0])).filter(Number.isFinite);
+    if (nums.length < 2) return `共 ${list.length} 次结果，分数格式不统一，建议结合详细内容人工比较。`;
+    const first = nums[0], last = nums[nums.length - 1], diff = last - first;
+    if (Math.abs(diff) < 0.01) return `共 ${list.length} 次结果，首末分数基本持平。`;
+    return `共 ${list.length} 次结果，首末分数${diff > 0 ? "上升" : "下降"} ${Math.abs(diff).toFixed(2)}。请结合该量表含义判断改善或风险变化。`;
   }
 })();
