@@ -78,6 +78,15 @@
     phoneLast4Input.value = value;
     return value;
   }
+  function movePastPhoneDigits() {
+    const next = form.elements.gender || form.querySelector("select, textarea, button, input:not(.phone-digit):not([type='hidden'])");
+    phoneDigitInputs.forEach(input => input.blur());
+    if (next) {
+      setTimeout(() => {
+        next.scrollIntoView({behavior:"smooth", block:"center"});
+      }, 80);
+    }
+  }
 
   function showOrganization(name) {
     if (!name) return;
@@ -127,7 +136,10 @@
       event.target.value = digits.slice(-1);
       const phoneLast4 = syncPhoneDigits();
       if (event.target.value && index < phoneDigitInputs.length - 1) phoneDigitInputs[index + 1].focus();
-      if (phoneLast4.length === 4) lookupProfile();
+      if (phoneLast4.length === 4) {
+        movePastPhoneDigits();
+        lookupProfile();
+      }
     });
     input.addEventListener("keydown", event => {
       if (event.key === "Backspace" && !input.value && index > 0) phoneDigitInputs[index - 1].focus();
@@ -137,8 +149,12 @@
       if (!digits) return;
       event.preventDefault();
       setPhoneDigits(digits);
-      phoneDigitInputs[Math.min(digits.length, 4) - 1]?.focus();
-      if (digits.length >= 4) lookupProfile();
+      if (digits.length >= 4) {
+        movePastPhoneDigits();
+        lookupProfile();
+      } else {
+        phoneDigitInputs[Math.min(digits.length, 4) - 1]?.focus();
+      }
     });
   });
 

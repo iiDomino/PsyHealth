@@ -78,8 +78,7 @@
     const trend = trendText(chronological);
     const latest = latestFirst[0];
     const title = scaleNames[key] || list[0]?.shortTitle || "未命名测评";
-    const openAttr = latestFirst.length === 1 ? " open" : "";
-    return `<details class="scale-group stacked-scale-group"${openAttr}><summary><span><strong>${esc(title)}</strong><small>${esc(latestFirst.length)} 次测试 · 最新：${esc(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${esc(trend)}</em></span><b>展开</b></summary>${renderTrendChart(chronological)}<div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
+    return `<details class="scale-group stacked-scale-group"><summary><span><strong>${esc(title)}</strong><small>${esc(latestFirst.length)} 次测试 · 最新：${esc(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${esc(trend)}</em></span><b>展开</b></summary>${renderTrendChart(chronological)}<div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
   }
   function renderResult(result, index, total) {
     const details = cleanDetails(Array.isArray(result.details) && result.details.length ? result.details : String(result.summary || "").split("；").filter(Boolean));

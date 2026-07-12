@@ -89,8 +89,7 @@
     const trend = trendText(chronological);
     const latest = latestFirst[0];
     const title = resultNames[key] || list[0]?.shortTitle || "未命名测评";
-    const openAttr = latestFirst.length === 1 ? " open" : "";
-    return `<details class="scale-group stacked-scale-group"${openAttr}><summary><span><strong>${escapeHTML(title)}</strong><small>${escapeHTML(latestFirst.length)} 次测试 · 最新：${escapeHTML(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${escapeHTML(trend)}</em></span><b>展开</b></summary><div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
+    return `<details class="scale-group stacked-scale-group"><summary><span><strong>${escapeHTML(title)}</strong><small>${escapeHTML(latestFirst.length)} 次测试 · 最新：${escapeHTML(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${escapeHTML(trend)}</em></span><b>展开</b></summary><div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
   }
 
   function renderResult(item, index, total) {
