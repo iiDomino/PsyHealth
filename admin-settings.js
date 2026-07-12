@@ -45,7 +45,7 @@
         renameMessage.textContent = error.message || "密码验证失败，未修改。";
       } finally {
         button.disabled = false;
-        button.textContent = "保存机构名称";
+        button.textContent = "更改机构名称";
       }
     };
   }
