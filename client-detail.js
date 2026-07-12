@@ -21,7 +21,7 @@
     return map;
   }, {});
   const facts = `<dl class="report-facts"><div><dt>姓名</dt><dd>${esc(profile.name || intake.name)}</dd></div><div><dt>手机号后四位</dt><dd>${esc(intake.phoneLast4 || "-")}</dd></div><div><dt>性别</dt><dd>${esc(intake.gender)}</dd></div><div><dt>出生年</dt><dd>${esc(intake.birthYear || "-")}${intake.birthYear ? " 年" : ""}</dd></div><div><dt>最高学历</dt><dd>${esc(intake.education)}</dd></div><div><dt>职业</dt><dd>${esc(intake.occupation)}</dd></div><div><dt>婚姻状况</dt><dd>${esc(intake.marital)}</dd></div><div><dt>出生城市</dt><dd>${esc(intake.birthCity)}</dd></div><div class="wide"><dt>主要咨询议题</dt><dd>${esc((intake.topics || []).join("、"))}</dd></div><div class="wide"><dt>所属机构</dt><dd>${esc(profile.organizationName || "系统直属")} · ${esc(profile.institutionCode || "-")}</dd></div></dl>`;
-  const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list.sort((a,b) => new Date(a.completedAt || a.sessionAt) - new Date(b.completedAt || b.sessionAt)))).join("") || '<p class="muted-copy">尚未完成测评。</p>';
+  const scaleGroups = Object.entries(grouped).map(([key, list]) => renderScaleGroup(key, list)).join("") || '<p class="muted-copy">尚未完成测评。</p>';
   const messages = sessions.filter(s => s.message).map(s => `<article class="note-card"><time>${esc(fmt(s.updatedAt || s.createdAt))}</time><p>${esc(s.message)}</p></article>`).join("") || '<p class="muted-copy">暂无来访者留言。</p>';
   const logs = (profile.workLogs || []).map(log => renderLog(log)).join("") || '<p class="muted-copy" id="emptyLogs">暂无工作日志。</p>';
   app.innerHTML = `<section class="panel report-panel"><header class="report-header"><p class="eyebrow">来访者档案</p><h1>${esc(profile.name || intake.name)}的独立档案</h1><p>建档时间：${esc(fmt(profile.createdAt))}</p></header><section class="report-block"><h2>基本信息</h2>${facts}</section><section class="report-block"><h2>测评分类与趋势分析</h2><p class="muted-copy">趋势仅基于同一测评的多次结果自动比较，用于辅助观察变化，仍需结合访谈与实际情况理解。</p><div class="scale-group-list">${scaleGroups}</div></section><section class="report-block"><h2>来访者留言</h2>${messages}</section><section class="report-block"><h2>机构工作日志</h2><p class="muted-copy">可记录咨询观察、跟进计划或沟通摘要。保存后自动生成日期，可修改或删除。</p><textarea class="note-textarea" id="workLogInput" rows="4" placeholder="填写新的工作日志"></textarea><p id="workLogMessage" class="form-message"></p><button class="secondary-btn" id="saveWorkLogBtn" type="button">保存工作日志</button><div class="work-log-list" id="workLogList">${logs}</div></section></section>`;
@@ -57,12 +57,17 @@
   }));
 
   function renderScaleGroup(key, list) {
-    const trend = trendText(list);
-    return `<article class="scale-group"><h3>${esc(scaleNames[key] || list[0]?.shortTitle || "未命名测评")}</h3><p class="muted-copy">${esc(trend)}</p><div class="result-comparison">${list.map((result, index) => renderResult(result, index)).join("")}</div></article>`;
+    const chronological = list.slice().sort((a,b) => new Date(a.completedAt || a.sessionAt) - new Date(b.completedAt || b.sessionAt));
+    const latestFirst = chronological.slice().reverse();
+    const trend = trendText(chronological);
+    const latest = latestFirst[0];
+    const title = scaleNames[key] || list[0]?.shortTitle || "未命名测评";
+    const openAttr = latestFirst.length === 1 ? " open" : "";
+    return `<details class="scale-group stacked-scale-group"${openAttr}><summary><span><strong>${esc(title)}</strong><small>${esc(latestFirst.length)} 次测试 · 最新：${esc(fmt(latest?.completedAt || latest?.sessionAt))}</small><em>${esc(trend)}</em></span><b>展开</b></summary>${renderTrendChart(chronological)}<div class="result-comparison">${latestFirst.map((result, index) => renderResult(result, index, latestFirst.length)).join("")}</div></details>`;
   }
-  function renderResult(result, index) {
+  function renderResult(result, index, total) {
     const details = Array.isArray(result.details) && result.details.length ? result.details : String(result.summary || "").split("；").filter(Boolean);
-    return `<article class="report-result compact-result"><div><span class="report-scale">第 ${index + 1} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
+    return `<article class="report-result compact-result"><div><span class="report-scale">${index === 0 ? "最新" : `倒数第 ${index + 1} 次`} · 共 ${total} 次 · ${esc(fmt(result.completedAt || result.sessionAt))}</span><h3>${esc(result.resultTitle || result.scoreLabel || "测评结果")}</h3></div><div class="mini-score"><strong>${esc(result.score)}</strong><span>${esc(result.scoreLabel || "结果")}</span></div><ul class="report-detail-list">${details.map(line => `<li>${esc(line)}</li>`).join("")}</ul></article>`;
   }
   function trendText(list) {
     if (list.length < 2) return "目前仅有 1 次结果，暂不形成趋势判断。";
@@ -71,6 +76,28 @@
     const first = nums[0], last = nums[nums.length - 1], diff = last - first;
     if (Math.abs(diff) < 0.01) return `共 ${list.length} 次结果，首末分数基本持平。`;
     return `共 ${list.length} 次结果，首末分数${diff > 0 ? "上升" : "下降"} ${Math.abs(diff).toFixed(2)}。请结合该量表含义判断改善或风险变化。`;
+  }
+  function renderTrendChart(list) {
+    const points = list.map((item, index) => ({index, value:Number(String(item.score).match(/-?\d+(\.\d+)?/)?.[0]), time:item.completedAt || item.sessionAt})).filter(item => Number.isFinite(item.value));
+    if (points.length < 2) return `<section class="trend-chart-card"><h4>趋势图</h4><p class="muted-copy">当前有效数字结果不足 2 次，暂不生成趋势图。可结合下方详细记录人工比较。</p></section>`;
+    const width = 620, height = 210, padX = 44, padY = 32;
+    const values = points.map(item => item.value);
+    let min = Math.min(...values), max = Math.max(...values);
+    if (min === max) { min -= 1; max += 1; }
+    const x = i => padX + (points.length === 1 ? 0 : i * (width - padX * 2) / (points.length - 1));
+    const y = value => height - padY - (value - min) * (height - padY * 2) / (max - min);
+    const d = points.map((point, i) => `${i ? "L" : "M"} ${x(i).toFixed(1)} ${y(point.value).toFixed(1)}`).join(" ");
+    const circles = points.map((point, i) => `<g><circle cx="${x(i).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="5"></circle><text x="${x(i).toFixed(1)}" y="${(y(point.value)-10).toFixed(1)}">${esc(point.value)}</text></g>`).join("");
+    const labels = points.map((point, i) => `<text class="trend-x-label" x="${x(i).toFixed(1)}" y="${height - 8}">${esc(shortDate(point.time))}</text>`).join("");
+    const first = points[0].value, last = points[points.length - 1].value, diff = last - first;
+    const summary = Math.abs(diff) < 0.01 ? "首末分数基本持平" : `首末分数${diff > 0 ? "上升" : "下降"} ${Math.abs(diff).toFixed(2)}`;
+    return `<section class="trend-chart-card"><h4>趋势分析图</h4><p>${esc(summary)}。图表按完成时间从左到右排列，越靠右越新。</p><svg class="trend-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="测评趋势折线图"><line class="trend-axis" x1="${padX}" y1="${height-padY}" x2="${width-padX}" y2="${height-padY}"></line><line class="trend-axis" x1="${padX}" y1="${padY}" x2="${padX}" y2="${height-padY}"></line><text class="trend-y-label" x="8" y="${padY+4}">${esc(max.toFixed(2))}</text><text class="trend-y-label" x="8" y="${height-padY+4}">${esc(min.toFixed(2))}</text><path d="${d}"></path>${circles}${labels}</svg></section>`;
+  }
+  function shortDate(value) {
+    if (!value) return "暂无";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "暂无";
+    return `${date.getMonth() + 1}/${date.getDate()}`;
   }
   function renderLog(log) {
     return `<article class="note-card"><time>生成日期：${esc(fmt(log.createdAt))}${log.updatedAt && log.updatedAt !== log.createdAt ? ` · 更新：${esc(fmt(log.updatedAt))}` : ""}</time><p>${esc(log.content)}</p><div class="inline-actions"><button class="secondary-btn" data-edit-log="${esc(log.id)}" type="button">修改</button><button class="danger-ghost-btn" data-delete-log="${esc(log.id)}" type="button">删除</button></div></article>`;

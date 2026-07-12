@@ -106,6 +106,27 @@
 .work-log-list,.scale-group-list,.result-comparison { display:grid; gap:12px; margin-top:14px; }
 .scale-group { border:1px solid #d9e9ef; border-radius:18px; padding:16px; background:#fbfeff; }
 .scale-group h3 { margin:0 0 6px; }
+.stacked-scale-group { padding:0; overflow:hidden; background:#fff; box-shadow:0 10px 28px rgba(31,101,136,.06); }
+.stacked-scale-group summary { display:flex; align-items:center; justify-content:space-between; gap:16px; padding:16px 18px; cursor:pointer; list-style:none; }
+.stacked-scale-group summary::-webkit-details-marker { display:none; }
+.stacked-scale-group summary span { display:grid; gap:5px; min-width:0; }
+.stacked-scale-group summary strong { color:var(--ink); font-size:1.05rem; }
+.stacked-scale-group summary small,.stacked-scale-group summary em { color:var(--muted); font-style:normal; line-height:1.45; }
+.stacked-scale-group summary b { flex:0 0 auto; padding:7px 12px; border-radius:999px; background:#eaf4f6; color:var(--brand-dark); font-size:.82rem; }
+.stacked-scale-group[open] summary { border-bottom:1px solid var(--line); }
+.stacked-scale-group[open] summary b { font-size:0; }
+.stacked-scale-group[open] summary b::before { content:"收起"; font-size:.82rem; }
+.stacked-scale-group .result-comparison { padding:0 14px 14px; }
+.trend-chart-card { margin:14px; padding:16px; border-radius:16px; background:linear-gradient(135deg,#f3fafb,#f8fbff); border:1px solid #dceaf0; }
+.trend-chart-card h4 { margin:0 0 6px; color:var(--brand-dark); }
+.trend-chart-card p { margin:0 0 10px; color:var(--muted); line-height:1.6; }
+.trend-chart { display:block; width:100%; height:auto; min-height:180px; overflow:visible; }
+.trend-chart path { fill:none; stroke:var(--brand); stroke-width:4; stroke-linecap:round; stroke-linejoin:round; }
+.trend-chart circle { fill:#fff; stroke:var(--brand-dark); stroke-width:3; }
+.trend-chart text { fill:var(--brand-dark); font-size:13px; font-weight:800; text-anchor:middle; }
+.trend-chart .trend-axis { stroke:#cbdde5; stroke-width:2; }
+.trend-chart .trend-y-label { text-anchor:start; fill:var(--muted); font-size:12px; }
+.trend-chart .trend-x-label { fill:var(--muted); font-size:12px; }
 .compact-result { background:#fff; }
 .client-card strong { font-size:1.2rem; }
 .organization-client-group { display:grid; gap:10px; margin:0 0 26px; }
