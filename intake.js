@@ -41,7 +41,7 @@
       if ([...birthYearSelect.options].some(option => option.value === guessedYear)) form.elements.birthYear.value = guessedYear;
     }
     form.querySelectorAll('input[name="topic"]').forEach(box => { box.checked = (profile.topics || []).includes(box.value); });
-    formError.textContent = source === "云端" ? "已从云端读取上次填写的资料，可核对后继续，也可以手动修改。" : "已自动填入本机保存的信息，可核对后继续，也可以手动修改。";
+    formError.textContent = source === "云端" ? "" : "已自动填入本机保存的信息，可核对后继续，也可以手动修改。";
   }
 
   function rememberProfile(intake, code) {
@@ -108,6 +108,11 @@
     nameInput.addEventListener(eventName, lookupProfile);
     phoneLast4Input.addEventListener(eventName, lookupProfile);
     codeInput.addEventListener(eventName, lookupProfile);
+  });
+  phoneLast4Input.addEventListener("input", () => {
+    const phoneLast4 = normalizePhoneLast4(phoneLast4Input.value);
+    if (phoneLast4Input.value !== phoneLast4) phoneLast4Input.value = phoneLast4;
+    if (phoneLast4.length === 4) lookupProfile();
   });
 
   form.addEventListener("submit", async event => {
