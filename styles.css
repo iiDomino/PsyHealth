@@ -156,7 +156,20 @@
 .report-result > time { grid-column: 1 / -1; }
 
 /* 新增量表沿用原始单页测评的全屏卡片语言 */
-.quiz-page { min-height: 100vh; min-height: 100dvh; margin: 0; overflow-y: auto; background: linear-gradient(145deg,#d9f4f4 0%,#f7e8ef 48%,#e4effb 100%); }
+.quiz-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-y: auto;
+  background-color: #edf7f5;
+  background-image:
+    linear-gradient(rgba(245,252,250,.72),rgba(242,249,252,.78)),
+    url("assets/assessment-warm-bg.webp");
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
 .legacy-quiz-shell { width: min(760px,100%); min-height: 100vh; min-height: 100dvh; margin: auto; padding: max(26px,env(safe-area-inset-top)) 22px max(30px,env(safe-area-inset-bottom)); box-sizing: border-box; display: flex; flex-direction: column; }
 .legacy-quiz-head { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 12px; color: #255e78; font-weight: 700; }
 .legacy-quiz-head a { color: inherit; text-decoration: none; }
@@ -189,6 +202,7 @@
 .result-summary { grid-column: 1 / -1; margin: 4px 0 0; color: var(--ink); line-height: 1.7; }
 
 @media (max-width: 620px) {
+  .quiz-page { background-attachment: scroll; background-position: 58% bottom; }
   .profile-grid { grid-template-columns: 1fr; }
   .profile-wide { grid-column: auto; }
   .legacy-quiz-shell { padding: max(12px,env(safe-area-inset-top)) 10px max(16px,env(safe-area-inset-bottom)); }
