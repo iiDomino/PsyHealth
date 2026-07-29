@@ -10,6 +10,7 @@
   const codeInput = form.elements.referralCode;
   const birthYearSelect = form.elements.birthYear;
   let lookupToken = 0;
+  let codeTouched = false;
 
   populateBirthYears();
 
@@ -34,9 +35,10 @@
 
   function applyProfile(profile, source = "本机") {
     if (!profile) return;
-    ["gender","birthYear","education","occupation","marital","birthCity","referralCode"].forEach(name => {
+    ["gender","birthYear","education","occupation","marital","birthCity"].forEach(name => {
       if (profile[name] !== undefined && form.elements[name]) form.elements[name].value = profile[name];
     });
+    if (!codeTouched && !codeInput.value.trim() && profile.referralCode) codeInput.value = profile.referralCode;
     if (!form.elements.birthYear.value && profile.age) {
       const guessedYear = String(new Date().getFullYear() - Number(profile.age));
       if ([...birthYearSelect.options].some(option => option.value === guessedYear)) form.elements.birthYear.value = guessedYear;
@@ -129,6 +131,9 @@
   ["change","blur"].forEach(eventName => {
     nameInput.addEventListener(eventName, lookupProfile);
     codeInput.addEventListener(eventName, lookupProfile);
+  });
+  ["input","change"].forEach(eventName => {
+    codeInput.addEventListener(eventName, () => { codeTouched = true; });
   });
   phoneDigitInputs.forEach((input, index) => {
     input.addEventListener("input", event => {
