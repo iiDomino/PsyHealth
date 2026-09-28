@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "psyhealth-supabase-keepalive",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-28",
+  "observability": {
+    "enabled": true
+  },
+  "triggers": {
+    "crons": [
+      "17 0 * * *",
+      "17 8 * * *",
+      "17 16 * * *"
+    ]
+  },
+  "vars": {
+    "SUPABASE_URL": "https://ijjzeicbtnxqdqenqjdl.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_SixmRplMwqVOAHJMoUw0mQ_pwGKPvdk"
+  }
+}

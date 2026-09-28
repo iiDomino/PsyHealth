@@ -1,0 +1,13 @@
+{
+  "name": "psyhealth-supabase-keepalive",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "check": "node --check src/index.js"
+  },
+  "devDependencies": {
+    "undici": "^7.16.0",
+    "wrangler": "4.141.0"
+  }
+}
